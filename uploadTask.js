@@ -132,9 +132,9 @@ divImage.appendChild(img);
 
 var id=document.createTextNode("ProductId : "+jsonObject.id);
 var title=document.createTextNode("Title : "+jsonObject.title);
-var occassion=document.createTextNode("Occassion : pary suit");
+ 
 var description=document.createTextNode("Description : "+jsonObject.description);
-var usedCount=document.createTextNode("ProductUsedInAisles : 5");
+var usedCount=document.createTextNode("OwnerAisleId : "+jsonObject.ownerAisleId);
 
  
 divTitle.appendChild(title);
@@ -148,7 +148,7 @@ productusedCount.style.color = 'red';
 
 td1.appendChild(divId);
 td1.appendChild(divTitle);
-td1.appendChild(divOccassion);
+ 
 td1.appendChild(divDescription);
 td1.appendChild(productusedCount);
 
