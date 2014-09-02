@@ -140,7 +140,7 @@ var usedCount=document.createTextNode("OwnerAisleId : "+jsonObject.ownerAisleId)
 divTitle.appendChild(title);
  
 divId.appendChild(id);
-divOccassion.appendChild(occassion);
+ 
 divDescription.appendChild(description);
 productusedCount.appendChild(usedCount);
 productusedCount.style.color = 'red';
