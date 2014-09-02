@@ -1,0 +1,344 @@
+<html>
+<head>
+
+<script src="uploadTask.js" type="text/javascript"></script>
+<script>
+ //prototype for clear the array values.
+Array.prototype.clear = function() {
+    this.length = 0;
+};
+var selected_products = [];
+var name;
+var userId;
+var category;
+var occassion;
+var lookingFor;
+var description;
+var aisleId;
+var uploadProductCount = 0;
+function callFrameOne(){
+var boolResult = checkAisleData();
+ if(boolResult){
+ selected_products.clear();
+uploadProductCount = 0;
+window.top.postMessage('getSelectedProducts', '*')
+}
+}
+window.onmessage = function(e){
+ try{
+ if(e.data == 'done') {
+if(selected_products.length >0){
+createAisleRequest();
+ //alert("from aisle creation products are : "+selected_products.length );
+  //for(var i=0;i<selected_products.length;i++){
+//alert(JSON.stringify(selected_products[i]));
+//}
+}
+} else {
+ selected_products.push(JSON.parse(e.data));
+}
+ 
+} catch(e){
+
+ }
+};
+function getProducts(){
+ window.top.postMessage('getproducts', '*')
+ 
+}
+function checkAisleData(){
+  name = document.getElementById("Name").value;
+ if(name.length < 1)
+{
+showAlert("Please Enter Name");
+return false;
+}
+userId = document.getElementById("UserId").value;
+ if(userId.length < 1)
+{
+showAlert("Please Enter UserId");
+return false;
+}
+  category = document.getElementById("Category").value;
+ if(category.length < 1)
+{
+showAlert("Please Enter Category");
+return false;
+}
+  occassion = document.getElementById("Occassion").value;
+ if(occassion.length < 1)
+{
+showAlert("Please Enter Occassion");
+return false;
+}
+  lookingFor = document.getElementById("LookingFor").value;
+ if(lookingFor.length < 1)
+{
+showAlert("Please Enter LookingFor");
+return false;
+}
+  description = document.getElementById("Description").value;
+ if(description.length < 1)
+{
+showAlert("Please Enter Description");
+return false;
+}
+return true;
+}
+function showAlert(message){
+alert(message);
+}
+ 
+ function createAisleRequest() {
+  var isAisleDataAvailable = checkAisleData();
+ if(isAisleDataAvailable == false){
+  return;
+}
+aisleId = "";
+var url = "https://vue-server-dev.appspot.com/api/aisle";
+if (XMLHttpRequest) {
+request = new XMLHttpRequest();
+if ("withCredentials" in request) {
+// Firefox 3.5 and Safari 4
+request.open('POST', url, true);
+request.setRequestHeader('Custom-Header', 'javascript-client');
+request.setRequestHeader('Content-Type', 'application/json');
+request.onreadystatechange = aisle_post_handler;
+ //aisle creation request.
+request.send(JSON.stringify({id:null, ownerUserId:6419807607980032, category: category, description: description, lookingFor: lookingFor, name: name, occassion: occassion,bookmarkCount:0}));
+}
+}
+}
+function aisle_post_handler() {
+if (request.readyState != 4)
+return;
+if (request.status != 200 && request.status != 304) {
+alert('HTTP POST error ' + request.status + 'Response ' + request.responseText);
+return;
+}
+if (request.status == 200)
+{
+//get the aisle id and start updating products from here.
+alert("Curated Successfully " + request.responseText);
+  var jsonObject = JSON.parse(request.responseText);
+  aisleId  = jsonObject.id;
+  console.log("aisle Id: "+aisleId);
+   //uploadin aisle products
+ 
+       uploadAisleProduct(selected_products[uploadProductCount]);
+  
+}
+
+}
+ function uploadAisleProduct(product) {
+var url = "https://vue-server-dev.appspot.com/api/product/" + product.id;
+   console.log("url: "+url);
+if (XMLHttpRequest) {
+request = new XMLHttpRequest();
+if ("withCredentials" in request) {
+// Firefox 3.5 and Safari 4
+request.open('PUT', url, true);
+request.setRequestHeader('Custom-Header', 'javascript-client');
+request.setRequestHeader('Content-Type', 'application/json');
+request.onreadystatechange = update_handler;
+//product update request:
+ 
+request.send(JSON.stringify({id: product.id, ownerAisleId: aisleId, ownerProductListId: product.ownerProductListId, creatorId: product.creatorId, curatorId: product.curatorId, title: product.title, description: product.description, currentProductState: product.currentProductState, relatedProductIds: null, productTags: null, productImages: null, productProviders: null, comments: null, ratings: null}));
+
+console.log(JSON.stringify({id: product.id, ownerAisleId: aisleId, ownerProductListId: product.ownerProductListId, creatorId: product.creatorId, curatorId: product.curatorId, title: product.title, description: product.description, currentProductState: product.currentProductState, relatedProductIds: null, productTags: null, productImages: null, productProviders: null, comments: null, ratings: null}));
+}
+}
+}
+function update_handler() {
+if (request.readyState != 4)
+return;
+if (request.status != 200 && request.status != 304) {
+alert('HTTP POST error ' + request.status + 'Response ' + request.responseText);
+return;
+}
+if (request.status == 200)
+{
+alert("Curated Successfully " + request.responseText);
+ uploadProductCount = uploadProductCount + 1;
+ if(uploadProductCount < selected_products.length){
+ uploadAisleProduct(selected_products[uploadProductCount]);
+}
+}
+
+}
+function fillValues(){
+ document.getElementById("UserId").value = "6419807607980032";
+}
+</script>
+</head>
+<body onLoad="fillValues()">
+ <div>
+     <input type = "text"  placeholder="Enter keyword"></input> 
+<button type ="button" value="getProducts" onClick ="getProducts()"> Get Products</button>
+</div>
+		<form action="" method="post" class="basic-grey">
+			<h1>
+				Details <span>Please fill all the texts in the fields.</span>
+			</h1>
+			<label> <span>Name: </span> <input id='Name' type="text"
+				name="name" placeholder="Name"  />
+
+				<button style="background-color: black; width: 30px; height: 20px;"
+					name="button" value="OK" type="button" id="btn_addTitle"></button>
+
+			</label> 
+			
+			
+			<label> <span>UserId: </span> <input id="UserId"
+				type="text" name="name" placeholder="UserId" />
+				<button style="background-color: black; width: 30px; height: 20px;"
+					name="button" value="OK" type="button" id="id_pricebutton"></button>
+			</label>
+			
+			
+			 <label> <span>Category: </span> <input id="Category"
+				type="text" name="name" placeholder="Category"></input>
+				<button style="background-color: black; width: 30px; height: 20px;"
+					name="button" value="OK" type="button" id="btn_colorSelection"></button>
+			</label> 
+			
+			<label> <span>Occassion: </span> <input id="Occassion"
+				type="text" name="name" placeholder="Occassion" ></input>
+				<button style="background-color: black; width: 30px; height: 20px;"
+					name="button" value="OK" type="button" id="btn_img_urls_id"></button>
+			</label> 
+		  
+			
+			
+			<label> <span>LookingFor: </span> <input
+				id="LookingFor" type="text" name="name"
+				placeholder="LookingFor"></input>
+				<button style="background-color: black; width: 30px; height: 20px;"
+					name="button" value="OK" type="button" id="product_rating_id"></button>
+			</label>
+	 
+
+			<label> <span>Description: </span> <textarea
+					id="Description" type="html" name="message"
+					placeholder="Features"></textarea>
+				<button style="background-color: black; width: 30px; height: 20px;"
+					name="button" value="OK" type="button" id="btn_featurebullets"></button>
+			</label> <label> <span>&nbsp;</span> <input type="button"
+				class="myButtonRED" value="Upload" id="uploaditem" onClick ="callFrameOne()" /> <span>&nbsp;</span>  
+				 
+			</label>
+		</form>
+</body>
+</html>
+<style>
+.myButtonRED {
+	-moz-box-shadow: inset 0px 39px 0px -24px #e67a73;
+	-webkit-box-shadow: inset 0px 39px 0px -24px #e67a73;
+	box-shadow: inset 0px 39px 0px -24px #e67a73;
+	background-color: #e4685d;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	border: 1px solid #ffffff;
+	display: inline-block;
+	cursor: pointer;
+	color: #ffffff;
+	font-family: arial;
+	font-size: 15px;
+	padding: 6px 15px;
+	text-decoration: none;
+	text-shadow: 0px 1px 0px #b23e35;
+}
+
+#example1 { width: 50%; }
+#example2 { width: 150px; }
+
+select { width: 300px; }
+
+textarea {
+width: 300px;
+height: 10em;
+}
+/* Basic Grey */
+.basic-grey {
+	width: 400px;
+	margin-right: auto;
+	margin-left: auto;
+	background: #EEE;
+	padding: 20px 30px 20px 30px;
+	font: 12px Georgia, "Times New Roman", Times, serif;
+	color: #888;
+	text-shadow: 1px 1px 1px #FFF;
+	border: 1px solid #DADADA;
+}
+
+.basic-grey h1 {
+	font: 25px Georgia, "Times New Roman", Times, serif;
+	padding: 0px 0px 10px 40px;
+	display: block;
+	border-bottom: 1px solid #DADADA;
+	margin: -10px -30px 30px -30px;
+	color: #888;
+}
+
+.basic-grey h1>span {
+	display: block;
+	font-size: 11px;
+}
+
+.basic-grey label {
+	display: block;
+	margin: 0px 0px 5px;
+}
+
+.basic-grey label>span {
+	float: left;
+	width: 80px;
+	text-align: right;
+	padding-right: 10px;
+	margin-top: 10px;
+	color: #888;
+}
+
+.basic-grey input[type="text"], .basic-grey input[type="email"],
+	.basic-grey textarea, .basic-grey select {
+	border: 1px solid #DADADA;
+	color: #888;
+	height: 30px;
+	margin-bottom: 16px;
+	margin-right: 6px;
+	margin-top: 2px;
+	outline: 0 none;
+	padding: 3px 3px 3px 5px;
+	width: 60%;
+	font: normal 12px/12px Georgia, "Times New Roman", Times, serif;
+}
+
+.basic-grey select {
+	background: #FFF url('down-arrow.png') no-repeat right;
+	background: #FFF url('down-arrow.png') no-repeat right);
+	appearance: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	text-indent: 0.01px;
+	text-overflow: '';
+	width: 72%;
+	height: 30px;
+}
+
+.basic-grey textarea {
+	height: 150px;
+}
+
+.basic-grey .button {
+	background: #E48F8F;
+	border: none;
+	padding: 10px 25px 10px 25px;
+	color: #FFF;
+}
+
+.basic-grey .button:hover {
+	background: #CF7A7A
+}
+ 
+</style>

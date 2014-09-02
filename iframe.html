@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<script>
+function callFrameOne(message){
+ 
+
+ var x = document.getElementById("frameOneId");
+ x.contentWindow.postMessage(message, '*');
+}
+function callFrameTwo(message){
+ 
+ var y = document.getElementById("frametwoId");
+ y.contentWindow.postMessage(message, '*');
+}
+ window.onmessage = function(e){
+ if(e.data == 'getproducts'){
+ callFrameTwo(e.data);
+ 
+} else if(e.data == 'getSelectedProducts'){
+ callFrameTwo(e.data);
+ 
+ }else if(e.data == 'selected some products'){
+callFrameOne(e.data);
+} else {
+callFrameOne(e.data);
+ }
+};
+</script>
+<body>
+
+<iframe src="aislecreate.html" id ="frameOneId" scrolling ="yes" style="display:inline" width = "30%" height = "800">
+  <p>Your browser does not support iframes.</p>
+</iframe>
+<iframe src="showproducts.html"  id ="frametwoId" scrolling ="yes"  style="display:inline" width = "68%" height = "800">
+  <p>Your browser does not support iframes.</p>
+</iframe>
+ 
+</body>
+</html>
