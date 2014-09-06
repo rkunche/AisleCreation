@@ -61,14 +61,6 @@ var products = [];
                 }
             }
 
-
-
-
-
-///////////////////
-
-
-
 function prepare(){
  
 var table = document.getElementById("product");
@@ -171,8 +163,7 @@ td1.appendChild(label);
  
 }
 }
-
-////////////////
+ 
 
 function initialize(container){
  
@@ -260,6 +251,7 @@ for (var i=0,len=cells.length; i<len; i++){
             if(childNodes[j].tagName == "INPUT"){
              if(childNodes[j].checked){
             selected[selected.length]=i;
+             childNodes[j].checked = false;
             }
              
 }
