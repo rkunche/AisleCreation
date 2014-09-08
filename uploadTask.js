@@ -18,7 +18,7 @@ var products = [];
  var selectedProducts = [];
             function getCrawledProducts() {
 
-                var url = "https://vue-server-dev.appspot.com/api/product/search?productstate=CRAWLED&limit=10";
+                var url = "https://vue-server-dev.appspot.com/api/product/search?productstate=CURATED_AND_VERIFIED&limit=10";
                 if (XMLHttpRequest)
                 {
                     request = new XMLHttpRequest();
@@ -92,7 +92,11 @@ var li = document.createElement("li");
 var imag = document.createElement("img");
 imag.width = 500;
 imag.height = 500;
-imag.src = jsonObject.productImages[0].externalURL;;
+try{
+imag.src = jsonObject.productImages[0].externalURL;
+}catch(e){
+    console.log("externalURL null")
+}
 li.appendChild(imag);
 ul.appendChild(li);
 }
