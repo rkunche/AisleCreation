@@ -44,9 +44,13 @@
                 }
             };
             function getProducts() {
-             var tagKey =   document.getElementById("productTagId").value;
-               
-               window.top.postMessage('getproducts#'+tagKey, '*');
+                var tagKey = document.getElementById("productTagId").value;
+                if(tagKey === undefined || tagKey.length === 0){
+                    alert("Enter valid tag");
+                    return;
+                }
+ 
+                 window.top.postMessage('getproducts#' + tagKey, '*');
 
             }
             function checkAisleData() {
@@ -181,8 +185,8 @@
                     if ("withCredentials" in request)
                     {
                         // Firefox 3.5 and Safari 4
-                         request.open('GET', url, true);
-                        request.onreadystatechange =  get_handler_aisle;
+                        request.open('GET', url, true);
+                        request.onreadystatechange = get_handler_aisle;
                         request.send();
                     }
                 }
@@ -196,15 +200,15 @@
                 }
                 if (request.status == 200)
                 {
-                  // alert('HTTP GET success: ' + request.responseText);
+                    // alert('HTTP GET success: ' + request.responseText);
                     var user = JSON.parse(request.responseText);
-                    var name = user.firstName + " "+user.lastName;
+                    var name = user.firstName + " " + user.lastName;
                     document.getElementById("Name").value = name;
                 }
 
             }
-            
-            
+
+
         </script>
     </head>
     <body onLoad="fillValues()">
