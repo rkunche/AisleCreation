@@ -44,7 +44,9 @@
                 }
             };
             function getProducts() {
-                window.top.postMessage('getproducts', '*')
+             var tagKey =   document.getElementById("productTagId").value;
+               
+               window.top.postMessage('getproducts#'+tagKey, '*');
 
             }
             function checkAisleData() {
@@ -207,7 +209,7 @@
     </head>
     <body onLoad="fillValues()">
         <div>
-            <input type = "text"  placeholder="Enter keyword"></input> 
+            <input type = "text"  placeholder="Enter keyword" id="productTagId"></input> 
             <button type ="button" value="getProducts" onClick ="getProducts()"> Get Products</button>
         </div>
         <form action="" method="post" class="basic-grey">

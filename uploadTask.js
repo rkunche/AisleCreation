@@ -16,9 +16,10 @@ Array.prototype.clear = function() {
 
 var products = [];
 var selectedProducts = [];
-function getCrawledProducts() {
-
-    var url = "https://vue-server-dev.appspot.com/api/product/search?productstate=CURATED_AND_VERIFIED&limit=50";
+function getCrawledProducts(tag) {
+ 
+   var url = "https://3dot1.vue-server-dev.appspot.com/api/product/search/tagsearch?tagstring="+tag+"&limit=30";
+   // var url = "https://vue-server-dev.appspot.com/api/product/search?productstate=CURATED_AND_VERIFIED&limit=50";
     if (XMLHttpRequest)
     {
         request = new XMLHttpRequest();
@@ -42,7 +43,12 @@ function getHandler() {
         //alert('HTTP GET success: ' +jsonResponse.length  );
         //clear the old data in array and populate with new product data.
         //products.clear();
-
+      
+          if(request.responseText.length < 3){
+              alert("No products was found with this tag");
+              return;
+          }
+          products.clear();
         for (var i = 0; i < jsonResponse.length; i++) {
             var jsonTempObject = jsonResponse[i];
 
@@ -64,6 +70,7 @@ function getHandler() {
 function prepare() {
 
     var table = document.getElementById("product");
+    table.innerHTML = "";  
     var i = 0;
 
     for (i = 0; i < products.length; i++) {

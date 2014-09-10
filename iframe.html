@@ -13,13 +13,16 @@ function callFrameTwo(message){
  y.contentWindow.postMessage(message, '*');
 }
  window.onmessage = function(e){
- if(e.data == 'getproducts'){
+     
+     var data = e.data.split("#");
+ if(data[0] === 'getproducts'){
+      
  callFrameTwo(e.data);
  
-} else if(e.data == 'getSelectedProducts'){
+} else if(data[0] === 'getSelectedProducts'){
  callFrameTwo(e.data);
  
- }else if(e.data == 'selected some products'){
+ }else if(data[0] === 'selected some products'){
 callFrameOne(e.data);
 } else {
 callFrameOne(e.data);
