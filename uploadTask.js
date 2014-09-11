@@ -18,9 +18,9 @@ Array.prototype.clear = function() {
 var products = [];
 var selectedProducts = [];
 function getCrawledProducts(tag) {
- 
-   var url = "https://3dot1.vue-server-dev.appspot.com/api/product/search/tagsearch?tagstring="+tag+"&limit=30";
-   // var url = "https://vue-server-dev.appspot.com/api/product/search?productstate=CURATED_AND_VERIFIED&limit=50";
+
+    var url = "https://3dot1.vue-server-dev.appspot.com/api/product/search/tagsearch?tagstring=" + tag + "&limit=30";
+    // var url = "https://vue-server-dev.appspot.com/api/product/search?productstate=CURATED_AND_VERIFIED&limit=50";
     if (XMLHttpRequest)
     {
         request = new XMLHttpRequest();
@@ -44,21 +44,21 @@ function getHandler() {
         //alert('HTTP GET success: ' +jsonResponse.length  );
         //clear the old data in array and populate with new product data.
         //products.clear();
-      
-          if(request.responseText.length < 3){
-              alert("No products was found with this tag");
-              return;
-          }
-          products.clear();
+
+        if (request.responseText.length < 3) {
+            alert("No products was found with this tag");
+            return;
+        }
+        products.clear();
         for (var i = 0; i < jsonResponse.length; i++) {
             var jsonTempObject = jsonResponse[i];
-             if(jsonTempObject.currentProductState === "CURATED" || jsonTempObject.currentProductState === "CURATED_AND_VERIFIED"){
-            var productObject = {id: jsonTempObject.id, ownerAisleId: jsonTempObject.ownerAisleId, ownerProductListId: jsonTempObject.ownerProductListId,
-                creatorId: jsonTempObject.creatorId, curatorId: jsonTempObject.curatorId, title: jsonTempObject.title, description: jsonTempObject.description,
-                currentProductState: jsonTempObject.currentProductState, relatedProductIds: jsonTempObject.relatedProductIds, productImages: jsonTempObject.productImages,
-                productProviders: jsonTempObject.productProviders, comments: jsonTempObject.comments, productTags: jsonTempObject.productTags, ratings: jsonTempObject.ratings};
-            products.push(productObject);
-        }
+            if (jsonTempObject.currentProductState === "CURATED" || jsonTempObject.currentProductState === "CURATED_AND_VERIFIED") {
+                var productObject = {id: jsonTempObject.id, ownerAisleId: jsonTempObject.ownerAisleId, ownerProductListId: jsonTempObject.ownerProductListId,
+                    creatorId: jsonTempObject.creatorId, curatorId: jsonTempObject.curatorId, title: jsonTempObject.title, description: jsonTempObject.description,
+                    currentProductState: jsonTempObject.currentProductState, relatedProductIds: jsonTempObject.relatedProductIds, productImages: jsonTempObject.productImages,
+                    productProviders: jsonTempObject.productProviders, comments: jsonTempObject.comments, productTags: jsonTempObject.productTags, ratings: jsonTempObject.ratings};
+                products.push(productObject);
+            }
         }
 
         prepare();
@@ -68,8 +68,8 @@ function getHandler() {
         return;
     }
 }
-function getAllAislesByUser(){
-     var url = "https://3dot1.vue-server-dev.appspot.com/api/aisles/user/"+6419807607980032;
+function getAllAislesByUser() {
+    var url = "https://3dot1.vue-server-dev.appspot.com/api/aisles/user/" + 6419807607980032;
     if (XMLHttpRequest)
     {
         request = new XMLHttpRequest();
@@ -80,7 +80,7 @@ function getAllAislesByUser(){
             request.onreadystatechange = aisleHandler;
             request.send();
         }
-    }  
+    }
 }
 //get result handler
 function aisleHandler() {
@@ -88,18 +88,18 @@ function aisleHandler() {
         return;
     if (request.status == 200)
     {
-aisles.clear();
+        aisles.clear();
         var jsonResponse = JSON.parse(request.responseText);
-        for(var i=0;i<jsonResponse.length;i++){
-           if(jsonResponse[i].productList.length !== 0){
-            aisles.push(jsonResponse[i]);
+        for (var i = 0; i < jsonResponse.length; i++) {
+            if (jsonResponse[i].productList.length !== 0) {
+                aisles.push(jsonResponse[i]);
+            }
         }
-        }
-      
-      alert("total aisles: "+aisles.length);
-      console.log(request.responseText);
-      prepareAisleTable();
-     
+
+        alert("total aisles: " + aisles.length);
+        console.log(request.responseText);
+        prepareAisleTable();
+
     }
     if (request.status != 200 && request.status != 304) {
         alert('HTTP GET error ' + request.status);
@@ -109,7 +109,7 @@ aisles.clear();
 function prepare() {
 
     var table = document.getElementById("product");
-    table.innerHTML = "";  
+    table.innerHTML = "";
     var i = 0;
 
     for (i = 0; i < products.length; i++) {
@@ -120,16 +120,16 @@ function prepare() {
         }
 
         var td1 = document.createElement("td");
- 
-            var imag = document.createElement("img");
-      
-            try {
-                imag.src = jsonObject.productImages[0].externalURL;
-            } catch (e) {
-                console.log("externalURL null")
-            }
-            td1.appendChild(imag);
-        
+
+        var imag = document.createElement("img");
+
+        try {
+            imag.src = jsonObject.productImages[0].externalURL;
+        } catch (e) {
+            console.log("externalURL null")
+        }
+        td1.appendChild(imag);
+
         tr.appendChild(td1);
         var divImage = document.createElement("div");
         divImage.className = "center";
@@ -138,7 +138,7 @@ function prepare() {
         var divDescription = document.createElement("div");
         var divId = document.createElement("div");
         var productusedCount = document.createElement("div");
-         var divCuratedState = document.createElement("div");
+        var divCuratedState = document.createElement("div");
         divImage.style.display = 'block'
         var img = document.createElement("img");
         img.src = "images.jpg";
@@ -151,7 +151,7 @@ function prepare() {
 
         var description = document.createTextNode("Description : " + jsonObject.description);
         var usedCount = document.createTextNode("OwnerAisleId : " + jsonObject.ownerAisleId);
-         var curatedState = document.createTextNode("OwnerAisleId : " + jsonObject.currentProductState);
+        var curatedState = document.createTextNode("CuratedState : " + jsonObject.currentProductState);
 
 
         divTitle.appendChild(title);
@@ -160,7 +160,7 @@ function prepare() {
 
         divDescription.appendChild(description);
         productusedCount.appendChild(usedCount);
-         divCuratedState.appendChild(curatedState);
+        divCuratedState.appendChild(curatedState);
         productusedCount.style.color = 'red';
 
 
@@ -169,7 +169,7 @@ function prepare() {
 
         td1.appendChild(divDescription);
         td1.appendChild(productusedCount);
-         td1.appendChild(divCuratedState);
+        td1.appendChild(divCuratedState);
 
 
         var checkbox = document.createElement('input');
@@ -186,31 +186,31 @@ function prepare() {
 
         td1.appendChild(checkbox);
         td1.appendChild(label);
-         td1.style.border = "thin dotted red";
+        td1.style.border = "thin dotted red";
 
 
     }
 }
-function prepareAisleTable(){
-  var table = document.getElementById("product");
-    table.innerHTML = "";  
-     for (i = 0; i < aisles.length; i++) {
+function prepareAisleTable() {
+    var table = document.getElementById("product");
+    table.innerHTML = "";
+    for (i = 0; i < aisles.length; i++) {
         var jsonObject = aisles[i];
-         if (i % 4 == 0) {
+        if (i % 4 == 0) {
             var tr = document.createElement("tr");
             table.appendChild(tr);
         }
-         var td1 = document.createElement("td");
- 
-            var imag = document.createElement("img");
-      
-            try {
-                imag.src = jsonObject.productList[0].productImages[0].externalURL;
-            } catch (e) {
-                console.log("externalURL null")
-            }
-            td1.appendChild(imag);
-              tr.appendChild(td1);
+        var td1 = document.createElement("td");
+
+        var imag = document.createElement("img");
+
+        try {
+            imag.src = jsonObject.productList[0].productImages[0].externalURL;
+        } catch (e) {
+            console.log("externalURL null")
+        }
+        td1.appendChild(imag);
+        tr.appendChild(td1);
         var divImage = document.createElement("div");
         divImage.className = "center";
         var divTitle = document.createElement("div");
@@ -219,24 +219,24 @@ function prepareAisleTable(){
         var divId = document.createElement("div");
         var productusedCount = document.createElement("div");
         var divCategory = document.createElement("div");
-         var divOccasion = document.createElement("div");
-          var divLookingfor = document.createElement("div");
-            var divProductsCount = document.createElement("div");
+        var divOccasion = document.createElement("div");
+        var divLookingfor = document.createElement("div");
+        var divProductsCount = document.createElement("div");
         divImage.style.display = 'block'
-             var id = document.createTextNode("AisleId : " + jsonObject.id);
+        var id = document.createTextNode("AisleId : " + jsonObject.id);
         var title = document.createTextNode("Name : " + jsonObject.name);
 
         var description = document.createTextNode("Description : " + jsonObject.description);
         var OwnerUserId = document.createTextNode("OwnerUserId : " + jsonObject.ownerUserId);
-          var categoryText = document.createTextNode("Category : " + jsonObject.category);
-            var occassionText = document.createTextNode("Occasion : " + jsonObject.occassion);
-             var lookingForText = document.createTextNode("LookingFor : " + jsonObject.lookingFor);
-              var prodcutsCountText = document.createTextNode("ProductsCount : " + jsonObject.productList.length);
-             divTitle.appendChild(title);
-             divCategory.appendChild(categoryText);
-             divOccasion.appendChild(occassionText);
-              divLookingfor.appendChild(lookingForText);
-              divProductsCount.appendChild(prodcutsCountText);
+        var categoryText = document.createTextNode("Category : " + jsonObject.category);
+        var occassionText = document.createTextNode("Occasion : " + jsonObject.occassion);
+        var lookingForText = document.createTextNode("LookingFor : " + jsonObject.lookingFor);
+        var prodcutsCountText = document.createTextNode("ProductsCount : " + jsonObject.productList.length);
+        divTitle.appendChild(title);
+        divCategory.appendChild(categoryText);
+        divOccasion.appendChild(occassionText);
+        divLookingfor.appendChild(lookingForText);
+        divProductsCount.appendChild(prodcutsCountText);
 
         divId.appendChild(id);
 
@@ -249,10 +249,10 @@ function prepareAisleTable(){
         td1.appendChild(divTitle);
 
         td1.appendChild(divDescription);
-         td1.appendChild(divCategory);
-          td1.appendChild(divOccasion);
-           td1.appendChild(divLookingfor);
-            td1.appendChild(divProductsCount);
+        td1.appendChild(divCategory);
+        td1.appendChild(divOccasion);
+        td1.appendChild(divLookingfor);
+        td1.appendChild(divProductsCount);
         td1.appendChild(productusedCount);
     }
 }
@@ -273,8 +273,8 @@ function initialize(container) {
         onClickNext();
     };
 }
- 
- function getSelectedProducts() {
+
+function getSelectedProducts() {
     selected.clear();
     selectedProducts.clear();
     //alert("upload is clicked");
