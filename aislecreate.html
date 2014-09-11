@@ -17,6 +17,7 @@
             var aisleId;
             var uploadProductCount = 0;
             var request;
+            var tagsrequest;
             function callFrameOne() {
                 var boolResult = checkAisleData();
                 if (boolResult) {
@@ -45,12 +46,13 @@
             };
             function getProducts() {
                 var tagKey = document.getElementById("productTagId").value;
-                if(tagKey === undefined || tagKey.length === 0){
+
+                if (tagKey === undefined || tagKey.length === 0) {
                     alert("Enter valid tag");
                     return;
                 }
- 
-                 window.top.postMessage('getproducts#' + tagKey, '*');
+
+                window.top.postMessage('getproducts#' + tagKey, '*');
 
             }
             function checkAisleData() {
@@ -112,7 +114,7 @@
                         request.setRequestHeader('Content-Type', 'application/json');
                         request.onreadystatechange = aisle_post_handler;
                         //aisle creation request.
-                        request.send(JSON.stringify({id: null, ownerUserId: 6419807607980032, category: category, description: description, lookingFor: lookingFor, name: name, occassion: occassion,currentAisleState:"CURATED" bookmarkCount: 0}));
+                        request.send(JSON.stringify({id: null, ownerUserId: 6419807607980032, category: category, description: description, lookingFor: lookingFor, name: name, occassion: occassion, currentAisleState: "CURATED", bookmarkCount: 0}));
                     }
                 }
             }
@@ -174,6 +176,7 @@
 
             }
             function fillValues() {
+
                 document.getElementById("UserId").value = "6419807607980032";
                 getUser("6419807607980032");
             }
@@ -204,18 +207,111 @@
                     var user = JSON.parse(request.responseText);
                     var name = user.firstName + " " + user.lastName;
                     document.getElementById("Name").value = name;
+                    getTags();
                 }
 
             }
 
+            function getTags() {
+
+                var url = "https://vue-server-dev.appspot.com/api/producttags/all";
+                if (XMLHttpRequest)
+                {
+                    tagsrequest = new XMLHttpRequest();
+                    if ("withCredentials" in tagsrequest)
+                    {
+                        // Firefox 3.5 and Safari 4
+                        tagsrequest.open('GET', url, true);
+                        tagsrequest.onreadystatechange = tagRespnseHandler;
+                        tagsrequest.send();
+                    }
+                }
+            }
+            function tagRespnseHandler() {
+                if (tagsrequest.readyState !== 4)
+                    return;
+                if (tagsrequest.status === 200)
+                {
+
+                    var tagString = tagsrequest.responseText;
+                    var jsonResponse = JSON.parse(tagString);
+                    var blocked = [];
+                    for (var k = 0; k < jsonResponse.length; k++) {
+                        var tagObject = jsonResponse[k];
+                        if (tagObject.tagString.charAt(0) === tagObject.tagString.charAt(0).toLowerCase()) {
+                            console.log(tagObject.tagString + " length : " + tagObject.tagString.length);
+                            blocked.push(tagObject);
+                        }
+                    }
+                    for (var i = 0; i < blocked.length; i++) {
+                        console.log("Blocked list " + blocked[i].tagString);
+                        var t = jsonResponse.indexOf(blocked[i]);
+                        if (t !== -1) {
+                            jsonResponse.splice(t, 1);
+                        }
+                    }
+                    var tagSubCatelement = document.getElementById('select_tag');
+                    //var temp2 = tag_string_array[static_categoryNames[k]];
+                    //  tagSubCatelement.options[tagSubCatelement.options.length] = new Option('', '', false, false);
+                    for (var i = 0; i < jsonResponse.length; i++) {
+                        tagSubCatelement.options[tagSubCatelement.options.length] = new Option(jsonResponse[i].tagString, jsonResponse[i].tagString, false, false);
+                    }
+                    $("select").multiselect({
+                        selectedList: 4}).multiselectfilter();
+                    $(function() {
+                        var warning = $(".message");
+
+                        $("select").multiselect({
+                            header: "Choose only TWO items!",
+                            click: function(e) {
+
+                                if ($(this).multiselect("widget").find("input:checked").length > 1) {
+                                    warning.addClass("error").removeClass("success").html("You can only check one checkboxe!");
+                                    alert("cant select more than one value");
+                                    return false;
+                                } else {
+                                    warning.addClass("success").removeClass("error").html("Check a few boxes.");
+                                }
+
+                            }
+                        });
+                    });
+                }
+                if (tagsrequest.status !== 200 && tagsrequest.status !== 304) {
+                    alert('HTTP GET error ' + tagsrequest.status);
+                    return;
+                }
+            }
+            function tagSelectionVal() {
+                var selectedValue = $("#select_tag").val();
+                 
+                document.getElementById("productTagId").value = selectedValue;
+            }
 
         </script>
+        <link rel="stylesheet" type="text/css" href="src/jquery.multiselect.css" />
+        <link rel="stylesheet" type="text/css" href="src/jquery.multiselect.filter.css" />
+        <link rel="stylesheet" type="text/css" href="assets/style.css" />
+        <link rel="stylesheet" type="text/css" href="assets/prettify.css" />
+        <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/ui-lightness/jquery-ui.css" />
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="src/jquery.multiselect.js"></script>
+        <script type="text/javascript" src="src/jquery.multiselect.filter.js"></script>
+        <script type="text/javascript" src="assets/prettify.js"></script>
     </head>
     <body onLoad="fillValues()">
         <div>
             <input type = "text"  placeholder="Enter keyword" id="productTagId"></input> 
             <button type ="button" value="getProducts" onClick ="getProducts()"> Get Products</button>
         </div>
+        <script type="text/javascript">
+            $("select").multiselect();
+        </script>
+        <select id="select_tag" onchange="tagSelectionVal()" name="selection" multiple="multiple"   style="width: 200px" >
+
+
+        </select>
         <form action="" method="post" class="basic-grey">
             <h1>
                 Details <span>Please fill all the texts in the fields.</span>
@@ -374,5 +470,19 @@
     .basic-grey .button:hover {
         background: #CF7A7A
     }
+    .multiselect {
+        width:20em;
+        height:15em;
+        border:solid 1px #c0c0c0;
+        overflow:auto;
+    }
 
+    .multiselect label {
+        display:block;
+    }
+
+    .multiselect-on {
+        color:#ffffff;
+        background-color:#000099;
+    }
 </style>
