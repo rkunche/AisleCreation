@@ -23,7 +23,7 @@
                 if (boolResult) {
                     selected_products.clear();
                     uploadProductCount = 0;
-                    window.top.postMessage('getSelectedProducts', '*')
+                    window.top.postMessage('getSelectedProducts', '*');
                 }
             }
             window.onmessage = function(e) {
@@ -284,10 +284,13 @@
             }
             function tagSelectionVal() {
                 var selectedValue = $("#select_tag").val();
-                 
+
                 document.getElementById("productTagId").value = selectedValue;
             }
-
+          function getAllAisles(){
+             
+              window.top.postMessage('getAllAisles', '*');
+          }
         </script>
         <link rel="stylesheet" type="text/css" href="src/jquery.multiselect.css" />
         <link rel="stylesheet" type="text/css" href="src/jquery.multiselect.filter.css" />
@@ -358,6 +361,8 @@
 
             </label>
         </form>
+        
+        <button type="button" class="myButtonRED" onClick="getAllAisles()">GetAisles</button>
     </body>
 </html>
 <style>
