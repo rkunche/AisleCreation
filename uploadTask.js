@@ -138,6 +138,7 @@ function prepare() {
         var divDescription = document.createElement("div");
         var divId = document.createElement("div");
         var productusedCount = document.createElement("div");
+         var divCuratedState = document.createElement("div");
         divImage.style.display = 'block'
         var img = document.createElement("img");
         img.src = "images.jpg";
@@ -150,6 +151,7 @@ function prepare() {
 
         var description = document.createTextNode("Description : " + jsonObject.description);
         var usedCount = document.createTextNode("OwnerAisleId : " + jsonObject.ownerAisleId);
+         var curatedState = document.createTextNode("OwnerAisleId : " + jsonObject.currentProductState);
 
 
         divTitle.appendChild(title);
@@ -158,6 +160,7 @@ function prepare() {
 
         divDescription.appendChild(description);
         productusedCount.appendChild(usedCount);
+         divCuratedState.appendChild(curatedState);
         productusedCount.style.color = 'red';
 
 
@@ -166,6 +169,7 @@ function prepare() {
 
         td1.appendChild(divDescription);
         td1.appendChild(productusedCount);
+         td1.appendChild(divCuratedState);
 
 
         var checkbox = document.createElement('input');
