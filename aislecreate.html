@@ -36,8 +36,9 @@
 
                 var messages = e.data.split("#");
                 if (messages[0] === 'User') {
-
-                    if (messages[1] !== 0) {
+                     
+                    if (messages[1] !== '0') {
+                        alert("user &&&& " +messages[1]);
                         getUser(messages[1]);
                     }
 
