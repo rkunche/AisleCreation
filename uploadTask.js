@@ -91,7 +91,7 @@ function aisleHandler() {
         aisles.clear();
         var jsonResponse = JSON.parse(request.responseText);
         for (var i = 0; i < jsonResponse.length; i++) {
-            if (jsonResponse[i].productList.length !== 0) {
+            if (jsonResponse[i].productList.length !== 0 && jsonResponse[i].currentAisleState !== "DELETED" ) {
                 aisles.push(jsonResponse[i]);
             }
         }
