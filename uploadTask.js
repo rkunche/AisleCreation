@@ -68,8 +68,8 @@ function getHandler() {
         return;
     }
 }
-function getAllAislesByUser() {
-    var url = "https://3dot1.vue-server-dev.appspot.com/api/aisles/user/" + 6419807607980032;
+function getAllAislesByUser(id) {
+    var url = "https://3dot1.vue-server-dev.appspot.com/api/aisles/user/" + id;
     if (XMLHttpRequest)
     {
         request = new XMLHttpRequest();

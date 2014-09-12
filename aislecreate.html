@@ -329,8 +329,8 @@
                 document.getElementById("productTagId").value = selectedValue;
             }
             function getAllAisles() {
-
-                window.top.postMessage('getAllAisles', '*');
+            
+                window.top.postMessage('getAllAisles#'+urlUserID, '*');
 
             }
             function occasionSelectionVal() {
