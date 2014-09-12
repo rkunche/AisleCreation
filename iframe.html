@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script>
+        var users = [];
+         var creatorId;
         function callFrameOne(message) {
 
 
@@ -15,24 +18,53 @@
         window.onmessage = function(e) {
 
             var data = e.data.split("#");
-            if (data[0] === 'getproducts') {
-
+            if(data[0] === 'getUser'){
+                callFrameOne("User#"+creatorId);
+                 
+            } else if (data[0] === 'getproducts') {
                 callFrameTwo(e.data);
-
             } else if (data[0] === 'getSelectedProducts') {
                 callFrameTwo(e.data);
-
             } else if (data[0] === 'selected some products') {
                 callFrameOne(e.data);
             } else if (data[0] === 'getAllAisles') {
-            
                 callFrameTwo(e.data);
             } else {
                 callFrameOne(e.data);
             }
         };
+        function readParams() {
+            //ONLY ALLOWED STATIC USER
+            //raju ID
+            users.push(5505177142427648);
+            users.push(6419807607980032);
+            //sangeeth ID
+            users.push(5769457217568768);
+            //Neem 
+            users.push(5169874951208960);
+            users.push(5649648836411392); //lakshminath's id
+            users.push(5638203017003008); //vidya's id
+            var srchString = unescape(location.search.substring(1, location.search.length));
+            var name = srchString.split("=");
+
+           creatorId = name[1];
+
+            var boolval = false;
+            for (var i = 0; i < users.length; i++) {
+                if (creatorId == users[i])
+                    boolval = true;
+            }
+            if (!boolval) {
+                creatorId = 00;
+                alert("user does not exist");
+                return;
+            }
+ 
+
+        }
+        
     </script>
-    <body>
+    <body onLoad="readParams()">
 
         <iframe src="aislecreate.html" id ="frameOneId" scrolling ="yes" style="display:inline" width = "30%" height = "800">
         <p>Your browser does not support iframes.</p>

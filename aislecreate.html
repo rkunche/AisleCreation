@@ -18,6 +18,8 @@
             var uploadProductCount = 0;
             var request;
             var tagsrequest;
+
+            var urlUserID;
             function callFrameOne() {
                 var boolResult = checkAisleData();
                 if (boolResult) {
@@ -26,33 +28,50 @@
                     window.top.postMessage('getSelectedProducts', '*');
                 }
             }
+            function getMe() {
+
+                window.top.postMessage('getUser', '*');
+            }
             window.onmessage = function(e) {
-                try {
-                    if (e.data == 'done') {
-                        if (selected_products.length > 0) {
-                            createAisleRequest();
-                            //alert("from aisle creation products are : "+selected_products.length );
-                            //for(var i=0;i<selected_products.length;i++){
-                            //alert(JSON.stringify(selected_products[i]));
-                            //}
-                        }
-                    } else {
-                        selected_products.push(JSON.parse(e.data));
+
+                var messages = e.data.split("#");
+                if (messages[0] === 'User') {
+
+                    if (messages[1] !== 0) {
+                        getUser(messages[1]);
                     }
 
-                } catch (e) {
+                } else {
 
+                    try {
+                        if (e.data == 'done') {
+                            if (selected_products.length > 0) {
+                                createAisleRequest();
+                                
+                            }
+                        } else {
+                            selected_products.push(JSON.parse(e.data));
+                        }
+
+                    } catch (e) {
+
+                    }
                 }
             };
             function getProducts() {
+
                 var tagKey = document.getElementById("productTagId").value;
 
                 if (tagKey === undefined || tagKey.length === 0) {
                     alert("Enter valid tag");
                     return;
                 }
-
-                window.top.postMessage('getproducts#' + tagKey, '*');
+                var currentUser = document.getElementById("UserId").value;
+                if (currentUser === urlUserID) {
+                    window.top.postMessage('getproducts#' + tagKey, '*');
+                } else {
+                    getUser(currentUser);
+                }
 
             }
             function checkAisleData() {
@@ -100,10 +119,12 @@
 
             function createAisleRequest() {
                 var isAisleDataAvailable = checkAisleData();
-                if (isAisleDataAvailable == false) {
+                if (isAisleDataAvailable === false) {
                     return;
                 }
-                aisleId = "";
+
+                var id = document.getElementById("UserId").value;
+
                 var url = "https://vue-server-dev.appspot.com/api/aisle";
                 if (XMLHttpRequest) {
                     request = new XMLHttpRequest();
@@ -114,18 +135,18 @@
                         request.setRequestHeader('Content-Type', 'application/json');
                         request.onreadystatechange = aisle_post_handler;
                         //aisle creation request.
-                        request.send(JSON.stringify({id: null, ownerUserId: 6419807607980032, category: category, description: description, lookingFor: lookingFor, name: name, occassion: occassion, currentAisleState: "CURATED", bookmarkCount: 0}));
+                        request.send(JSON.stringify({id: null, ownerUserId: id, category: category, description: description, lookingFor: lookingFor, name: name, occassion: occassion, currentAisleState: "CURATED", bookmarkCount: 0}));
                     }
                 }
             }
             function aisle_post_handler() {
-                if (request.readyState != 4)
+                if (request.readyState !== 4)
                     return;
-                if (request.status != 200 && request.status != 304) {
+                if (request.status !== 200 && request.status !== 304) {
                     alert('HTTP POST error ' + request.status + 'Response ' + request.responseText);
                     return;
                 }
-                if (request.status == 200)
+                if (request.status === 200)
                 {
                     //get the aisle id and start updating products from here.
                     alert("Curated Successfully " + request.responseText);
@@ -167,18 +188,22 @@
                 }
                 if (request.status == 200)
                 {
-                    alert("Curated Successfully " + request.responseText);
+                    //alert("Curated Successfully " + request.responseText);
                     uploadProductCount = uploadProductCount + 1;
                     if (uploadProductCount < selected_products.length) {
                         uploadAisleProduct(selected_products[uploadProductCount]);
+                    } else {
+                        alert("Aisle created successfully with  "+uploadProductCount+ " products");
                     }
                 }
 
             }
             function fillValues() {
 
-                document.getElementById("UserId").value = "6419807607980032";
-                getUser("6419807607980032");
+                getMe();
+                getTags();
+           
+
             }
             function getUser(id) {
                 var url = "https://vue-server-dev.appspot.com/api/user/" + id;
@@ -198,7 +223,7 @@
                 if (request.readyState != 4)
                     return;
                 if (request.status != 200 && request.status != 304) {
-                    //alert('HTTP GET error ' + request.status);
+                    alert('User reqeust Error ' + request.status);
                     return;
                 }
                 if (request.status == 200)
@@ -207,7 +232,9 @@
                     var user = JSON.parse(request.responseText);
                     var name = user.firstName + " " + user.lastName;
                     document.getElementById("Name").value = name;
-                    getTags();
+                    document.getElementById("UserId").value = user.id;
+                    urlUserID = user.id;
+
                 }
 
             }
@@ -251,11 +278,20 @@
                         }
                     }
                     var tagSubCatelement = document.getElementById('select_tag');
+                    var occasionSubCatelement = document.getElementById('Occassion_tag');
+                    var lookingForSubCatelement = document.getElementById('LookingFor_tag');
                     //var temp2 = tag_string_array[static_categoryNames[k]];
                     //  tagSubCatelement.options[tagSubCatelement.options.length] = new Option('', '', false, false);
                     for (var i = 0; i < jsonResponse.length; i++) {
                         tagSubCatelement.options[tagSubCatelement.options.length] = new Option(jsonResponse[i].tagString, jsonResponse[i].tagString, false, false);
+                        if (jsonResponse[i].tagCategory == "Occasion") {
+                            occasionSubCatelement.options[occasionSubCatelement.options.length] = new Option(jsonResponse[i].tagString, jsonResponse[i].tagString, false, false);
+                        }
+                        if (jsonResponse[i].tagCategory == "Product Type") {
+                            lookingForSubCatelement.options[lookingForSubCatelement.options.length] = new Option(jsonResponse[i].tagString, jsonResponse[i].tagString, false, false);
+                        }
                     }
+
                     $("select").multiselect({
                         selectedList: 4}).multiselectfilter();
                     $(function() {
@@ -287,10 +323,21 @@
 
                 document.getElementById("productTagId").value = selectedValue;
             }
-          function getAllAisles(){
-             
-              window.top.postMessage('getAllAisles', '*');
-          }
+            function getAllAisles() {
+
+                window.top.postMessage('getAllAisles', '*');
+
+            }
+            function occasionSelectionVal() {
+                var selectedValue = $("#Occassion_tag").val();
+
+                document.getElementById("Occassion").value = selectedValue;
+            }
+            function lookingForSelectionVal() {
+                var selectedValue = $("#LookingFor_tag").val();
+
+                document.getElementById("LookingFor").value = selectedValue;
+            }
         </script>
         <link rel="stylesheet" type="text/css" href="src/jquery.multiselect.css" />
         <link rel="stylesheet" type="text/css" href="src/jquery.multiselect.filter.css" />
@@ -340,7 +387,10 @@
 
             <label> <span>Occassion: </span> <input id="Occassion"
                                                     type="text" name="name" placeholder="Occassion" ></input>
+                <span>Occassion: </span>  <select id="Occassion_tag" onchange="occasionSelectionVal()" name="selection" multiple="multiple"   style="width: 200px"  style="margin-left: 20px;">
 
+
+                </select>
             </label> 
 
 
@@ -348,7 +398,7 @@
             <label> <span>LookingFor: </span> <input
                     id="LookingFor" type="text" name="name"
                     placeholder="LookingFor"></input>
-
+                <span>LookingFor: </span>  <select id="LookingFor_tag" onchange="lookingForSelectionVal()" name="selection" multiple="multiple"   style="width: 200px"  style="margin-left: 20px;">
             </label>
 
 
@@ -361,7 +411,7 @@
 
             </label>
         </form>
-        
+
         <button type="button" class="myButtonRED" onClick="getAllAisles()">GetAisles</button>
     </body>
 </html>
