@@ -18,8 +18,9 @@ Array.prototype.clear = function() {
 var products = [];
 var selectedProducts = [];
 function getCrawledProducts(tag) {
-
-    var url = "https://3dot1.vue-server-dev.appspot.com/api/product/search/tagsearch?tagstring=" + tag + "&limit=30";
+        //keyword
+       var url ="https://3dot1.vue-server-dev.appspot.com/api/product/search/genericsearch?queryString="+tag+"&limit=20";
+     // var url = "https://3dot1.vue-server-dev.appspot.com/api/product/search/tagsearch?tagstring=" + tag + "&limit=30";
     // var url = "https://vue-server-dev.appspot.com/api/product/search?productstate=CURATED_AND_VERIFIED&limit=50";
     if (XMLHttpRequest)
     {
