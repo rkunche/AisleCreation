@@ -17,11 +17,17 @@ Array.prototype.clear = function() {
 
 var products = [];
 var selectedProducts = [];
-function getCrawledProducts(tag) {
+function getCrawledProducts(tag,offset,limit,productState) {
+ 
         //keyword
-       var url ="https://3dot1.vue-server-dev.appspot.com/api/product/search/genericsearch?queryString="+tag+"&limit=20";
+  var  url  ="https://3dot1.vue-server-dev.appspot.com/api/product/search/genericsearch?productstate="+productState+"&queryString="+tag+"&offset="+offset+"&limit="+limit;
+ 
+ 
+       //var url ="https://3dot1.vue-server-dev.appspot.com/api/product/search/genericsearch?queryString="+tag+"&limit=20";
      // var url = "https://3dot1.vue-server-dev.appspot.com/api/product/search/tagsearch?tagstring=" + tag + "&limit=30";
-    // var url = "https://vue-server-dev.appspot.com/api/product/search?productstate=CURATED_AND_VERIFIED&limit=50";
+    // var url = "https://vue-server-dev.appspot.com/api/product/search?productstate=CURATED_AND_VERIFIED&offset="+offset+"&limit="+limit;
+ 
+ 
     if (XMLHttpRequest)
     {
         request = new XMLHttpRequest();
@@ -45,7 +51,7 @@ function getHandler() {
         //alert('HTTP GET success: ' +jsonResponse.length  );
         //clear the old data in array and populate with new product data.
         //products.clear();
-
+ 
         if (request.responseText.length < 3) {
             alert("No products was found with this tag");
             return;

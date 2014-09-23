@@ -18,6 +18,10 @@
             var uploadProductCount = 0;
             var request;
             var tagsrequest;
+var stateValue = "CURATED_AND_VERIFIED";
+
+            var offset =0;
+            var limit = 20;
 
             var urlUserID;
             function callFrameOne() {
@@ -71,7 +75,7 @@
      
                 if (currentUser === urlUserID.toString()) {
                   
-                    window.top.postMessage('getproducts#' + tagKey, '*');
+                    window.top.postMessage('getproducts#' + tagKey+"#"+offset+"#"+limit+"#"+stateValue, '*');
                 } else {
                      alert("else case: "+currentUser);
                     getUser(currentUser);
@@ -325,7 +329,7 @@
             }
             function tagSelectionVal() {
                 var selectedValue = $("#select_tag").val();
-
+                offset = 0;
                 document.getElementById("productTagId").value = selectedValue;
             }
             function getAllAisles() {
@@ -343,6 +347,15 @@
 
                 document.getElementById("LookingFor").value = selectedValue;
             }
+function next(){
+ offset = offset + limit;
+getProducts();
+}
+function getSelectedValue(){
+  stateValue = $("#stateId").val();
+offset = 0;
+ document.getElementById("stateId").value = stateValue;
+}
         </script>
         <link rel="stylesheet" type="text/css" href="src/jquery.multiselect.css" />
         <link rel="stylesheet" type="text/css" href="src/jquery.multiselect.filter.css" />
@@ -356,10 +369,26 @@
         <script type="text/javascript" src="assets/prettify.js"></script>
     </head>
     <body onLoad="fillValues()">
+  <div>
+         
+    <select id="stateId" name="" style="width:150;" onchange="getSelectedValue();">
+                <option value="CRAWLED" title=" ">CRAWLED</option>
+                <option value="CURATED" title=" ">CURATED</option>
+                <option value="CURATED_AND_VERIFIED" title=" ">CURATED_AND_VERIFIED</option>
+                <option value="NEEDS_RECURATION" title=" ">NEEDS_RECURATION</option>
+                <option value="ARCHIVED" title=" ">ARCHIVED</option>
+            </select>
+        </div>
+
+
         <div>
             <input type = "text"  placeholder="Enter keyword" id="productTagId"></input> 
             <button type ="button" value="getProducts" onClick ="getProducts()"> Get Products</button>
+ <button type ="button" value="getProducts" onClick ="next()">Next</button>
         </div>
+<div>
+      
+<div>
         <script type="text/javascript">
             $("select").multiselect();
         </script>
