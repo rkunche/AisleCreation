@@ -14,20 +14,23 @@ var dummyImages = ["whitshirt.jpg", "girlshirt.jpg", "ladyshirt.jpg", "blackshir
 Array.prototype.clear = function() {
     this.length = 0;
 };
-
+var offsetval;
 var products = [];
 var selectedProducts = [];
 function getCrawledProducts(tag,offset,limit,productState) {
- 
+ offsetval = offset;
         //keyword
+  if(productState == "NONE"){
+var  url  ="https://3dot1.vue-server-dev.appspot.com/api/product/search/genericsearch?queryString="+tag+"&offset="+offset+"&limit="+limit;
+ }else {
   var  url  ="https://3dot1.vue-server-dev.appspot.com/api/product/search/genericsearch?productstate="+productState+"&queryString="+tag+"&offset="+offset+"&limit="+limit;
- 
+ }
  
        //var url ="https://3dot1.vue-server-dev.appspot.com/api/product/search/genericsearch?queryString="+tag+"&limit=20";
      // var url = "https://3dot1.vue-server-dev.appspot.com/api/product/search/tagsearch?tagstring=" + tag + "&limit=30";
     // var url = "https://vue-server-dev.appspot.com/api/product/search?productstate=CURATED_AND_VERIFIED&offset="+offset+"&limit="+limit;
  
- 
+ console.log(url);
     if (XMLHttpRequest)
     {
         request = new XMLHttpRequest();
@@ -56,16 +59,19 @@ function getHandler() {
             alert("No products was found with this tag");
             return;
         }
+          if(offsetval == 0){
         products.clear();
+}
         for (var i = 0; i < jsonResponse.length; i++) {
             var jsonTempObject = jsonResponse[i];
-            if (jsonTempObject.currentProductState === "CURATED" || jsonTempObject.currentProductState === "CURATED_AND_VERIFIED") {
+           // if (jsonTempObject.currentProductState === "CURATED" || jsonTempObject.currentProductState === "CURATED_AND_VERIFIED") {
                 var productObject = {id: jsonTempObject.id, ownerAisleId: jsonTempObject.ownerAisleId, ownerProductListId: jsonTempObject.ownerProductListId,
                     creatorId: jsonTempObject.creatorId, curatorId: jsonTempObject.curatorId, title: jsonTempObject.title, description: jsonTempObject.description,
                     currentProductState: jsonTempObject.currentProductState, relatedProductIds: jsonTempObject.relatedProductIds, productImages: jsonTempObject.productImages,
-                    productProviders: jsonTempObject.productProviders, comments: jsonTempObject.comments, productTags: jsonTempObject.productTags, ratings: jsonTempObject.ratings};
+                    productProviders: jsonTempObject.productProviders, comments: jsonTempObject.comments, productTags: jsonTempObject.productTags, ratings: jsonTempObject.ratings
+};
                 products.push(productObject);
-            }
+         // }
         }
 
         prepare();
@@ -112,6 +118,11 @@ function aisleHandler() {
         alert('HTTP GET error ' + request.status);
         return;
     }
+}
+function crearPorducts(){
+ products.clear();
+   var table = document.getElementById("product");
+    table.innerHTML = "";
 }
 function prepare() {
 

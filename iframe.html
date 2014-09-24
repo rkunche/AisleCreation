@@ -30,7 +30,9 @@
                 callFrameOne(e.data);
             } else if (data[0] === 'getAllAisles') {
                 callFrameTwo(e.data);
-            } else {
+            } else if(data[0] === 'clearProducsts'){
+                callFrameTwo(e.data);
+                }else {
                 callFrameOne(e.data);
             }
         };

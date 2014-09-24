@@ -18,7 +18,7 @@
             var uploadProductCount = 0;
             var request;
             var tagsrequest;
-var stateValue = "CURATED_AND_VERIFIED";
+var stateValue = "NONE";
 
             var offset =0;
             var limit = 20;
@@ -356,6 +356,9 @@ function getSelectedValue(){
 offset = 0;
  document.getElementById("stateId").value = stateValue;
 }
+function clearProducts(){
+ window.top.postMessage('clearProducsts#', '*');
+}
         </script>
         <link rel="stylesheet" type="text/css" href="src/jquery.multiselect.css" />
         <link rel="stylesheet" type="text/css" href="src/jquery.multiselect.filter.css" />
@@ -372,6 +375,7 @@ offset = 0;
   <div>
          
     <select id="stateId" name="" style="width:150;" onchange="getSelectedValue();">
+                <option value="NONE" title=" ">NONE</option>
                 <option value="CRAWLED" title=" ">CRAWLED</option>
                 <option value="CURATED" title=" ">CURATED</option>
                 <option value="CURATED_AND_VERIFIED" title=" ">CURATED_AND_VERIFIED</option>
@@ -445,8 +449,10 @@ offset = 0;
 
             </label>
         </form>
-
+        <div>
         <button type="button" class="myButtonRED" onClick="getAllAisles()">GetAisles</button>
+<button type="button" class="myButtonRED" onClick="clearProducts()">ClearProducts</button>
+</div>
     </body>
 </html>
 <style>
