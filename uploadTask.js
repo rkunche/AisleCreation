@@ -138,7 +138,8 @@ function prepare() {
         }
 
         var td1 = document.createElement("td");
-
+          td1.style.width = 500;
+          td1.style.height = 500;
         var imag = document.createElement("img");
 
         try {
@@ -160,6 +161,7 @@ function prepare() {
         divImage.style.display = 'block'
         var img = document.createElement("img");
         img.src = "images.jpg";
+        
         img.className = "center";
         var br = document.createElement("br");
         divImage.appendChild(img);
@@ -208,6 +210,41 @@ function prepare() {
 
 
     }
+   resize_images(400,400,400,400);
+}
+
+function resize_images(maxht, maxwt, minht, minwt) {
+  var imgs = document.getElementsByTagName('img');
+
+  var resize_image = function(img, newht, newwt) {
+    img.height = newht;
+    img.width  = newwt;
+  };
+  
+  for (var i = 0; i < imgs.length; i++) {
+    var img = imgs[i];
+    if (img.height > maxht || img.width > maxwt) {
+      // Use Ratios to constraint proportions.
+      var old_ratio = img.height / img.width;
+      var min_ratio = minht / minwt;
+      // If it can scale perfectly.
+      if (old_ratio === min_ratio) {
+        resize_image(img, minht, minwt);
+      } 
+      else {
+        var newdim = [img.height, img.width];
+        newdim[0] = minht;  // Sort out the height first
+        // ratio = ht / wt => wt = ht / ratio.
+        newdim[1] = newdim[0] / old_ratio;
+        // Do we still have to sort out the width?
+        if (newdim[1] > maxwt) {
+          newdim[1] = minwt;
+          newdim[0] = newdim[1] * old_ratio;
+        }
+        resize_image(img, newdim[0], newdim[1]);
+      }
+    }
+  }
 }
 function prepareAisleTable() {
     var table = document.getElementById("product");
