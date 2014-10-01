@@ -259,7 +259,7 @@ function addToAisle(product, isAddToAisle) {
     }
     if(aisleProducts.length < 3){
     productsCount.innerHTML = "Selected Products: " + aisleProducts.length;
-     productsCount.style.colour = "black";
+     productsCount.style.color = "Black";
 } else {
     productsCount.innerHTML = "Selected Products: " + aisleProducts.length + " (Aisle Ready to Upload)";
     productsCount.style.color = "green";
@@ -284,6 +284,13 @@ function addToAisle(product, isAddToAisle) {
         imag.height = 400;
         mouseroverEvent(imag, tempProduct);
         aisleHolder.appendChild(imag);
+    }
+    if(aisleProducts.length == 0){
+         var imag = document.createElement("img");
+        imag.src =  "images/aisle_baground.png";
+        imag.width = 400;
+        imag.height = 400; 
+         aisleHolder.appendChild(imag);
     }
     aisleSldierReload();
 }
