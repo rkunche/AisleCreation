@@ -18,9 +18,9 @@
             var uploadProductCount = 0;
             var request;
             var tagsrequest;
-var stateValue = "NONE";
+            var stateValue = "NONE";
 
-            var offset =0;
+            var offset = 0;
             var limit = 20;
 
             var urlUserID;
@@ -40,26 +40,31 @@ var stateValue = "NONE";
 
                 var messages = e.data.split("#");
                 if (messages[0] === 'User') {
-                     
+
                     if (messages[1] !== '0') {
-                       
-                        getUser(messages[1]);
+
+                        //getUser(messages[1]);
+                        getUser("6419807607980032");
                     }
 
                 } else {
+                    if (messages[0] === 'aislePost') {
 
-                    try {
-                        if (e.data == 'done') {
-                            if (selected_products.length > 0) {
-                                createAisleRequest();
-                                
+                        changeUploadButtonBg(messages[1], messages[2]);
+                    } else {
+                        try {
+                            if (e.data == 'done') {
+                                if (selected_products.length > 0) {
+                                    createAisleRequest();
+
+                                }
+                            } else {
+                                selected_products.push(JSON.parse(e.data));
                             }
-                        } else {
-                            selected_products.push(JSON.parse(e.data));
+
+                        } catch (e) {
+
                         }
-
-                    } catch (e) {
-
                     }
                 }
             };
@@ -72,12 +77,12 @@ var stateValue = "NONE";
                     return;
                 }
                 var currentUser = document.getElementById("UserId").value.trim();
-     
+
                 if (currentUser === urlUserID.toString()) {
-                  
-                    window.top.postMessage('getproducts#' + tagKey+"#"+offset+"#"+limit+"#"+stateValue, '*');
+
+                    window.top.postMessage('getproducts#' + tagKey + "#" + offset + "#" + limit + "#" + stateValue, '*');
                 } else {
-                     alert("else case: "+currentUser);
+                    alert("else case: " + currentUser);
                     getUser(currentUser);
                 }
 
@@ -201,7 +206,7 @@ var stateValue = "NONE";
                     if (uploadProductCount < selected_products.length) {
                         uploadAisleProduct(selected_products[uploadProductCount]);
                     } else {
-                        alert("Aisle created successfully with  "+uploadProductCount+ " products");
+                        alert("Aisle created successfully with  " + uploadProductCount + " products");
                     }
                 }
 
@@ -210,11 +215,12 @@ var stateValue = "NONE";
 
                 getMe();
                 getTags();
-           
+
 
             }
             function getUser(id) {
                 var url = "https://vue-server-dev.appspot.com/api/user/" + id;
+                console.log("user url" + url);
                 if (XMLHttpRequest)
                 {
                     request = new XMLHttpRequest();
@@ -236,13 +242,13 @@ var stateValue = "NONE";
                 }
                 if (request.status == 200)
                 {
-                  
+
                     var user = JSON.parse(request.responseText);
                     var name = user.firstName + " " + user.lastName;
                     document.getElementById("Name").value = name;
                     document.getElementById("UserId").value = user.id;
                     urlUserID = user.id;
-                     alert('HTTP GET success: ' + urlUserID);
+                    // alert('HTTP GET success: ' + urlUserID);
 
                 }
 
@@ -333,8 +339,8 @@ var stateValue = "NONE";
                 document.getElementById("productTagId").value = selectedValue;
             }
             function getAllAisles() {
-            
-                window.top.postMessage('getAllAisles#'+urlUserID, '*');
+
+                window.top.postMessage('getAllAisles#' + urlUserID, '*');
 
             }
             function occasionSelectionVal() {
@@ -347,18 +353,44 @@ var stateValue = "NONE";
 
                 document.getElementById("LookingFor").value = selectedValue;
             }
-function next(){
- offset = offset + limit;
-getProducts();
-}
-function getSelectedValue(){
-  stateValue = $("#stateId").val();
-offset = 0;
- document.getElementById("stateId").value = stateValue;
-}
-function clearProducts(){
- window.top.postMessage('clearProducsts#', '*');
-}
+            function next() {
+                offset = offset + limit;
+                getProducts();
+            }
+            function getSelectedValue() {
+                stateValue = $("#stateId").val();
+                offset = 0;
+                document.getElementById("stateId").value = stateValue;
+            }
+            function clearProducts() {
+                window.top.postMessage('clearProducsts#', '*');
+            }
+            function changeUploadButtonBg(color, count) {
+                if (color === 'Ready') {
+                    document.getElementById('uploaditem').className = "myButtonGreen";
+                    blinker('uploaditem', 5);
+                } else {
+                    document.getElementById('uploaditem').className = "myButtonRED";
+                }
+
+                totalSelectedProducts(count);
+            }
+            function blinker(id, times) {
+                var color = document.getElementById(id).style.backgroundColor;
+                document.getElementById(id).style.backgroundColor = "red";
+                setTimeout(function() {
+                    document.getElementById(id).style.backgroundColor = color;
+                }, 110);
+                if (1 < times)
+                    setTimeout(function() {
+                        blinker(id, times - 1);
+                    }, 220);
+            }
+            function totalSelectedProducts(count) {
+                document.getElementById('selected_products_count_id').innerHtml = "Total Selected Producsts: " + count;
+                document.getElementById('selected_products_count_id').style.color = 'green';
+
+            }
         </script>
         <link rel="stylesheet" type="text/css" href="src/jquery.multiselect.css" />
         <link rel="stylesheet" type="text/css" href="src/jquery.multiselect.filter.css" />
@@ -372,9 +404,9 @@ function clearProducts(){
         <script type="text/javascript" src="assets/prettify.js"></script>
     </head>
     <body onLoad="fillValues()">
-  <div>
-         
-    <select id="stateId" name="" style="width:150;" onchange="getSelectedValue();">
+        <div>
+
+            <select id="stateId" name="" style="width:150;" onchange="getSelectedValue();">
                 <option value="NONE" title=" ">NONE</option>
                 <option value="CRAWLED" title=" ">CRAWLED</option>
                 <option value="CURATED" title=" ">CURATED</option>
@@ -388,196 +420,215 @@ function clearProducts(){
         <div>
             <input type = "text"  placeholder="Enter keyword" id="productTagId"></input> 
             <button type ="button" value="getProducts" onClick ="getProducts()"> Get Products</button>
- <button type ="button" value="getProducts" onClick ="next()">Next</button>
+            <button type ="button" value="getProducts" onClick ="next()">Next</button>
         </div>
-<div>
-      
-<div>
-        <script type="text/javascript">
-            $("select").multiselect();
-        </script>
-        <select id="select_tag" onchange="tagSelectionVal()" name="selection" multiple="multiple"   style="width: 200px" >
+        <div>
 
-
-        </select>
-        <form action="" method="post" class="basic-grey">
-            <h1>
-                Details <span>Please fill all the texts in the fields.</span>
-            </h1>
-            <label> <span>Name: </span> <input id='Name' type="text"
-                                               name="name" placeholder="Name"  />
-
-
-
-            </label> 
-
-
-            <label> <span>UserId: </span> <input id="UserId"
-                                                 type="text" name="name" placeholder="UserId" />
-
-            </label>
-
-
-            <label> <span>Category: </span> <input id="Category"
-                                                   type="text" name="name" placeholder="Category"></input>
-
-            </label> 
-
-            <label> <span>Occassion: </span> <input id="Occassion"
-                                                    type="text" name="name" placeholder="Occassion" ></input>
-                <span>Occassion: </span>  <select id="Occassion_tag" onchange="occasionSelectionVal()" name="selection" multiple="multiple"   style="width: 200px"  style="margin-left: 20px;">
+            <div>
+                <script type="text/javascript">
+                    $("select").multiselect();
+                </script>
+                <select id="select_tag" onchange="tagSelectionVal()" name="selection" multiple="multiple"   style="width: 200px" >
 
 
                 </select>
-            </label> 
+                <form action="" method="post" class="basic-grey">
+                    <h1>
+                        Details <span>Please fill all the texts in the fields.</span>
+                    </h1>
+                    <label> <span>Name: </span> <input id='Name' type="text"
+                                                       name="name" placeholder="Name"  />
 
 
 
-            <label> <span>LookingFor: </span> <input
-                    id="LookingFor" type="text" name="name"
-                    placeholder="LookingFor"></input>
-                <span>LookingFor: </span>  <select id="LookingFor_tag" onchange="lookingForSelectionVal()" name="selection" multiple="multiple"   style="width: 200px"  style="margin-left: 20px;">
-            </label>
+                    </label> 
 
 
-            <label> <span>Description: </span> <textarea
-                    id="Description" type="html" name="message"
-                    placeholder="Features"></textarea>
+                    <label> <span>UserId: </span> <input id="UserId"
+                                                         type="text" name="name" placeholder="UserId" />
 
-            </label> <label> <span>&nbsp;</span> <input type="button"
-                                                        class="myButtonRED" value="Upload" id="uploaditem" onClick ="callFrameOne()" /> <span>&nbsp;</span>  
+                    </label>
 
-            </label>
-        </form>
-        <div>
-        <button type="button" class="myButtonRED" onClick="getAllAisles()">GetAisles</button>
-<button type="button" class="myButtonRED" onClick="clearProducts()">ClearProducts</button>
-</div>
-    </body>
-</html>
-<style>
-    .myButtonRED {
-        -moz-box-shadow: inset 0px 39px 0px -24px #e67a73;
-        -webkit-box-shadow: inset 0px 39px 0px -24px #e67a73;
-        box-shadow: inset 0px 39px 0px -24px #e67a73;
-        background-color: #e4685d;
-        -moz-border-radius: 4px;
-        -webkit-border-radius: 4px;
-        border-radius: 4px;
-        border: 1px solid #ffffff;
-        display: inline-block;
-        cursor: pointer;
-        color: #ffffff;
-        font-family: arial;
-        font-size: 15px;
-        padding: 6px 15px;
-        text-decoration: none;
-        text-shadow: 0px 1px 0px #b23e35;
-    }
 
-    #example1 { width: 50%; }
-    #example2 { width: 150px; }
+                    <label> <span>Category: </span> <input id="Category"
+                                                           type="text" name="name" placeholder="Category"></input>
 
-    select { width: 300px; }
+                    </label> 
 
-    textarea {
-        width: 300px;
-        height: 10em;
-    }
-    /* Basic Grey */
-    .basic-grey {
-        width: 400px;
-        margin-right: auto;
-        margin-left: auto;
-        background: #EEE;
-        padding: 20px 30px 20px 30px;
-        font: 12px Georgia, "Times New Roman", Times, serif;
-        color: #888;
-        text-shadow: 1px 1px 1px #FFF;
-        border: 1px solid #DADADA;
-    }
+                    <label> <span>Occassion: </span> <input id="Occassion"
+                                                            type="text" name="name" placeholder="Occassion" ></input>
+                        <span>Occassion: </span>  <select id="Occassion_tag" onchange="occasionSelectionVal()" name="selection" multiple="multiple"   style="width: 200px"  style="margin-left: 20px;">
 
-    .basic-grey h1 {
-        font: 25px Georgia, "Times New Roman", Times, serif;
-        padding: 0px 0px 10px 40px;
-        display: block;
-        border-bottom: 1px solid #DADADA;
-        margin: -10px -30px 30px -30px;
-        color: #888;
-    }
 
-    .basic-grey h1>span {
-        display: block;
-        font-size: 11px;
-    }
+                        </select>
+                    </label> 
 
-    .basic-grey label {
-        display: block;
-        margin: 0px 0px 5px;
-    }
 
-    .basic-grey label>span {
-        float: left;
-        width: 80px;
-        text-align: right;
-        padding-right: 10px;
-        margin-top: 10px;
-        color: #888;
-    }
 
-    .basic-grey input[type="text"], .basic-grey input[type="email"],
-    .basic-grey textarea, .basic-grey select {
-        border: 1px solid #DADADA;
-        color: #888;
-        height: 30px;
-        margin-bottom: 16px;
-        margin-right: 6px;
-        margin-top: 2px;
-        outline: 0 none;
-        padding: 3px 3px 3px 5px;
-        width: 60%;
-        font: normal 12px/12px Georgia, "Times New Roman", Times, serif;
-    }
+                    <label> <span>LookingFor: </span> <input
+                            id="LookingFor" type="text" name="name"
+                            placeholder="LookingFor"></input>
+                        <span>LookingFor: </span>  <select id="LookingFor_tag" onchange="lookingForSelectionVal()" name="selection" multiple="multiple"   style="width: 200px"  style="margin-left: 20px;">
+                    </label>
 
-    .basic-grey select {
-        background: #FFF url('down-arrow.png') no-repeat right;
-        background: #FFF url('down-arrow.png') no-repeat right);
-        appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        text-indent: 0.01px;
-        text-overflow: '';
-        width: 72%;
-        height: 30px;
-    }
 
-    .basic-grey textarea {
-        height: 150px;
-    }
+                    <label> <span>Description: </span> <textarea
+                            id="Description" type="html" name="message"
+                            placeholder="Features"></textarea>
 
-    .basic-grey .button {
-        background: #E48F8F;
-        border: none;
-        padding: 10px 25px 10px 25px;
-        color: #FFF;
-    }
+                    </label> <label> <span>&nbsp;</span> <input type="button"
+                                                                class="myButtonRED" value="Upload" id="uploaditem" onClick ="callFrameOne()" /> <span>&nbsp;</span>  
 
-    .basic-grey .button:hover {
-        background: #CF7A7A
-    }
-    .multiselect {
-        width:20em;
-        height:15em;
-        border:solid 1px #c0c0c0;
-        overflow:auto;
-    }
+                    </label>
+                </form>
+                <div>
+                    <button type="button" class="myButtonRED" onClick="getAllAisles()">GetAisles</button>
+                    <button type="button" class="myButtonRED" onClick="clearProducts()">ClearProducts</button>
+                    <p id='selected_products_count_id'></p>
+                </div>
+                </body>
+                </html>
+                <style>
+                    .myButtonRED {
+                        -moz-box-shadow: inset 0px 39px 0px -24px #e67a73;
+                        -webkit-box-shadow: inset 0px 39px 0px -24px #e67a73;
+                        box-shadow: inset 0px 39px 0px -24px #e67a73;
+                        background-color: #e4685d;
+                        -moz-border-radius: 4px;
+                        -webkit-border-radius: 4px;
+                        border-radius: 4px;
+                        border: 1px solid #ffffff;
+                        display: inline-block;
+                        cursor: pointer;
+                        color: #ffffff;
+                        font-family: arial;
+                        font-size: 15px;
+                        padding: 6px 15px;
+                        text-decoration: none;
+                        text-shadow: 0px 1px 0px #b23e35;
+                    }
+                    .myButtonGreen {
+                        -moz-box-shadow: inset 0px 39px 0px -24px #e67a73;
+                        -webkit-box-shadow: inset 0px 39px 0px -24px #e67a73;
+                        box-shadow: inset 0px 39px 0px -24px #e67a73;
+                        background-color: green;
+                        -moz-border-radius: 4px;
+                        -webkit-border-radius: 4px;
+                        border-radius: 4px;
+                        border: 1px solid #ffffff;
+                        display: inline-block;
+                        cursor: pointer;
+                        color: #ffffff;
+                        font-family: arial;
+                        font-size: 15px;
+                        padding: 6px 15px;
+                        text-decoration: none;
+                        text-shadow: 0px 1px 0px #b23e35;
+                    }
 
-    .multiselect label {
-        display:block;
-    }
+                    #example1 { width: 50%; }
+                    #example2 { width: 150px; }
 
-    .multiselect-on {
-        color:#ffffff;
-        background-color:#000099;
-    }
-</style>
+                    select { width: 300px; }
+
+                    textarea {
+                        width: 300px;
+                        height: 10em;
+                    }
+                    /* Basic Grey */
+                    .basic-grey {
+                        width: 400px;
+                        margin-right: auto;
+                        margin-left: auto;
+                        background: #EEE;
+                        padding: 20px 30px 20px 30px;
+                        font: 12px Georgia, "Times New Roman", Times, serif;
+                        color: #888;
+                        text-shadow: 1px 1px 1px #FFF;
+                        border: 1px solid #DADADA;
+                    }
+
+                    .basic-grey h1 {
+                        font: 25px Georgia, "Times New Roman", Times, serif;
+                        padding: 0px 0px 10px 40px;
+                        display: block;
+                        border-bottom: 1px solid #DADADA;
+                        margin: -10px -30px 30px -30px;
+                        color: #888;
+                    }
+
+                    .basic-grey h1>span {
+                        display: block;
+                        font-size: 11px;
+                    }
+
+                    .basic-grey label {
+                        display: block;
+                        margin: 0px 0px 5px;
+                    }
+
+                    .basic-grey label>span {
+                        float: left;
+                        width: 80px;
+                        text-align: right;
+                        padding-right: 10px;
+                        margin-top: 10px;
+                        color: #888;
+                    }
+
+                    .basic-grey input[type="text"], .basic-grey input[type="email"],
+                    .basic-grey textarea, .basic-grey select {
+                        border: 1px solid #DADADA;
+                        color: #888;
+                        height: 30px;
+                        margin-bottom: 16px;
+                        margin-right: 6px;
+                        margin-top: 2px;
+                        outline: 0 none;
+                        padding: 3px 3px 3px 5px;
+                        width: 60%;
+                        font: normal 12px/12px Georgia, "Times New Roman", Times, serif;
+                    }
+
+                    .basic-grey select {
+                        background: #FFF url('down-arrow.png') no-repeat right;
+                        background: #FFF url('down-arrow.png') no-repeat right);
+                        appearance: none;
+                        -webkit-appearance: none;
+                        -moz-appearance: none;
+                        text-indent: 0.01px;
+                        text-overflow: '';
+                        width: 72%;
+                        height: 30px;
+                    }
+
+                    .basic-grey textarea {
+                        height: 150px;
+                    }
+
+                    .basic-grey .button {
+                        background: #E48F8F;
+                        border: none;
+                        padding: 10px 25px 10px 25px;
+                        color: #FFF;
+                    }
+
+                    .basic-grey .button:hover {
+                        background: #CF7A7A
+                    }
+                    .multiselect {
+                        width:20em;
+                        height:15em;
+                        border:solid 1px #c0c0c0;
+                        overflow:auto;
+                    }
+
+                    .multiselect label {
+                        display:block;
+                    }
+
+                    .multiselect-on {
+                        color:#ffffff;
+                        background-color:#000099;
+                    }
+                </style>

@@ -3,7 +3,7 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script>
         var users = [];
-         var creatorId;
+        var creatorId;
         function callFrameOne(message) {
 
 
@@ -18,11 +18,11 @@
         window.onmessage = function(e) {
 
             var data = e.data.split("#");
-            if(data[0] === 'getUser'){
-                callFrameOne("User#"+creatorId);
-                 
+            if (data[0] === 'getUser') {
+                callFrameOne("User#" + creatorId);
+
             } else if (data[0] === 'getproducts') {
-                 
+
                 callFrameTwo(e.data);
             } else if (data[0] === 'getSelectedProducts') {
                 callFrameTwo(e.data);
@@ -30,9 +30,9 @@
                 callFrameOne(e.data);
             } else if (data[0] === 'getAllAisles') {
                 callFrameTwo(e.data);
-            } else if(data[0] === 'clearProducsts'){
+            } else if (data[0] === 'clearProducsts') {
                 callFrameTwo(e.data);
-                }else {
+            } else {
                 callFrameOne(e.data);
             }
         };
@@ -50,7 +50,7 @@
             var srchString = unescape(location.search.substring(1, location.search.length));
             var name = srchString.split("=");
 
-           creatorId = name[1];
+            creatorId = name[1];
 
             var boolval = false;
             for (var i = 0; i < users.length; i++) {
@@ -62,10 +62,10 @@
                 alert("user does not exist");
                 return;
             }
- 
+
 
         }
-        
+
     </script>
     <body onLoad="readParams()">
 
