@@ -148,8 +148,8 @@
                         request.setRequestHeader('Content-Type', 'application/json');
                         request.onreadystatechange = aisle_post_handler;
                         //aisle creation request.
-                        
-                       request.send(JSON.stringify({id: null, ownerUserId: id, category: category, description: description, lookingFor: lookingFor, name: name, occassion: occassion, currentAisleState: "CURATED", bookmarkCount: 0}));
+
+                        request.send(JSON.stringify({id: null, ownerUserId: id, category: category, description: description, lookingFor: lookingFor, name: name, occassion: occassion, currentAisleState: "CURATED", bookmarkCount: 0}));
                     }
                 }
             }
@@ -368,17 +368,18 @@
             }
             function changeUploadButtonBg(color, count) {
                 if (color === 'Ready') {
-                    document.getElementById('uploaditem').className = "myButtonGreen";
-                    blinker('uploaditem', 5);
+                    document.getElementById('uploaditem').className = "roundButtonReverse";
+                    blinker('uploaditem', 5);                         
                 } else {
-                    document.getElementById('uploaditem').className = "myButtonRED";
+                     document.getElementById('uploaditem').className = "roundButton";
                 }
 
                 totalSelectedProducts(count);
             }
             function blinker(id, times) {
+                
                 var color = document.getElementById(id).style.backgroundColor;
-                document.getElementById(id).style.backgroundColor = "red";
+                document.getElementById(id).style.backgroundColor = "#9999ff";
                 setTimeout(function() {
                     document.getElementById(id).style.backgroundColor = color;
                 }, 110);
@@ -475,57 +476,38 @@
 
                     <label> <span>Description: </span> <textarea
                             id="Description" type="html" name="message"
-                            placeholder="Features"></textarea>
+                            placeholder="Features"  ></textarea>
 
-                    </label> <label> <span>&nbsp;</span> <input type="button"
-                                                                class="myButtonRED" value="Upload" id="uploaditem" onClick ="callFrameOne()" /> <span>&nbsp;</span>  
+                    </label>    <input type="button"
+                                       value="Submit Aisle" id = "uploaditem" class="roundButton" onClick ="callFrameOne()" /> <span>&nbsp;</span>  
 
-                    </label>
+
                 </form>
                 <div>
-                    <button type="button" class="myButtonRED" onClick="getAllAisles()">GetAisles</button>
-                    <button type="button" class="myButtonRED" onClick="clearProducts()">ClearProducts</button>
+                    <button type="button" class="roundButton" onClick="getAllAisles()">GetAisles</button>
+                    <button type="button"  class="roundButton" onClick="clearProducts()">ClearProducts</button>
                     <p id='selected_products_count_id'></p>
                 </div>
                 </body>
                 </html>
                 <style>
-                    .myButtonRED {
-                        -moz-box-shadow: inset 0px 39px 0px -24px #e67a73;
-                        -webkit-box-shadow: inset 0px 39px 0px -24px #e67a73;
-                        box-shadow: inset 0px 39px 0px -24px #e67a73;
-                        background-color: #e4685d;
-                        -moz-border-radius: 4px;
-                        -webkit-border-radius: 4px;
-                        border-radius: 4px;
-                        border: 1px solid #ffffff;
-                        display: inline-block;
-                        cursor: pointer;
-                        color: #ffffff;
-                        font-family: arial;
-                        font-size: 15px;
-                        padding: 6px 15px;
-                        text-decoration: none;
-                        text-shadow: 0px 1px 0px #b23e35;
+                    .roundButton {
+                        border: 2px solid #ff6600;
+                        padding: 10px 40px; 
+                        background: #FFFF99;
+                        width: 150px;
+                        border-radius: 25px;
                     }
-                    .myButtonGreen {
-                        -moz-box-shadow: inset 0px 39px 0px -24px #e67a73;
-                        -webkit-box-shadow: inset 0px 39px 0px -24px #e67a73;
-                        box-shadow: inset 0px 39px 0px -24px #e67a73;
-                        background-color: green;
-                        -moz-border-radius: 4px;
-                        -webkit-border-radius: 4px;
-                        border-radius: 4px;
-                        border: 1px solid #ffffff;
-                        display: inline-block;
-                        cursor: pointer;
-                        color: #ffffff;
-                        font-family: arial;
-                        font-size: 15px;
-                        padding: 6px 15px;
-                        text-decoration: none;
-                        text-shadow: 0px 1px 0px #b23e35;
+                  
+ .roundButtonReverse {
+                        border: 2px solid #FFFF99;
+                        padding: 10px 40px; 
+                        background: #ff6600; 
+                        width: 150px;
+                        border-radius: 25px;
                     }
+                  
+                 
 
                     #example1 { width: 50%; }
                     #example2 { width: 150px; }
