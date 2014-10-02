@@ -148,7 +148,8 @@
                         request.setRequestHeader('Content-Type', 'application/json');
                         request.onreadystatechange = aisle_post_handler;
                         //aisle creation request.
-                        request.send(JSON.stringify({id: null, ownerUserId: id, category: category, description: description, lookingFor: lookingFor, name: name, occassion: occassion, currentAisleState: "CURATED", bookmarkCount: 0}));
+                        
+                       request.send(JSON.stringify({id: null, ownerUserId: id, category: category, description: description, lookingFor: lookingFor, name: name, occassion: occassion, currentAisleState: "CURATED", bookmarkCount: 0}));
                     }
                 }
             }

@@ -17,6 +17,7 @@ Array.prototype.clear = function() {
 var offsetval;
 var products = [];
 var aisleProducts = [];
+ 
 var selectedProducts = [];
 function getCrawledProducts(tag, offset, limit, productState) {
     offsetval = offset;
@@ -249,9 +250,12 @@ function addToAisle(product, isAddToAisle) {
     var productsCount = document.getElementById('products_id');
     aisleHolder.innerHTML = "";
     if (isAddToAisle) {
+        //adding to aisle
         aisleProducts.push(product);
+ 
         console.log("push to aisle array");
     } else {
+        //removing from aisle
         var index = aisleProducts.indexOf(product);
         if (index > -1) {
             aisleProducts.splice(index, 1);
@@ -265,7 +269,8 @@ function addToAisle(product, isAddToAisle) {
     productsCount.style.color = "green";
      
 }
-    console.log("push to aisle sie " + aisleProducts.length);
+    console.log("aisle products size " + aisleProducts.length);
+    
     if (aisleProducts.length >= 3) {
         changeButton(true, aisleProducts.length);
         //  var instructions = document.getElementById('instruction_id');
@@ -285,7 +290,7 @@ function addToAisle(product, isAddToAisle) {
         mouseroverEvent(imag, tempProduct);
         aisleHolder.appendChild(imag);
     }
-    if(aisleProducts.length == 0){
+    if(aisleProducts.length === 0){
          var imag = document.createElement("img");
         imag.src =  "images/aisle_baground.png";
         imag.width = 400;
@@ -528,28 +533,14 @@ function prepareAisleTable() {
     }
 }
 
-function initialize(container) {
-
-    ul = document.getElementById('image_slider');
-    li_items = ul.children;
-    imageNumber = li_items.length;
-    imageWidth = li_items[0].children[0].clientWidth;
-    ul.style.width = parseInt(imageWidth * imageNumber) + 'px';
-    prev = document.getElementById("prev");
-    next = document.getElementById("next");
-    prev.onclick = function() {
-        onClickPrev();
-    };
-    next.onclick = function() {
-        onClickNext();
-    };
-}
+ 
 
 function getSelectedProducts() {
+    
     if (aisleProducts.length < 1) {
-        alert("Please select atleast one product");
+        alert("Please select atleast one product ");
         return;
-    } else if (aisleProducts.length >= 1 && aisleProducts < 3) {
+    } else if (aisleProducts.length >= 1 && aisleProducts.length < 3) {
         var r = confirm("You have selected only Two prodcuts, Do you want continue?");
         if (r === true) {
             selected.clear();
@@ -601,15 +592,15 @@ function getSelectedProducts() {
 }
 window.addEventListener('DOMContentLoaded', function() {
 
-    var uploaditem = document.getElementById('uploaditem');
-
-
-    uploaditem.addEventListener('click', function() {
-        //alert("upload is clicked");
-
-        getSelectedProducts();
-
-    });
+//    var uploaditem = document.getElementById('uploaditem');
+//
+//
+//    uploaditem.addEventListener('click', function() {
+//        alert("upload is clicked");
+//
+//        getSelectedProducts();
+//
+//    });
 
 
 
