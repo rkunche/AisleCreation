@@ -62,17 +62,19 @@
                 alert("user does not exist");
                 return;
             }
-
-
+ 
+ var newheight = screen.height - 120;
+ document.getElementById("frameOneId").height= (newheight) + "px";
+  document.getElementById("frametwoId").height= (newheight) + "px";
         }
 
     </script>
     <body onLoad="readParams()">
 
-        <iframe src="aislecreate.html" id ="frameOneId" scrolling ="yes" style="display:inline" width = "30%" height = "800">
+        <iframe src="aislecreate.html" id ="frameOneId" scrolling ="yes" style="display:inline" width = "30%" height = "900">
         <p>Your browser does not support iframes.</p>
         </iframe>
-        <iframe src="showproducts.html"  id ="frametwoId" scrolling ="yes"  style="display:inline" width = "68%" height = "800">
+        <iframe src="showproducts.html"  id ="frametwoId" scrolling ="yes"  style="display:inline" width = "68%" height = "900">
         <p>Your browser does not support iframes.</p>
         </iframe>
 
