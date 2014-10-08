@@ -23,9 +23,9 @@ function getCrawledProducts(tag, offset, limit, productState) {
     offsetval = offset;
     //keyword
     if (productState === "NONE") {
-        var url = "https://3dot1.vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + tag + "&offset=" + offset + "&limit=" + limit;
+        var url = "https://3dot1.vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + tag + "&offset=" + offset + "&limit=" + limit+"&randomize=false";
     } else {
-        var url = "https://3dot1.vue-server-dev.appspot.com/api/product/search/genericsearch?productstate=" + productState + "&queryString=" + tag + "&offset=" + offset + "&limit=" + limit;
+        var url = "https://3dot1.vue-server-dev.appspot.com/api/product/search/genericsearch?productstate=" + productState + "&queryString=" + tag + "&offset=" + offset + "&limit=" + limit+"&randomize=false";
     }
 
     //var url ="https://3dot1.vue-server-dev.appspot.com/api/product/search/genericsearch?queryString="+tag+"&limit=20";
