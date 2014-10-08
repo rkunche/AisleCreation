@@ -309,7 +309,11 @@
                     }
 
                     $("select").multiselect({
-                        selectedList: 4}).multiselectfilter();
+                        multiple: false,
+                        header: "Select an option",
+                        noneSelectedText: "Select an Option",
+                        selectedList: 1
+                    }).multiselectfilter();
                     $(function() {
                         var warning = $(".message");
 
@@ -369,15 +373,15 @@
             function changeUploadButtonBg(color, count) {
                 if (color === 'Ready') {
                     document.getElementById('uploaditem').className = "roundButtonReverse";
-                    blinker('uploaditem', 5);                         
+                    blinker('uploaditem', 5);
                 } else {
-                     document.getElementById('uploaditem').className = "roundButton";
+                    document.getElementById('uploaditem').className = "roundButton";
                 }
 
                 totalSelectedProducts(count);
             }
             function blinker(id, times) {
-                
+
                 var color = document.getElementById(id).style.backgroundColor;
                 document.getElementById(id).style.backgroundColor = "#9999ff";
                 setTimeout(function() {
@@ -428,7 +432,12 @@
 
             <div>
                 <script type="text/javascript">
-                    $("select").multiselect();
+                    $("select").multiselect({
+                        multiple: false,
+                        header: "Select an option",
+                        noneSelectedText: "Select an Option",
+                        selectedList: 1
+                    });
                 </script>
                 <select id="select_tag" onchange="tagSelectionVal()" name="selection" multiple="multiple"   style="width: 200px" >
 
@@ -499,17 +508,17 @@
                         border-radius: 25px;
                         color: #ff6600;
                     }
-                  
- .roundButtonReverse {
+
+                    .roundButtonReverse {
                         border: 2px solid #FFFF99;
                         padding: 10px 40px; 
                         background: #ff6600; 
                         width: 150px;
                         border-radius: 25px;
-                         color: #FFFF99;
+                        color: #FFFF99;
                     }
-                  
-                 
+
+
 
                     #example1 { width: 50%; }
                     #example2 { width: 150px; }
