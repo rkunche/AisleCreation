@@ -38,31 +38,64 @@
                 }
             };
         </script>
+        <script>
+            (function(i, s, o, g, r, a, m) {
+                i['GoogleAnalyticsObject'] = r;
+                i[r] = i[r] || function() {
+                    (i[r].q = i[r].q || []).push(arguments)
+                }, i[r].l = 1 * new Date();
+                a = s.createElement(o),
+                        m = s.getElementsByTagName(o)[0];
+                a.async = 1;
+                a.src = g;
+                m.parentNode.insertBefore(a, m)
+            })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
+            ga('create', 'UA-55582645-2', 'auto');
+            ga('send', 'pageview');
+
+        </script>
     </head>
 
     <body>
 
         <table id="product">
 
-        </table>
-        <div  id = 'products_holder_id' class="slider6">
-            <div> <img src ='images/aisle_baground.png' width="400" height="400"/></div>
+        </table>  
+        <div class="outside">
 
+            <p><span id="slider-prev"></span> | <span id="slider-next"></span></p>
         </div>
-        <table align="center"><tr><td><p id='products_id'> Selected Products:</p> 
+        <div class="outside2" align="right">
+
+            <p><span id="slider-prev2"></span> | <span id="slider-next2"></span></p>
+        </div>
+
+        <table align="center" style="border-spacing: 20px;"><tr>
+                <td>
+                    <div  id = 'products_holder_id' class="slider6">
+                        <div> <img src ='images/aisle_baground.png' width="600" height="600"/></div>
+
+                    </div>  
+
+
+                </td> 
+
+
+
+                <td><p id='products_id'> Selected Products:</p> 
 
                     <div id='aisle_holder_id' class="slider8">
-                        <div> <img src ='images/aisle_baground.png' width="400" height="400"/></div>
+                        <div> <img src ='images/aisle_baground.png' width="600" height="600"/></div>
                     </div>
 
 
 
                 </td>
-                <td width = 600 id='product_info_id'>
-
-
-                </td>
+                <!--                 <td width = 600 id='product_info_id'>
+                
+                
+                                </td> -->
 
             </tr>
         </table>
@@ -71,41 +104,47 @@
             $(document).ready(function() {
 
                 aisleSlider = $('.slider8').bxSlider({
-                    mode: 'vertical',
-                    slideWidth: 400,
-                    minSlides: 1,
-                    slideMargin: 10
+                    nextSelector: '#slider-next2',
+                    prevSelector: '#slider-prev2',
+                    slideWidth: 450,
+                    adaptiveHeight: true,
+                    nextText: 'Next →',
+                    prevText: '← Back'
                 });
             });
             var slider;
 
             $(document).ready(function() {
                 slider = $('.slider6').bxSlider({
-                    slideWidth: 400,
-                    minSlides: 3,
-                    maxSlides: 3,
-                    startSlide: 3,
-                    slideMargin: 10
+                    nextSelector: '#slider-next',
+                    prevSelector: '#slider-prev',
+                    slideWidth: 600,
+                    adaptiveHeight: true,
+                    nextText: 'Next →',
+                    prevText: '← Back'
                 });
             });
 
             function aisleSldierReload() {
                 aisleSlider.reloadSlider({
-                    mode: 'vertical',
-                    slideWidth: 400,
-                    minSlides: 1,
-                    slideMargin: 4
+                    nextSelector: '#slider-next2',
+                    prevSelector: '#slider-prev2',
+                    slideWidth: 450,
+                    adaptiveHeight: true,
+                    nextText: 'Next →',
+                    prevText: '← Back'
                 });
             }
 
             function sliderReload() {
                 //e.preventDefault();
                 slider.reloadSlider({
-                    slideWidth: 400,
-                    minSlides: 3,
-                    maxSlides: 3,
-                    startSlide: 3,
-                    slideMargin: 10
+                    nextSelector: '#slider-next',
+                    prevSelector: '#slider-prev',
+                    nextText: 'Next →',
+                    slideWidth: 600,
+                    adaptiveHeight: true,
+                    prevText: '← Back'
                 });
             }
             function changeButton(isAisleReadyToUpload, count) {
@@ -183,6 +222,12 @@
         padding: 6px 15px;
         text-decoration: none;
         text-shadow: 0px 1px 0px #b23e35;
+    }
+    .pos_fixed {
+        position: fixed;
+        top: 30px;
+        right: 150px;
+
     }
 </style>
 

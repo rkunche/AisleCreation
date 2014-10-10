@@ -17,15 +17,15 @@ Array.prototype.clear = function() {
 var offsetval;
 var products = [];
 var aisleProducts = [];
- 
+
 var selectedProducts = [];
 function getCrawledProducts(tag, offset, limit, productState) {
     offsetval = offset;
     //keyword
     if (productState === "NONE") {
-        var url = "https://3dot1.vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + tag + "&offset=" + offset + "&limit=" + limit+"&randomize=false";
+        var url = "https://3dot1.vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + tag + "&offset=" + offset + "&limit=" + limit + "&randomize=false";
     } else {
-        var url = "https://3dot1.vue-server-dev.appspot.com/api/product/search/genericsearch?productstate=" + productState + "&queryString=" + tag + "&offset=" + offset + "&limit=" + limit+"&randomize=false";
+        var url = "https://3dot1.vue-server-dev.appspot.com/api/product/search/genericsearch?productstate=" + productState + "&queryString=" + tag + "&offset=" + offset + "&limit=" + limit + "&randomize=false";
     }
 
     //var url ="https://3dot1.vue-server-dev.appspot.com/api/product/search/genericsearch?queryString="+tag+"&limit=20";
@@ -61,9 +61,10 @@ function getHandler() {
             alert("No products was found with this tag");
             return;
         }
-        if (offsetval === 0) {
+        if (offsetval === '0') {
             products.clear();
-            aisleProducts.clear();
+            aisleProducts.clear();            
+            //crearPorducts();
             var aisleHolder = document.getElementById('aisle_holder_id');
             var productsCount = document.getElementById('products_id');
             aisleHolder.innerHTML = "";
@@ -74,8 +75,7 @@ function getHandler() {
             imag.height = 400;
             aisleHolder.appendChild(imag);
             aisleSldierReload();
-
-        }
+        } 
         for (var i = 0; i < jsonResponse.length; i++) {
             var jsonTempObject = jsonResponse[i];
             // if (jsonTempObject.currentProductState === "CURATED" || jsonTempObject.currentProductState === "CURATED_AND_VERIFIED") {
@@ -138,6 +138,10 @@ function crearPorducts() {
     products.clear();
     var table = document.getElementById("product");
     table.innerHTML = "";
+     var prodcuHolder = document.getElementById('products_holder_id');
+    prodcuHolder.innerHTML = "";
+     sliderReload();
+      alert("products cleared");
 }
 function showProductsBxSlider() {
 
@@ -150,17 +154,28 @@ function showProductsBxSlider() {
         var imag = document.createElement("img");
         try {
             imag.src = jsonObject.productImages[0].externalURL;
-            imag.width = 400;
-            imag.height = 400;
+            // imag.width = 400;
+            // imag.height = 400;
             console.log(jsonObject.productImages[0].externalURL);
         } catch (e) {
             console.log("externalURL null")
         }
-        mouseroverEvent(imag, jsonObject);
+        //mouseroverEvent(imag, jsonObject);
         container.appendChild(imag);
         var textContainer = document.createElement("div");
-        var provider = document.createTextNode("Provider : " + jsonObject.productProviders[0].store);
+        var provider = document.createTextNode(jsonObject.productProviders[0].store);
         textContainer.appendChild(provider);
+        var br = document.createElement('br');
+        textContainer.appendChild(br);
+
+        var title = document.createTextNode(jsonObject.title);
+        textContainer.appendChild(title);
+        var br = document.createElement('br');
+        textContainer.appendChild(br);
+
+
+        var state = document.createTextNode(jsonObject.currentProductState);
+        textContainer.appendChild(state);
         var br = document.createElement('br');
         textContainer.appendChild(br);
 
@@ -173,7 +188,7 @@ function showProductsBxSlider() {
         prodcuHolder.appendChild(container);
     }
     sliderReload();
-    resize_images(400, 400, 400, 400);
+    //resize_images(400, 400, 400, 400);
 }
 function mouseroverEvent(image, product) {
     var localObject = {
@@ -195,10 +210,6 @@ function createButton(product, div) {
     button.style.outline = "solid orange";
     var obj = {
         handleEvent: function() {
-
-
-
-
             var buttonText = button.value;
             if (buttonText == 'AddToAisle') {
                 if (aisleProducts.length >= 1) {
@@ -247,13 +258,11 @@ function createButton(product, div) {
 function addToAisle(product, isAddToAisle) {
     var j;
     var aisleHolder = document.getElementById('aisle_holder_id');
-    var productsCount = document.getElementById('products_id');
+    // var productsCount = document.getElementById('products_id');
     aisleHolder.innerHTML = "";
     if (isAddToAisle) {
         //adding to aisle
         aisleProducts.push(product);
- 
-        console.log("push to aisle array");
     } else {
         //removing from aisle
         var index = aisleProducts.indexOf(product);
@@ -261,88 +270,112 @@ function addToAisle(product, isAddToAisle) {
             aisleProducts.splice(index, 1);
         }
     }
-    if(aisleProducts.length < 3){
-    productsCount.innerHTML = "Selected Products: " + aisleProducts.length;
-     productsCount.style.color = "Black";
-} else {
-    productsCount.innerHTML = "Selected Products: " + aisleProducts.length + " (Aisle Ready to Upload)";
-    productsCount.style.color = "green";
-     
+    prepareAisleSlider(aisleHolder);
 }
-    console.log("aisle products size " + aisleProducts.length);
-    
-    if (aisleProducts.length >= 3) {
-        changeButton(true, aisleProducts.length);
-        //  var instructions = document.getElementById('instruction_id');
-        // instructions.style.color = 'green';
-        // instructions.innerHTML = "Your Aisle is Ready to Upload";
+function prepareAisleSlider(aisleHolder) {
+    var productsCount = document.getElementById('products_id');
+    if (aisleProducts.length < 3) {
+        productsCount.innerHTML = "Selected Products: " + aisleProducts.length;
+        productsCount.style.color = "Black";
     } else {
-        changeButton(false, aisleProducts.length);
-        // document.getElementById('instruction_id').innerHTML = "";
+        productsCount.innerHTML = "Selected Products: " + aisleProducts.length + " (Aisle Ready to Upload)";
+        productsCount.style.color = "green";
     }
     for (j = 0; j < aisleProducts.length; j++) {
         var tempProduct = aisleProducts[j];
         var imag = document.createElement("img");
 
         imag.src = tempProduct.productImages[0].externalURL;
+        var aileDiv = document.createElement("div");
+        aileDiv.appendChild(imag);
+        createAisleDeleteButton(aileDiv, tempProduct);
+        aisleHolder.appendChild(aileDiv);
+    }
+     if (aisleProducts.length >= 3) {
+        changeButton(true, aisleProducts.length);
+    } else {
+        changeButton(false, aisleProducts.length);
+    }
+    if (aisleProducts.length === 0) {
+        var imag = document.createElement("img");
+        imag.src = "images/aisle_baground.png";
         imag.width = 400;
         imag.height = 400;
-        mouseroverEvent(imag, tempProduct);
         aisleHolder.appendChild(imag);
-    }
-    if(aisleProducts.length === 0){
-         var imag = document.createElement("img");
-        imag.src =  "images/aisle_baground.png";
-        imag.width = 400;
-        imag.height = 400; 
-         aisleHolder.appendChild(imag);
     }
     aisleSldierReload();
 }
+function createAisleDeleteButton(div, product) {
+    var deleteImageDiv = document.createElement("div");
+    deleteImageDiv.setAttribute('align', 'right');
+    var delImag = document.createElement("img");
+    delImag.src = 'images/delete.png';
+    delImag.width = 30;
+    delImag.height = 30;
+    deleteImageDiv.appendChild(delImag);
+
+    var obj = {
+        handleEvent: function() {
+            //removing from aisle
+            var index = aisleProducts.indexOf(product);
+            if (index > -1) {
+
+                aisleProducts.splice(index, 1);
+            }
+            var aisleHolder = document.getElementById('aisle_holder_id');
+            aisleHolder.innerHTML = "";
+            prepareAisleSlider(aisleHolder);
+
+        },
+        dude: product.title
+    };
+    delImag.addEventListener("click", obj, false);
+    div.appendChild(deleteImageDiv);
+}
 function onImageMouseOver(jsonObject) {
-    console.log("mouse Event: " + jsonObject.id);
-    var prodcutInfoTdEle = document.getElementById('product_info_id');
-    prodcutInfoTdEle.innerHTML = "";
-    var parentDiv = document.createElement("div");
-    parentDiv.style.marginLeft = 16;
-    var divTitle = document.createElement("div");
-    var title = document.createTextNode("TITLE  :   \n" + jsonObject.title);
-    divTitle.appendChild(title);
-    parentDiv.appendChild(divTitle);
-    var br = document.createElement("br");
-    parentDiv.appendChild(br);
-
-    var description = document.createTextNode("DESCRIPTION  : \n    " + jsonObject.description);
-    var divDescription = document.createElement("div");
-    divDescription.appendChild(description);
-    parentDiv.appendChild(divDescription);
-    var br = document.createElement("br");
-    parentDiv.appendChild(br);
-
-
-
-    var divCuratedState = document.createElement("div");
-    var curatedState = document.createTextNode("CURATED_STATE : " + jsonObject.currentProductState);
-    divCuratedState.appendChild(curatedState);
-    parentDiv.appendChild(divCuratedState);
-    var br = document.createElement("br");
-    parentDiv.appendChild(br);
-
-    var divId = document.createElement("div");
-    var id = document.createTextNode("PRODUCT_ID : " + jsonObject.id);
-    divId.appendChild(id);
-    parentDiv.appendChild(divId);
-    var br = document.createElement("br");
-    parentDiv.appendChild(br)
-
-
-    var divProductOwnerAisleId = document.createElement("div");
-    var ownerAisleId = document.createTextNode("OwnerAisleId : " + jsonObject.ownerAisleId);
-    divProductOwnerAisleId.appendChild(ownerAisleId);
-    parentDiv.appendChild(divProductOwnerAisleId);
-
-
-    prodcutInfoTdEle.appendChild(parentDiv);
+//    console.log("mouse Event: " + jsonObject.id);
+//    var prodcutInfoTdEle = document.getElementById('product_info_id');
+//    prodcutInfoTdEle.innerHTML = "";
+//    var parentDiv = document.createElement("div");
+//    parentDiv.style.marginLeft = 16;
+//    var divTitle = document.createElement("div");
+//    var title = document.createTextNode("TITLE  :   \n" + jsonObject.title);
+//    divTitle.appendChild(title);
+//    parentDiv.appendChild(divTitle);
+//    var br = document.createElement("br");
+//    parentDiv.appendChild(br);
+//
+//    var description = document.createTextNode("DESCRIPTION  : \n    " + jsonObject.description);
+//    var divDescription = document.createElement("div");
+//    divDescription.appendChild(description);
+//    parentDiv.appendChild(divDescription);
+//    var br = document.createElement("br");
+//    parentDiv.appendChild(br);
+//
+//
+//
+//    var divCuratedState = document.createElement("div");
+//    var curatedState = document.createTextNode("CURATED_STATE : " + jsonObject.currentProductState);
+//    divCuratedState.appendChild(curatedState);
+//    parentDiv.appendChild(divCuratedState);
+//    var br = document.createElement("br");
+//    parentDiv.appendChild(br);
+//
+//    var divId = document.createElement("div");
+//    var id = document.createTextNode("PRODUCT_ID : " + jsonObject.id);
+//    divId.appendChild(id);
+//    parentDiv.appendChild(divId);
+//    var br = document.createElement("br");
+//    parentDiv.appendChild(br)
+//
+//
+//    var divProductOwnerAisleId = document.createElement("div");
+//    var ownerAisleId = document.createTextNode("OwnerAisleId : " + jsonObject.ownerAisleId);
+//    divProductOwnerAisleId.appendChild(ownerAisleId);
+//    parentDiv.appendChild(divProductOwnerAisleId);
+//
+//
+//    prodcutInfoTdEle.appendChild(parentDiv);
 }
 //back up code to create to show the data in table.
 function prepare() {
@@ -431,7 +464,7 @@ function prepare() {
 
 
     }
-    resize_images(400, 400, 400, 400);
+    //resize_images(400, 400, 400, 400);
 }
 
 function resize_images(maxht, maxwt, minht, minwt) {
@@ -533,10 +566,10 @@ function prepareAisleTable() {
     }
 }
 
- 
+
 
 function getSelectedProducts() {
-    
+
     if (aisleProducts.length < 1) {
         alert("Please select atleast one product ");
         return;
