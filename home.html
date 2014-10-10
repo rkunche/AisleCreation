@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Vue 2.0 Product Curation - Fetch Products</title>
+
+        <style>
+
+
+            #header {
+                background-color:white;
+                color:black;
+                text-align:center;
+                padding:4px;
+                box-shadow: 2px 2px 2px 1px #aaaaaa;
+            }
+            #instructions {
+                width: 500px;
+                height: 80px;
+                text-align:left;
+                background-color: lightcyan;
+                box-shadow: 1px 1px 1px #aaaaaa;
+            }
+
+            #fetchButton {
+                width: 200px;
+                height: 50px;
+                text-align:center;
+                font-size: 18px;
+                color:white;
+                background-color: green;
+                box-shadow: 1px 1px 0px #999999;
+
+            }
+
+            .myButton {
+                -moz-box-shadow: 0px 10px 14px -7px #276873;
+                -webkit-box-shadow: 0px 10px 14px -7px #276873;
+                box-shadow: 0px 10px 14px -7px #276873;
+                background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #599bb3), color-stop(1, #408c99));
+                background:-moz-linear-gradient(top, #599bb3 5%, #408c99 100%);
+                background:-webkit-linear-gradient(top, #599bb3 5%, #408c99 100%);
+                background:-o-linear-gradient(top, #599bb3 5%, #408c99 100%);
+                background:-ms-linear-gradient(top, #599bb3 5%, #408c99 100%);
+                background:linear-gradient(to bottom, #599bb3 5%, #408c99 100%);
+                filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#599bb3', endColorstr='#408c99',GradientType=0);
+                background-color:#599bb3;
+                -moz-border-radius:8px;
+                -webkit-border-radius:8px;
+                border-radius:8px;
+                display:inline-block;
+                cursor:pointer;
+                color:#ffffff;
+                font-family:arial;
+                font-size:20px;
+                font-weight:bold;
+                padding:13px 32px;
+                text-decoration:none;
+                text-shadow:0px 1px 0px #3d768a;
+            }
+            .myButton:hover {
+                background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #408c99), color-stop(1, #599bb3));
+                background:-moz-linear-gradient(top, #408c99 5%, #599bb3 100%);
+                background:-webkit-linear-gradient(top, #408c99 5%, #599bb3 100%);
+                background:-o-linear-gradient(top, #408c99 5%, #599bb3 100%);
+                background:-ms-linear-gradient(top, #408c99 5%, #599bb3 100%);
+                background:linear-gradient(to bottom, #408c99 5%, #599bb3 100%);
+                filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#408c99', endColorstr='#599bb3',GradientType=0);
+                background-color:#408c99;
+            }
+            .myButton:active {
+                position:relative;
+                top:1px;
+            }
+
+            #content {
+                width: 700px ;
+                margin-left: auto ;
+                margin-right: auto ;
+            }
+        </style>
+
+
+    </head>
+
+    <body onLoad = "readParams()">
+
+
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+        <script>
+        var productStatusTag = "CRAWLED";
+        var numProducts = 1;
+        var request;
+        var products = [];
+        var otherWindow;
+        var myVar;
+        var clickedProductId;
+        //get tags from server.
+        var tagString;
+        var tagsrequest;
+        var curateProductRequest;
+        //for user authentication
+        var users = [];
+        var curatorID;
+        var otherWindowObserver;
+        var buttonText;
+
+
+
+
+        function readParams() {
+            //ONLY ALLOWED STATIC USER
+            //raju ID
+            users.push(5505177142427648);
+            users.push(6419807607980032);
+            //sangeeth ID
+            users.push(5769457217568768);
+            //Neem 
+            users.push(5169874951208960);
+            users.push(5649648836411392); //lakshminath's id
+            users.push(5638203017003008); //vidya's id
+        }
+
+        var active_id = '';
+        function prepareLink() {
+            active_id = $('select[id=userlist]').val();
+
+        }
+        function curateProducts() {
+            if (active_id === '') {
+                alert('select the user');
+                return;
+            }
+            var requestProduct = "http://dev.curatevue.com/Product_Curation/ProductRequest.html?user=" + active_id;
+            window.open(requestProduct, '_blank');
+            window.focus();
+            //  alert(requestProduct);
+        }
+        function cuarteAsiles() {
+            if (active_id === '') {
+                alert('select the user');
+                return;
+            }
+            var requestAsile = "http://dev.curatevue.com/Aisle_Curation/iframe.html?user=" + active_id;
+            window.open(requestAsile, '_blank');
+            window.focus();
+            //alert(requestAsile);
+        }
+
+
+
+
+
+
+        </script>
+
+        <div id="header"><h3>Vue Product And Aisle Curation</h3></div>
+
+        <!--        <div id="instructions">
+                    <p><br>Fetch CRAWLED products and <font color=blue><b>Curate Now</b></font>;<br>
+                        <font color=Orange><b>Archive</b></font> products that are not in stock or do not have a product image:
+                    </p>
+                </div>-->
+        <div id="content">
+            <p style="size: 40">
+                Product State:
+                <select id="userlist"  style="width:150;" onchange="prepareLink()">
+                    <option value="">Select user:</option>
+                    <option value="5505177142427648" >Raju</option>
+                    <option value="6419807607980032" >Sangeetha</option>
+                    <option value="5769457217568768" >Neem</option>
+                    <option value="5649648836411392" >Lakshminath</option>
+                    <option value="5638203017003008" >Vidya</option>
+                </select>
+                <br>
+
+            </p>
+
+            <a class="myButton"id="curate_products_btn_id" onclick="curateProducts();" >Curate Products</a><br><br>
+            <a class="myButton" id="curate_asiles_btn_id" onclick="cuarteAsiles();" >Curate Aisles</a>
+
+            <p></p>
+
+
+
+        </div>
+
+
+
+    </body>
+</html>
+<style>
+    .myButtonRED {
+        -moz-box-shadow: inset 0px 39px 0px -24px #e67a73;
+        -webkit-box-shadow: inset 0px 39px 0px -24px #e67a73;
+        box-shadow: inset 0px 39px 0px -24px #e67a73;
+        background-color: #e4685d;
+        -moz-border-radius: 4px;
+        -webkit-border-radius: 4px;
+        border-radius: 4px;
+        border: 1px solid #ffffff;
+        display: inline-block;
+        cursor: pointer;
+        color: #ffffff;
+        font-family: arial;
+        font-size: 15px;
+        padding: 6px 15px;
+        text-decoration: none;
+        text-shadow: 0px 1px 0px #b23e35;
+    }
+
+    #input
+    {
+        position: absolute;
+        top: 0;
+        left: 10%;
+        z-index: 999;
+        padding: 0;
+        margin: 0;
+    }
+
+    #select
+    {
+        position: absolute;
+        top: 3%;
+        left: 10%;
+        padding: 0;
+        margin: 0;
+    }
+    argin-top:5px;
+    }
+
+
+
+
+</style>
