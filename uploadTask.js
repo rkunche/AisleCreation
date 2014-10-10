@@ -22,10 +22,10 @@ var selectedProducts = [];
 function getCrawledProducts(tag, offset, limit, productState) {
     offsetval = offset;
     //keyword
-    if (productState === "NONE") {
-        var url = "https://3dot1.vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + tag + "&offset=" + offset + "&limit=" + limit + "&randomize=false";
+    if (productState === "NONE") { 
+        var url = "https://3dot1-dot-vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + tag + "&offset=" + offset + "&limit=" + limit + "&randomize=false";
     } else {
-        var url = "https://3dot1.vue-server-dev.appspot.com/api/product/search/genericsearch?productstate=" + productState + "&queryString=" + tag + "&offset=" + offset + "&limit=" + limit + "&randomize=false";
+        var url = "https://3dot1-dot-vue-server-dev.appspot.com/api/product/search/genericsearch?productstate=" + productState + "&queryString=" + tag + "&offset=" + offset + "&limit=" + limit + "&randomize=false";
     }
 
     //var url ="https://3dot1.vue-server-dev.appspot.com/api/product/search/genericsearch?queryString="+tag+"&limit=20";
@@ -97,7 +97,7 @@ function getHandler() {
     }
 }
 function getAllAislesByUser(id) {
-    var url = "https://3dot1.vue-server-dev.appspot.com/api/aisles/user/" + id;
+    var url = "https://3dot1-dot-vue-server-dev.appspot.com/api/aisles/user/" + id;
     if (XMLHttpRequest)
     {
         request = new XMLHttpRequest();
@@ -204,6 +204,7 @@ function createButton(product, div) {
 
     var button = document.createElement("input");
     button.type = "button";
+    button.id = product.id;
     button.value = "AddToAisle";
     button.style.backgroundColor = "white";
     button.style.color = "orange";
@@ -325,7 +326,12 @@ function createAisleDeleteButton(div, product) {
             var aisleHolder = document.getElementById('aisle_holder_id');
             aisleHolder.innerHTML = "";
             prepareAisleSlider(aisleHolder);
-
+            
+           var  myButton = document.getElementById(product.id);
+           myButton.value = "AddToAisle";
+            myButton.style.backgroundColor = "white";
+    myButton.style.color = "orange";
+     myButton.style.outline = "solid orange";
         },
         dude: product.title
     };
