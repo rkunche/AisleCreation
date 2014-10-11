@@ -31,6 +31,13 @@
             var aisleOwnerName = "Anonymous";
             var request;
              var newheight;
+             
+             var userId;
+             var category;
+             var occasion;
+             var lookingFor;
+             var aisleOwnerName;
+             var uploadProductCount = 0;
             window.onmessage = function(e) {
                 var data = e.data.split("#");
                 if (data[0] === 'getSelectedProducts') {
@@ -178,18 +185,19 @@
             }
             function occasionSelectionVal() {
                 var selectedValue = $("#Occassion_tag").val();
-                alert(selectedValue);
-
+                 
+occasion =selectedValue;
                 document.getElementById("Occassion_tag").value = selectedValue;
             }
             function lookingForSelectionVal() {
                 var selectedValue = $("#LookingFor_tag").val();
-
+lookingFor = selectedValue;
                 document.getElementById("LookingFor_tag").value = selectedValue;
             }
             function tagSelectionVal() {
                 var selectedValue = $("#select_tag").val();
                 offset = 0;
+                category = selectedValue;
                 document.getElementById('fetch_button_id').value = "Fetch";
                 document.getElementById("select_tag").value = selectedValue;
             }
@@ -257,7 +265,7 @@
                     var user = JSON.parse(request.responseText);
                     aisleOwnerName = user.firstName + " " + user.lastName;
 
-                    urlUserID = user.id;
+                    userId = user.id;
 
                     // alert('HTTP GET success: ' + urlUserID);
 
@@ -269,6 +277,97 @@
 
                 window.top.postMessage('getUser', '*');
             }
+            /////////////////////////////////////////////////
+            
+            
+            function createAisleRequest() {
+             
+
+                var url = "https://vue-server-dev.appspot.com/api/aisle";
+                if (XMLHttpRequest) {
+                    request = new XMLHttpRequest();
+                    if ("withCredentials" in request) {
+                        // Firefox 3.5 and Safari 4
+                        request.open('POST', url, true);
+                        request.setRequestHeader('Custom-Header', 'javascript-client');
+                        request.setRequestHeader('Content-Type', 'application/json');
+                        request.onreadystatechange = aisle_post_handler;
+                        //aisle creation request.
+                        request.send(JSON.stringify({id: null, ownerUserId:userId, category: category, description: description, lookingFor: lookingFor, name: aisleOwnerName, occassion: occassion, currentAisleState: "CURATED", bookmarkCount: 0}));
+                    }
+                }
+            }
+            function aisle_post_handler() {
+                if (request.readyState !== 4)
+                    return;
+                if (request.status !== 200 && request.status !== 304) {
+                    alert('HTTP POST error ' + request.status + 'Response ' + request.responseText);
+                    return;
+                }
+                if (request.status === 200)
+                {
+                    //get the aisle id and start updating products from here.
+                    alert("Curated Successfully " + request.responseText);
+                    var jsonObject = JSON.parse(request.responseText);
+                    aisleId = jsonObject.id;
+                    console.log("aisle Id: " + aisleId);
+                    //uploadin aisle products
+
+                    uploadAisleProduct(selectedProducts[uploadProductCount]);
+
+                }
+
+            }
+            function uploadAisleProduct(product) {
+                var url = "https://vue-server-dev.appspot.com/api/product/" + product.id;
+                console.log("url: " + url);
+                if (XMLHttpRequest) {
+                    request = new XMLHttpRequest();
+                    if ("withCredentials" in request) {
+                        // Firefox 3.5 and Safari 4
+                        request.open('PUT', url, true);
+                        request.setRequestHeader('Custom-Header', 'javascript-client');
+                        request.setRequestHeader('Content-Type', 'application/json');
+                        request.onreadystatechange = update_handler;
+                        //product update request:
+
+                        request.send(JSON.stringify({id: product.id, ownerAisleId: aisleId, ownerProductListId: product.ownerProductListId, creatorId: product.creatorId, curatorId: product.curatorId, title: product.title, description: product.description, currentProductState: product.currentProductState, relatedProductIds: null, productTags: null, productImages: null, productProviders: null, comments: null, ratings: null}));
+
+                        console.log(JSON.stringify({id: product.id, ownerAisleId: aisleId, ownerProductListId: product.ownerProductListId, creatorId: product.creatorId, curatorId: product.curatorId, title: product.title, description: product.description, currentProductState: product.currentProductState, relatedProductIds: null, productTags: null, productImages: null, productProviders: null, comments: null, ratings: null}));
+                    }
+                }
+            }
+            function update_handler() {
+                if (request.readyState != 4)
+                    return;
+                if (request.status != 200 && request.status != 304) {
+                    alert('HTTP POST error ' + request.status + 'Response ' + request.responseText);
+                    return;
+                }
+                if (request.status == 200)
+                {
+                    //alert("Curated Successfully " + request.responseText);
+                    uploadProductCount = uploadProductCount + 1;
+                    if (uploadProductCount < selectedProducts.length) {
+                        uploadAisleProduct(selectedProducts[uploadProductCount]);
+                    } else {
+                        alert("Aisle created successfully with  " + uploadProductCount + " products");
+                    }
+                }
+
+            }
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            /////////////////////////////////////////////////////////
         </script>
 
 
@@ -406,7 +505,7 @@
                 }
             }
             function onSubmitAisleButtonClick() {
-
+uploadProductCount = 0;
                 getSelectedProducts();
                 alert(selectedProducts.length);
 
