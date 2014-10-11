@@ -58,8 +58,8 @@ function getHandler() {
         if (request.responseText.length < 3) {
             alert("No products was found with this tag");
             return;
-        }
-        if (offsetval === '0') {
+        }       
+        if (offsetval === '0' || offsetval === 0) {      
             products.clear();
             aisleProducts.clear();
             //crearPorducts();
