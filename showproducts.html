@@ -1,6 +1,22 @@
 <html>
     <head>
+    <script>
+            (function(i, s, o, g, r, a, m) {
+                i['GoogleAnalyticsObject'] = r;
+                i[r] = i[r] || function() {
+                    (i[r].q = i[r].q || []).push(arguments)
+                }, i[r].l = 1 * new Date();
+                a = s.createElement(o),
+                        m = s.getElementsByTagName(o)[0];
+                a.async = 1;
+                a.src = g;
+                m.parentNode.insertBefore(a, m)
+            })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
+            ga('create', 'UA-55582645-2', 'auto');
+            ga('send', 'pageview');
+
+        </script>
         <meta charset="utf-8">
 
         <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"/>
@@ -38,6 +54,7 @@
             var lookingFor;
             var aisleOwnerName;
             var uploadProductCount = 0;
+            var aisleCount = 0;
             window.onmessage = function(e) {
                 var data = e.data.split("#");
                 if (data[0] === 'getSelectedProducts') {
@@ -71,23 +88,7 @@
                 }
             };
         </script>
-        <script>
-            (function(i, s, o, g, r, a, m) {
-                i['GoogleAnalyticsObject'] = r;
-                i[r] = i[r] || function() {
-                    (i[r].q = i[r].q || []).push(arguments)
-                }, i[r].l = 1 * new Date();
-                a = s.createElement(o),
-                        m = s.getElementsByTagName(o)[0];
-                a.async = 1;
-                a.src = g;
-                m.parentNode.insertBefore(a, m)
-            })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-
-            ga('create', 'UA-55582645-2', 'auto');
-            ga('send', 'pageview');
-
-        </script>
+    
 
         <script>
 
@@ -185,24 +186,27 @@
             }
             function occasionSelectionVal() {
                 var selectedValue = $("#Occassion_tag").val();
-
+                ga('send', 'event', 'option', 'select', selectedValue);
                 occasion = selectedValue;
                 document.getElementById("Occassion_tag").value = selectedValue;
             }
             function lookingForSelectionVal() {
                 var selectedValue = $("#LookingFor_tag").val();
                 lookingFor = selectedValue;
+                ga('send', 'event', 'option', 'select', selectedValue);
                 document.getElementById("LookingFor_tag").value = selectedValue;
             }
             function tagSelectionVal() {
                 var selectedValue = $("#select_tag").val();
                 offset = 0;
+                 ga('send', 'event', 'option', 'select', selectedValue);
                 category = selectedValue;
                 document.getElementById('fetch_button_id').value = "Fetch";
                 document.getElementById("select_tag").value = selectedValue;
             }
             function getSelectedValue() {
                 stateValue = $("#stateId").val();
+                 ga('send', 'event', 'option', 'select', stateValue);
                 document.getElementById('fetch_button_id').value = "Fetch";
                 offset = 0;
                 document.getElementById("stateId").value = stateValue;
@@ -212,10 +216,12 @@
                 document.getElementById('create_aisle_heading').scrollIntoView();
                 var buttonValue = document.getElementById('fetch_button_id').value;
                 if (buttonValue === "Fetch More") {
+                     ga('send', 'event', 'button', 'click', 'Fetch More');
                     offset = offset + limit;
                     document.getElementById('fetch_button_id').value = "Fetch More";
                 } else {
                     offset = 0;
+                     ga('send', 'event', 'button', 'click', 'Fetch');
                     document.getElementById('fetch_button_id').value = "Fetch More";
                 }
                 var tagKey = document.getElementById("select_tag").value;
@@ -261,7 +267,10 @@
                     aisleOwnerName = user.firstName + " " + user.lastName;
 
                     userId = user.id;
-
+                    
+                    
+                   ga('create', 'UA-55582645-2', { 'userId': userId });
+                     ga('send', 'pageview');
                     // alert('HTTP GET success: ' + urlUserID);
 
                 }
@@ -273,8 +282,20 @@
                 window.top.postMessage('getUser', '*');
             }
 
-            function createAisleRequest() {
-
+            function createAisleRequest() {   
+                if (occassion.length < 1)
+                {
+                    showAlert("Please Select Occassion");
+                    document.getElementById('Occassion_tag').scrollIntoView();
+                    return false;
+                }
+                
+                if (lookingFor.length < 1)
+                {
+                    showAlert("Please Select LookingFor");
+                    document.getElementById('LookingFor_tag').scrollIntoView();
+                    return false;
+                }
 
                 var url = "https://vue-server-dev.appspot.com/api/aisle";
                 if (XMLHttpRequest) {
@@ -486,9 +507,12 @@
                 }
             }
             function onSubmitAisleButtonClick() {
+                aisleCount = aisleCount +1;
+                ga('send', 'event', 'button', 'click', 'Submit Aisle', aisleCount);
+
                 uploadProductCount = 0;
                 getSelectedProducts();
-                alert(selectedProducts.length);
+                alert(selectedProducts.length+" Added");
 
             }
         </script>

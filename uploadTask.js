@@ -223,6 +223,7 @@ function createButton(product, div) {
                     if (count >= 1) {
                         var r = confirm("Aisle has product from same Provider Do you want Add?");
                         if (r === true) {
+                           
                             addToAisle(product, true);
                             button.value = "Remove From Aisle";
                             button.style.color = "orange";
@@ -261,9 +262,11 @@ function addToAisle(product, isAddToAisle) {
     aisleHolder.innerHTML = "";
     if (isAddToAisle) {
         //adding to aisle
+         ga('send', 'event', 'button', 'clcik', "AddToAisle");
         aisleProducts.push(product);
     } else {
         //removing from aisle
+         ga('send', 'event', 'button', 'clcik', "RemoveFromAisle");
         var index = aisleProducts.indexOf(product);
         if (index > -1) {
             aisleProducts.splice(index, 1);
@@ -344,7 +347,7 @@ function createAisleDeleteButton(div, product) {
     button.style.color = "orange";
     button.style.outline = "solid orange";
     var deleteImageDiv = document.createElement("div");
-    deleteImageDiv.setAttribute('align', 'right');
+    deleteImageDiv.setAttribute('align', 'left');
     deleteImageDiv.appendChild(button);
 
     var obj = {
@@ -355,6 +358,7 @@ function createAisleDeleteButton(div, product) {
 
                 aisleProducts.splice(index, 1);
             }
+             ga('send', 'event', 'button', 'clcik', "RemoveFromAisle");
             var aisleHolder = document.getElementById('aisle_holder_id');
             aisleHolder.innerHTML = "";
             prepareAisleSlider(aisleHolder);
