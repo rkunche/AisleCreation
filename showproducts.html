@@ -28,8 +28,9 @@
             var stateValue = 'CURATED';
             var offset = 0;
             var limit = 20;
-            var aisleOwnerName="Anonymous";
+            var aisleOwnerName = "Anonymous";
             var request;
+             var newheight = 600;
             window.onmessage = function(e) {
                 var data = e.data.split("#");
                 if (data[0] === 'getSelectedProducts') {
@@ -52,11 +53,12 @@
                 }
                 if (data[0] == 'clearProducsts') {
                     crearPorducts();
-                }  if (data[0] === 'User') {
+                }
+                if (data[0] === 'User') {
 
                     if (data[1] !== '0') {
-                          getUser(data[1]);
-                       // getUser("6419807607980032");
+                        getUser(data[1]);
+                        // getUser("6419807607980032");
                     }
 
                 }
@@ -83,11 +85,13 @@
         <script>
 
             function getTags() {
+              var screenHeight= screen.height - 120;
+              newheight = screenHeight * 80/100;
                 getMe();
-                var fetchButton =  document.getElementById("fetch_button_id");
-                  fetchButton.style.backgroundColor = "white";
-            fetchButton.style.color = "green";
-            fetchButton.style.outline = "solid orange";
+                var fetchButton = document.getElementById("fetch_button_id");
+                fetchButton.style.backgroundColor = "white";
+                fetchButton.style.color = "green";
+                fetchButton.style.outline = "solid orange";
                 var url = "https://vue-server-dev.appspot.com/api/producttags/all";
                 if (XMLHttpRequest)
                 {
@@ -110,7 +114,7 @@
                     var tagString = tagsrequest.responseText;
                     var jsonResponse = JSON.parse(tagString);
                     var blocked = [];
-                     console.log("tags are downloaded " + jsonResponse.length);
+                    console.log("tags are downloaded " + jsonResponse.length);
                     for (var k = 0; k < jsonResponse.length; k++) {
                         var tagObject = jsonResponse[k];
                         if (tagObject.tagString.charAt(0) === tagObject.tagString.charAt(0).toLowerCase()) {
@@ -119,7 +123,7 @@
                         }
                     }
                     for (var i = 0; i < blocked.length; i++) {
-                       
+
                         var t = jsonResponse.indexOf(blocked[i]);
                         if (t !== -1) {
                             jsonResponse.splice(t, 1);
@@ -132,7 +136,7 @@
                     //var temp2 = tag_string_array[static_categoryNames[k]];
                     //  tagSubCatelement.options[tagSubCatelement.options.length] = new Option('', '', false, false);
                     for (var i = 0; i < jsonResponse.length; i++) {
-                         console.log("Blocked list " + jsonResponse[i].tagString);
+                        console.log("Blocked list " + jsonResponse[i].tagString);
                         tagSubCatelement.options[tagSubCatelement.options.length] = new Option(jsonResponse[i].tagString, jsonResponse[i].tagString, false, false);
                         if (jsonResponse[i].tagCategory === "Occasion") {
                             occasionSubCatelement.options[occasionSubCatelement.options.length] = new Option(jsonResponse[i].tagString, jsonResponse[i].tagString, false, false);
@@ -141,7 +145,7 @@
                             lookingForSubCatelement.options[lookingForSubCatelement.options.length] = new Option(jsonResponse[i].tagString, jsonResponse[i].tagString, false, false);
                         }
                     }
- $("select").multiselect({
+                    $("select").multiselect({
                         multiple: false,
                         header: "Select an option",
                         noneSelectedText: "Select an Option",
@@ -166,14 +170,14 @@
                             }
                         });
                     });
-                   
+
                 }
                 if (tagsrequest.status !== 200 && tagsrequest.status !== 304) {
                     alert('HTTP GET error ' + tagsrequest.status);
                     return;
                 }
             }
- function occasionSelectionVal() {
+            function occasionSelectionVal() {
                 var selectedValue = $("#Occassion_tag").val();
                 alert(selectedValue);
 
@@ -184,31 +188,31 @@
 
                 document.getElementById("LookingFor_tag").value = selectedValue;
             }
-   function tagSelectionVal() {
+            function tagSelectionVal() {
                 var selectedValue = $("#select_tag").val();
                 offset = 0;
                 document.getElementById('fetch_button_id').value = "Fetch";
                 document.getElementById("select_tag").value = selectedValue;
             }
-  function getSelectedValue() {
+            function getSelectedValue() {
                 stateValue = $("#stateId").val();
                 document.getElementById('fetch_button_id').value = "Fetch";
                 offset = 0;
                 document.getElementById("stateId").value = stateValue;
             }
-            
-              function getProducts() {
-                var buttonValue =  document.getElementById('fetch_button_id').value;
-                 if(buttonValue === "Fetch More"){
-                     offset = offset + limit;
-                      document.getElementById('fetch_button_id').value = "Fetch More";
-                 } else {
-                     offset = 0;
-                      document.getElementById('fetch_button_id').value = "Fetch More";
-                 }
+
+            function getProducts() {
+                var buttonValue = document.getElementById('fetch_button_id').value;
+                if (buttonValue === "Fetch More") {
+                    offset = offset + limit;
+                    document.getElementById('fetch_button_id').value = "Fetch More";
+                } else {
+                    offset = 0;
+                    document.getElementById('fetch_button_id').value = "Fetch More";
+                }
                 var tagKey = document.getElementById("select_tag").value;
-                
-               
+
+
 
                 if (tagKey === undefined || tagKey.length === 0) {
                     alert("Please Select Tag");
@@ -218,14 +222,14 @@
 
                 //if (currentUser === urlUserID.toString()) {
 
-                    window.top.postMessage('getproducts#' + tagKey + "#" + offset + "#" + limit + "#" + stateValue, '*');
-               // } else {
-                  //  alert("else case: " + currentUser);
-                   // getUser(currentUser);
-               // }
+                window.top.postMessage('getproducts#' + tagKey + "#" + offset + "#" + limit + "#" + stateValue, '*');
+                // } else {
+                //  alert("else case: " + currentUser);
+                // getUser(currentUser);
+                // }
 
             }
-  function getUser(id) {
+            function getUser(id) {
                 var url = "https://vue-server-dev.appspot.com/api/user/" + id;
                 console.log("user url" + url);
                 if (XMLHttpRequest)
@@ -252,16 +256,16 @@
 
                     var user = JSON.parse(request.responseText);
                     aisleOwnerName = user.firstName + " " + user.lastName;
-                    
+
                     urlUserID = user.id;
-                    
-                   // alert('HTTP GET success: ' + urlUserID);
+
+                    // alert('HTTP GET success: ' + urlUserID);
 
                 }
 
             }
-          
-              function getMe() {
+
+            function getMe() {
 
                 window.top.postMessage('getUser', '*');
             }
@@ -293,13 +297,13 @@
             <input type='button' id="fetch_button_id" value='Fetch ' style="margin-left: 25px;"   onClick="getProducts()"/> 
             <hr>
             <div> <H2 align="center">Create Aisle</H2></div>
-            
+
 
             <img src=" " alt="Smiley face" width="42" height="42" style="margin-right:35px;">
             LookingFor   <select id="LookingFor_tag" onchange="lookingForSelectionVal()" name="" style="width:150;" onchange="getSelectedValue();" >
             </select> Occasion  <select id="Occassion_tag" onchange="occasionSelectionVal()" name="selection" multiple="multiple"   style="width: 200px" >
             </select>   
-             <hr>
+            <hr>
             <script type="text/javascript">
                 $("select").multiselect({
                     multiple: false,
@@ -329,200 +333,200 @@
 
                 <td>
                     <div class="outside"><p id='products_id'> Selected Products:</p> 
-                       
-                    <input type='button' id='submit_button' value='Submit Aisle' onClick="onSubmitAisleButtonClick()"/> 
+
+                        <input type='button' id='submit_button' value='Submit Aisle' onClick="onSubmitAisleButtonClick()"/> 
                     </div>
-                            <div id='aisle_holder_id' class="slider8">
-                                <div> <img src ='images/aisle_baground.png' width="600" height="600"/></div>
-                            </div>
+                    <div id='aisle_holder_id' class="slider8">
+                        <div> <img src ='images/aisle_baground.png' width="600" height="600"/></div>
+                    </div>
 
 
 
-                            </td>
-                            <!--<td width = 600 id='product_info_id'>
-                            
-                            
-                                            </td> -->
+                </td>
+                <!--<td width = 600 id='product_info_id'>
+                
+                
+                                </td> -->
 
-                            </tr>
-                            </table>
-                            <script>
-                                var aisleSlider;
-                                $(document).ready(function() {
+            </tr>
+        </table>
+        <script>
+            var aisleSlider;
+            $(document).ready(function() {
 
-                                    aisleSlider = $('.slider8').bxSlider({
-                                        nextSelector: '#slider-next2',
-                                        prevSelector: '#slider-prev2',
-                                        slideWidth: 600,
-                                        adaptiveHeight: true,
-                                        nextText: 'Next →',
-                                        prevText: '← Back'
-                                    });
-                                });
-                                var slider;
+                aisleSlider = $('.slider8').bxSlider({
+                    nextSelector: '#slider-next2',
+                    prevSelector: '#slider-prev2',
+                    slideWidth: newheight,
+                    adaptiveHeight: true,
+                    nextText: 'Next →',
+                    prevText: '← Back'
+                });
+            });
+            var slider;
 
-                                $(document).ready(function() {
-                                    slider = $('.slider6').bxSlider({
-                                        nextSelector: '#slider-next',
-                                        prevSelector: '#slider-prev',
-                                        slideWidth: 600,
-                                        adaptiveHeight: true,
-                                        nextText: 'Next →',
-                                        prevText: '← Back'
-                                    });
-                                });
+            $(document).ready(function() {
+                slider = $('.slider6').bxSlider({
+                    nextSelector: '#slider-next',
+                    prevSelector: '#slider-prev',
+                    slideWidth: newheight,
+                    adaptiveHeight: true,
+                    nextText: 'Next →',
+                    prevText: '← Back'
+                });
+            });
 
-                                function aisleSldierReload() {
-                                    aisleSlider.reloadSlider({
-                                        nextSelector: '#slider-next2',
-                                        prevSelector: '#slider-prev2',
-                                        slideWidth: 600,
-                                        adaptiveHeight: true,
-                                        nextText: 'Next →',
-                                        prevText: '← Back'
-                                    });
-                                }
-
-                                function sliderReload() {
-                                    //e.preventDefault();
-                                    slider.reloadSlider({
-                                        nextSelector: '#slider-next',
-                                        prevSelector: '#slider-prev',
-                                        nextText: 'Next →',
-                                        slideWidth: 600,
-                                        adaptiveHeight: true,
-                                        prevText: '← Back'
-                                    });
-                                }
-                                function changeButton(isAisleReadyToUpload, count) {
-                                    if (isAisleReadyToUpload) {
-                                        window.top.postMessage('aislePost#Ready#' + count, '*');
-                                    } else {
-                                        window.top.postMessage('aislePost#NotReady#' + count, '*');
-                                    }
-                                }
-                                  function onSubmitAisleButtonClick(){
-                 
-                 getSelectedProducts();
-                 alert(selectedProducts.length);
-                  
+            function aisleSldierReload() {
+                aisleSlider.reloadSlider({
+                    nextSelector: '#slider-next2',
+                    prevSelector: '#slider-prev2',
+                    slideWidth: newheight,
+                    adaptiveHeight: true,
+                    nextText: 'Next →',
+                    prevText: '← Back'
+                });
             }
-                            </script>
-                            </body>
+
+            function sliderReload() {
+                //e.preventDefault();
+                slider.reloadSlider({
+                    nextSelector: '#slider-next',
+                    prevSelector: '#slider-prev',
+                    nextText: 'Next →',
+                    slideWidth: newheight,
+                    adaptiveHeight: true,
+                    prevText: '← Back'
+                });
+            }
+            function changeButton(isAisleReadyToUpload, count) {
+                if (isAisleReadyToUpload) {
+                    window.top.postMessage('aislePost#Ready#' + count, '*');
+                } else {
+                    window.top.postMessage('aislePost#NotReady#' + count, '*');
+                }
+            }
+            function onSubmitAisleButtonClick() {
+
+                getSelectedProducts();
+                alert(selectedProducts.length);
+
+            }
+        </script>
+    </body>
 
 
-                            </html>
+</html>
 
-                            <style>
-                                .outside{
-                                    text-align:center;
-                                }
+<style>
+    .outside{
+        text-align:center;
+    }
 
-                                #btnPrevious
-                                {
-                                    float:left;
-                                }
-                                #btnNext
-                                {
-                                    float:right;
-                                }
-                                #products_id
-                                {
-                                    float:left;
-                                }
-                               
-                                .test{
-                                    display:inline-block;
-                                }
+    #btnPrevious
+    {
+        float:left;
+    }
+    #btnNext
+    {
+        float:right;
+    }
+    #products_id
+    {
+        float:left;
+    }
+
+    .test{
+        display:inline-block;
+    }
 
 
-                                .center {
-                                    margin: auto;
+    .center {
+        margin: auto;
 
-                                }
-                                .container{
-                                    width:500px;
-                                    height:550px;
-                                    padding:20px;
-                                    border:1px solid gray;
-                                    -webkit-box-sizing:border-box;
-                                    -moz-box-sizing:border-box;
-                                    box-sizing:border-box;
-                                    background: white;	
-                                }
-                                .slider_wrapper{
-                                    overflow: hidden;
-                                    position:relative;
-                                    height:500px;
-                                    top:auto;
-                                }
+    }
+    .container{
+        width:500px;
+        height:550px;
+        padding:20px;
+        border:1px solid gray;
+        -webkit-box-sizing:border-box;
+        -moz-box-sizing:border-box;
+        box-sizing:border-box;
+        background: white;	
+    }
+    .slider_wrapper{
+        overflow: hidden;
+        position:relative;
+        height:500px;
+        top:auto;
+    }
 
-                                .nvgt{
-                                    position:absolute;
-                                    top: 120px;
-                                    height: 50px;
-                                    width: 30px;
-                                    opacity: 0.6;
-                                }
-                                .nvgt:hover{
-                                    opacity: 0.9;
-                                }
-                                input.largerCheckbox
-                                {
-                                    width: 30px;
-                                    height: 30px;
-                                }
-                                label{width:150px; display:inline-block}
-                                input[type="checkbox"]:checked+label{background:green; color:white}​
+    .nvgt{
+        position:absolute;
+        top: 120px;
+        height: 50px;
+        width: 30px;
+        opacity: 0.6;
+    }
+    .nvgt:hover{
+        opacity: 0.9;
+    }
+    input.largerCheckbox
+    {
+        width: 30px;
+        height: 30px;
+    }
+    label{width:150px; display:inline-block}
+    input[type="checkbox"]:checked+label{background:green; color:white}​
 
-                                .myButtonRED {
-                                    -moz-box-shadow: inset 0px 39px 0px -24px #e67a73;
-                                    -webkit-box-shadow: inset 0px 39px 0px -24px #e67a73;
-                                    box-shadow: inset 0px 39px 0px -24px #e67a73;
-                                    background-color: #e4685d;
-                                    -moz-border-radius: 4px;
-                                    -webkit-border-radius: 4px;
-                                    border-radius: 4px;
-                                    border: 1px solid #ffffff;
-                                    display: inline-block;
-                                    cursor: pointer;
-                                    color: #ffffff;
-                                    font-family: arial;
-                                    font-size: 15px;
-                                    padding: 6px 15px;
-                                    text-decoration: none;
-                                    text-shadow: 0px 1px 0px #b23e35;
-                                }
-                                .pos_fixed {
-                                    position: fixed;
-                                    top: 30px;
-                                    right: 150px;
+    .myButtonRED {
+        -moz-box-shadow: inset 0px 39px 0px -24px #e67a73;
+        -webkit-box-shadow: inset 0px 39px 0px -24px #e67a73;
+        box-shadow: inset 0px 39px 0px -24px #e67a73;
+        background-color: #e4685d;
+        -moz-border-radius: 4px;
+        -webkit-border-radius: 4px;
+        border-radius: 4px;
+        border: 1px solid #ffffff;
+        display: inline-block;
+        cursor: pointer;
+        color: #ffffff;
+        font-family: arial;
+        font-size: 15px;
+        padding: 6px 15px;
+        text-decoration: none;
+        text-shadow: 0px 1px 0px #b23e35;
+    }
+    .pos_fixed {
+        position: fixed;
+        top: 30px;
+        right: 150px;
 
-                                }
+    }
 
-                              hr {
-    display: block;
-    height: 1px;
-    border: 0;
-    border-top: 1px solid #ccc;
-    margin: 1em 0;
-    padding: 0;
-}
-     .multiselect {
-                        width:20em;
-                        height:15em;
-                        border:solid 1px #c0c0c0;
-                        overflow:auto;
-                    }
+    hr {
+        display: block;
+        height: 1px;
+        border: 0;
+        border-top: 1px solid #ccc;
+        margin: 1em 0;
+        padding: 0;
+    }
+    .multiselect {
+        width:20em;
+        height:15em;
+        border:solid 1px #c0c0c0;
+        overflow:auto;
+    }
 
-                    .multiselect label {
-                        display:block;
-                    }
+    .multiselect label {
+        display:block;
+    }
 
-                    .multiselect-on {
-                        color:#ffffff;
-                        background-color:#000099;
-                    }
+    .multiselect-on {
+        color:#ffffff;
+        background-color:#000099;
+    }
 
-                            </style>
+</style>
 
