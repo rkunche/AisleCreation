@@ -30,7 +30,7 @@
             var limit = 20;
             var aisleOwnerName = "Anonymous";
             var request;
-             var newheight = 600;
+             var newheight;
             window.onmessage = function(e) {
                 var data = e.data.split("#");
                 if (data[0] === 'getSelectedProducts') {
@@ -85,8 +85,7 @@
         <script>
 
             function getTags() {
-              var screenHeight= screen.height - 120;
-              newheight = screenHeight * 80/100;
+                newheight = screen.height - 120;
                 getMe();
                 var fetchButton = document.getElementById("fetch_button_id");
                 fetchButton.style.backgroundColor = "white";
@@ -202,6 +201,7 @@
             }
 
             function getProducts() {
+                document.getElementById('create_aisle_heading').scrollIntoView();
                 var buttonValue = document.getElementById('fetch_button_id').value;
                 if (buttonValue === "Fetch More") {
                     offset = offset + limit;
@@ -296,7 +296,7 @@
             </select>   
             <input type='button' id="fetch_button_id" value='Fetch ' style="margin-left: 25px;"   onClick="getProducts()"/> 
             <hr>
-            <div> <H2 align="center">Create Aisle</H2></div>
+            <div> <H2 align="center" id="create_aisle_heading">Create Aisle</H2></div>
 
 
             <img src=" " alt="Smiley face" width="42" height="42" style="margin-right:35px;">
@@ -315,15 +315,15 @@
         </div><br><br>
         <div class="outside">
 
-            <p id='btnPrevious'><span id="slider-prev"></span> | <span id="slider-next"></span></p>
+            <p id='btnPrevious' style="margin-left:30em;"><span id="slider-prev"></span> | <span id="slider-next"></span></p>
 
 
 
-            <p id='btnNext'><span id="slider-prev2"></span> | <span id="slider-next2"></span></p>
+            <p id='btnNext'  style="margin-right:30em;"><span id="slider-prev2"></span> | <span id="slider-next2"></span></p>
         </div>
 
         <table align="center" style="border-spacing: 20px;"><tr>
-                <td><p id='products_text_id'> Select products form here</p> 
+                <td><p id='products_text_id'> Select products from here</p> 
                     <div  id = 'products_holder_id' class="slider6">
                         <div> <img src ='images/aisle_baground.png' width="600" height="600"/></div>
 
@@ -357,7 +357,7 @@
                 aisleSlider = $('.slider8').bxSlider({
                     nextSelector: '#slider-next2',
                     prevSelector: '#slider-prev2',
-                    slideWidth: newheight,
+                    slideWidth: 600,
                     adaptiveHeight: true,
                     nextText: 'Next →',
                     prevText: '← Back'
@@ -369,7 +369,7 @@
                 slider = $('.slider6').bxSlider({
                     nextSelector: '#slider-next',
                     prevSelector: '#slider-prev',
-                    slideWidth: newheight,
+                    slideWidth: 600,
                     adaptiveHeight: true,
                     nextText: 'Next →',
                     prevText: '← Back'
@@ -380,7 +380,7 @@
                 aisleSlider.reloadSlider({
                     nextSelector: '#slider-next2',
                     prevSelector: '#slider-prev2',
-                    slideWidth: newheight,
+                    slideWidth: 600,
                     adaptiveHeight: true,
                     nextText: 'Next →',
                     prevText: '← Back'
@@ -393,7 +393,7 @@
                     nextSelector: '#slider-next',
                     prevSelector: '#slider-prev',
                     nextText: 'Next →',
-                    slideWidth: newheight,
+                    slideWidth: 600,
                     adaptiveHeight: true,
                     prevText: '← Back'
                 });
