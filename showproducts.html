@@ -30,14 +30,14 @@
             var limit = 20;
             var aisleOwnerName = "Anonymous";
             var request;
-             var newheight;
-             
-             var userId;
-             var category;
-             var occasion;
-             var lookingFor;
-             var aisleOwnerName;
-             var uploadProductCount = 0;
+            var newheight;
+
+            var userId;
+            var category;
+            var occasion;
+            var lookingFor;
+            var aisleOwnerName;
+            var uploadProductCount = 0;
             window.onmessage = function(e) {
                 var data = e.data.split("#");
                 if (data[0] === 'getSelectedProducts') {
@@ -185,13 +185,13 @@
             }
             function occasionSelectionVal() {
                 var selectedValue = $("#Occassion_tag").val();
-                 
-occasion =selectedValue;
+
+                occasion = selectedValue;
                 document.getElementById("Occassion_tag").value = selectedValue;
             }
             function lookingForSelectionVal() {
                 var selectedValue = $("#LookingFor_tag").val();
-lookingFor = selectedValue;
+                lookingFor = selectedValue;
                 document.getElementById("LookingFor_tag").value = selectedValue;
             }
             function tagSelectionVal() {
@@ -226,15 +226,10 @@ lookingFor = selectedValue;
                     alert("Please Select Tag");
                     return;
                 }
-                //var currentUser = document.getElementById("UserId").value.trim();
+                getCrawledProducts(tagKey, offset, limit, stateValue);
 
-                //if (currentUser === urlUserID.toString()) {
+                //window.top.postMessage('getproducts#' + tagKey + "#" + offset + "#" + limit + "#" + stateValue, '*');
 
-                window.top.postMessage('getproducts#' + tagKey + "#" + offset + "#" + limit + "#" + stateValue, '*');
-                // } else {
-                //  alert("else case: " + currentUser);
-                // getUser(currentUser);
-                // }
 
             }
             function getUser(id) {
@@ -277,11 +272,9 @@ lookingFor = selectedValue;
 
                 window.top.postMessage('getUser', '*');
             }
-            /////////////////////////////////////////////////
-            
-            
+
             function createAisleRequest() {
-             
+
 
                 var url = "https://vue-server-dev.appspot.com/api/aisle";
                 if (XMLHttpRequest) {
@@ -293,7 +286,7 @@ lookingFor = selectedValue;
                         request.setRequestHeader('Content-Type', 'application/json');
                         request.onreadystatechange = aisle_post_handler;
                         //aisle creation request.
-                        request.send(JSON.stringify({id: null, ownerUserId:userId, category: category, description: description, lookingFor: lookingFor, name: aisleOwnerName, occassion: occassion, currentAisleState: "CURATED", bookmarkCount: 0}));
+                        request.send(JSON.stringify({id: null, ownerUserId: userId, category: category, description: description, lookingFor: lookingFor, name: aisleOwnerName, occassion: occassion, currentAisleState: "CURATED", bookmarkCount: 0}));
                     }
                 }
             }
@@ -332,7 +325,6 @@ lookingFor = selectedValue;
                         //product update request:
 
                         request.send(JSON.stringify({id: product.id, ownerAisleId: aisleId, ownerProductListId: product.ownerProductListId, creatorId: product.creatorId, curatorId: product.curatorId, title: product.title, description: product.description, currentProductState: product.currentProductState, relatedProductIds: null, productTags: null, productImages: null, productProviders: null, comments: null, ratings: null}));
-
                         console.log(JSON.stringify({id: product.id, ownerAisleId: aisleId, ownerProductListId: product.ownerProductListId, creatorId: product.creatorId, curatorId: product.curatorId, title: product.title, description: product.description, currentProductState: product.currentProductState, relatedProductIds: null, productTags: null, productImages: null, productProviders: null, comments: null, ratings: null}));
                     }
                 }
@@ -356,18 +348,7 @@ lookingFor = selectedValue;
                 }
 
             }
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            /////////////////////////////////////////////////////////
+
         </script>
 
 
@@ -505,7 +486,7 @@ lookingFor = selectedValue;
                 }
             }
             function onSubmitAisleButtonClick() {
-uploadProductCount = 0;
+                uploadProductCount = 0;
                 getSelectedProducts();
                 alert(selectedProducts.length);
 

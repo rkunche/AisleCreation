@@ -1,5 +1,4 @@
-//1. set ul width 
-//2. image when click prev/next button
+
 var ul;
 var li_items;
 var imageNumber = 5;
@@ -9,7 +8,6 @@ var currentPostion = 0;
 var currentImage = 0;
 var selected = [];
 var aisles = [];
-var dummyImages = ["images/one.jpg", "images/two.jpg", "images/three.jpg", "images/four.jpg", "whitshirt.jpg", "blackshirt.jpg", "whitshirt.jpg", "images.jpg", "ladyshirt.jpg", "blackshirt.jpg", ];
 //prototype for clear the array values.
 Array.prototype.clear = function() {
     this.length = 0;
@@ -417,96 +415,6 @@ function onImageMouseOver(jsonObject) {
 //
 //    prodcutInfoTdEle.appendChild(parentDiv);
 }
-//back up code to create to show the data in table.
-function prepare() {
-
-    var table = document.getElementById("product");
-    table.innerHTML = "";
-    var i = 0;
-
-    for (i = 0; i < products.length; i++) {
-        var jsonObject = products[i];
-        if (i % 4 == 0) {
-            var tr = document.createElement("tr");
-            table.appendChild(tr);
-        }
-
-        var td1 = document.createElement("td");
-        td1.style.width = 500;
-        td1.style.height = 500;
-        var imag = document.createElement("img");
-
-        try {
-            imag.src = jsonObject.productImages[0].externalURL;
-        } catch (e) {
-            console.log("externalURL null")
-        }
-        td1.appendChild(imag);
-
-        tr.appendChild(td1);
-        var divImage = document.createElement("div");
-        divImage.className = "center";
-        var divTitle = document.createElement("div");
-        var divOccassion = document.createElement("div");
-        var divDescription = document.createElement("div");
-        var divId = document.createElement("div");
-        var productusedCount = document.createElement("div");
-        var divCuratedState = document.createElement("div");
-        divImage.style.display = 'block'
-        var img = document.createElement("img");
-        img.src = "images.jpg";
-
-        img.className = "center";
-        var br = document.createElement("br");
-        divImage.appendChild(img);
-
-        var id = document.createTextNode("ProductId : " + jsonObject.id);
-        var title = document.createTextNode("Title : " + jsonObject.title);
-
-        var description = document.createTextNode("Description : " + jsonObject.description);
-        var usedCount = document.createTextNode("OwnerAisleId : " + jsonObject.ownerAisleId);
-        var curatedState = document.createTextNode("CuratedState : " + jsonObject.currentProductState);
-
-
-        divTitle.appendChild(title);
-
-        divId.appendChild(id);
-
-        divDescription.appendChild(description);
-        productusedCount.appendChild(usedCount);
-        divCuratedState.appendChild(curatedState);
-        productusedCount.style.color = 'red';
-
-
-        td1.appendChild(divId);
-        td1.appendChild(divTitle);
-
-        td1.appendChild(divDescription);
-        td1.appendChild(productusedCount);
-        td1.appendChild(divCuratedState);
-
-
-        var checkbox = document.createElement('input');
-        checkbox.type = "checkbox";
-        checkbox.name = "name";
-        checkbox.value = "value";
-        checkbox.id = "id";
-        checkbox.value = "orange";
-        checkbox.className = "largerCheckbox";
-
-        var label = document.createElement('label')
-        label.htmlFor = "id";
-        label.appendChild(document.createTextNode('Select'));
-
-        td1.appendChild(checkbox);
-        td1.appendChild(label);
-        td1.style.border = "thin dotted red";
-
-
-    }
-    //resize_images(400, 400, 400, 400);
-}
-
 function resize_images(maxht, maxwt, minht, minwt) {
     var imgs = document.getElementsByTagName('img');
 
@@ -540,74 +448,6 @@ function resize_images(maxht, maxwt, minht, minwt) {
         }
     }
 }
-function prepareAisleTable() {
-    var table = document.getElementById("product");
-    table.innerHTML = "";
-    for (i = 0; i < aisles.length; i++) {
-        var jsonObject = aisles[i];
-        if (i % 4 == 0) {
-            var tr = document.createElement("tr");
-            table.appendChild(tr);
-        }
-        var td1 = document.createElement("td");
-
-        var imag = document.createElement("img");
-
-        try {
-            imag.src = jsonObject.productList[0].productImages[0].externalURL;
-        } catch (e) {
-            console.log("externalURL null")
-        }
-        td1.appendChild(imag);
-        tr.appendChild(td1);
-        var divImage = document.createElement("div");
-        divImage.className = "center";
-        var divTitle = document.createElement("div");
-        var divOccassion = document.createElement("div");
-        var divDescription = document.createElement("div");
-        var divId = document.createElement("div");
-        var productusedCount = document.createElement("div");
-        var divCategory = document.createElement("div");
-        var divOccasion = document.createElement("div");
-        var divLookingfor = document.createElement("div");
-        var divProductsCount = document.createElement("div");
-        divImage.style.display = 'block'
-        var id = document.createTextNode("AisleId : " + jsonObject.id);
-        var title = document.createTextNode("Name : " + jsonObject.name);
-
-        var description = document.createTextNode("Description : " + jsonObject.description);
-        var OwnerUserId = document.createTextNode("OwnerUserId : " + jsonObject.ownerUserId);
-        var categoryText = document.createTextNode("Category : " + jsonObject.category);
-        var occassionText = document.createTextNode("Occasion : " + jsonObject.occassion);
-        var lookingForText = document.createTextNode("LookingFor : " + jsonObject.lookingFor);
-        var prodcutsCountText = document.createTextNode("ProductsCount : " + jsonObject.productList.length);
-        divTitle.appendChild(title);
-        divCategory.appendChild(categoryText);
-        divOccasion.appendChild(occassionText);
-        divLookingfor.appendChild(lookingForText);
-        divProductsCount.appendChild(prodcutsCountText);
-
-        divId.appendChild(id);
-
-        divDescription.appendChild(description);
-        productusedCount.appendChild(OwnerUserId);
-        productusedCount.style.color = 'red';
-
-
-        td1.appendChild(divId);
-        td1.appendChild(divTitle);
-
-        td1.appendChild(divDescription);
-        td1.appendChild(divCategory);
-        td1.appendChild(divOccasion);
-        td1.appendChild(divLookingfor);
-        td1.appendChild(divProductsCount);
-        td1.appendChild(productusedCount);
-    }
-}
-
-
-
 function getSelectedProducts() {
 
     if (aisleProducts.length < 1) {
@@ -631,51 +471,8 @@ function getSelectedProducts() {
             selectedProducts[index] = aisleProducts[index];
         }
     }
-//    //alert("upload is clicked");
-//    var table = document.getElementById("product");
-//// alert("upload is clicked 1 "+table);
-//    cells = table.getElementsByTagName('td');
-//// alert("upload is clicked 2");
-//    for (var i = 0, len = cells.length; i < len; i++) {
-//        var childNodes = cells[i].childNodes;
-//        for (var j = 0; j < childNodes.length; j++) {
-//            if (childNodes[j].tagName == "INPUT") {
-//                if (childNodes[j].checked) {
-//                    selected[selected.length] = i;
-//                    childNodes[j].checked = false;
-//                }
-//
-//            }
-//        }
-//
-//        cells[i].onclick = function() {
-//
-//        }
-//    }
-//
-//    if (selected.length == 0) {
-//        alert("Please select atleast one product");
-//    } else {
-//        for (var i = 0; i < selected.length; i++) {
-//            var j = selected[i];
-//            selectedProducts[i] = products[j];
-//        }
-//        alert("Total Selected products are: " + selected.length);
-//    }
+ 
 }
 window.addEventListener('DOMContentLoaded', function() {
-
-//    var uploaditem = document.getElementById('uploaditem');
-//
-//
-//    uploaditem.addEventListener('click', function() {
-//        alert("upload is clicked");
-//
-//        getSelectedProducts();
-//
-//    });
-
-
-
-
+ 
 });
