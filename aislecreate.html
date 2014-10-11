@@ -49,7 +49,7 @@
             }
             function getMe() {
 
-                window.top.postMessage('getUser', '*');
+                //window.top.postMessage('getUser', '*');
             }
             window.onmessage = function(e) {
 
@@ -298,12 +298,12 @@
                     for (var k = 0; k < jsonResponse.length; k++) {
                         var tagObject = jsonResponse[k];
                         if (tagObject.tagString.charAt(0) === tagObject.tagString.charAt(0).toLowerCase()) {
-                            console.log(tagObject.tagString + " length : " + tagObject.tagString.length);
+                            //console.log(tagObject.tagString + " length : " + tagObject.tagString.length);
                             blocked.push(tagObject);
                         }
                     }
                     for (var i = 0; i < blocked.length; i++) {
-                        console.log("Blocked list " + blocked[i].tagString);
+                       // console.log("Blocked list " + blocked[i].tagString);
                         var t = jsonResponse.indexOf(blocked[i]);
                         if (t !== -1) {
                             jsonResponse.splice(t, 1);

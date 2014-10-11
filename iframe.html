@@ -19,8 +19,8 @@
         function callFrameOne(message) {
 
 
-            var x = document.getElementById("frameOneId");
-            x.contentWindow.postMessage(message, '*');
+           // var x = document.getElementById("frameOneId");
+           // x.contentWindow.postMessage(message, '*');
         }
         function callFrameTwo(message) {
 
@@ -30,8 +30,9 @@
         window.onmessage = function(e) {
 
             var data = e.data.split("#");
-            if (data[0] === 'getUser') {
-                callFrameOne("User#" + creatorId);
+            if (data[0] === 'getUser') {               
+                callFrameTwo("User#" + creatorId);
+                //callFrameOne("User#" + creatorId);
 
             } else if (data[0] === 'getproducts') {
 
@@ -78,18 +79,18 @@
             }
  
  var newheight = screen.height - 120;
- document.getElementById("frameOneId").height= (newheight) + "px";
+ //document.getElementById("frameOneId").height= (newheight) + "px";
   document.getElementById("frametwoId").height= (newheight) + "px";
         }
 
     </script>
        </head> 
     <body onLoad="readParams()">
-
+<!--
         <iframe src="aislecreate.html" id ="frameOneId" scrolling ="yes" style="display:inline" width = "30%" height = "900">
         <p>Your browser does not support iframes.</p>
-        </iframe>
-        <iframe src="showproducts.html"  id ="frametwoId" scrolling ="yes"  style="display:inline" width = "68%" height = "900">
+        </iframe>-->
+        <iframe src="showproducts.html"  id ="frametwoId" scrolling ="yes"  style="display:inline" width = "100%" height = "900">
         <p>Your browser does not support iframes.</p>
         </iframe>
 

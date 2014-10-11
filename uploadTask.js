@@ -22,7 +22,7 @@ var selectedProducts = [];
 function getCrawledProducts(tag, offset, limit, productState) {
     offsetval = offset;
     //keyword
-    if (productState === "NONE") { 
+    if (productState === "NONE") {
         var url = "https://3dot1-dot-vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + tag + "&offset=" + offset + "&limit=" + limit + "&randomize=false";
     } else {
         var url = "https://3dot1-dot-vue-server-dev.appspot.com/api/product/search/genericsearch?productstate=" + productState + "&queryString=" + tag + "&offset=" + offset + "&limit=" + limit + "&randomize=false";
@@ -63,7 +63,7 @@ function getHandler() {
         }
         if (offsetval === '0') {
             products.clear();
-            aisleProducts.clear();            
+            aisleProducts.clear();
             //crearPorducts();
             var aisleHolder = document.getElementById('aisle_holder_id');
             var productsCount = document.getElementById('products_id');
@@ -75,7 +75,7 @@ function getHandler() {
             imag.height = 400;
             aisleHolder.appendChild(imag);
             aisleSldierReload();
-        } 
+        }
         for (var i = 0; i < jsonResponse.length; i++) {
             var jsonTempObject = jsonResponse[i];
             // if (jsonTempObject.currentProductState === "CURATED" || jsonTempObject.currentProductState === "CURATED_AND_VERIFIED") {
@@ -138,10 +138,10 @@ function crearPorducts() {
     products.clear();
     var table = document.getElementById("product");
     table.innerHTML = "";
-     var prodcuHolder = document.getElementById('products_holder_id');
+    var prodcuHolder = document.getElementById('products_holder_id');
     prodcuHolder.innerHTML = "";
-     sliderReload();
-      alert("products cleared");
+    sliderReload();
+    alert("products cleared");
 }
 function showProductsBxSlider() {
 
@@ -207,7 +207,7 @@ function createButton(product, div) {
     button.id = product.id;
     button.value = "AddToAisle";
     button.style.backgroundColor = "white";
-    button.style.color = "orange";
+    button.style.color = "green";
     button.style.outline = "solid orange";
     var obj = {
         handleEvent: function() {
@@ -227,25 +227,25 @@ function createButton(product, div) {
                         if (r === true) {
                             addToAisle(product, true);
                             button.value = "Remove From Aisle";
-                            button.style.color = "green";
+                            button.style.color = "orange";
                         } else {
 
                         }
                     } else {
                         addToAisle(product, true);
                         button.value = "Remove From Aisle";
-                        button.style.color = "green";
+                        button.style.color = "orange";
                     }
                 } else {
-                    button.value = 'Remove From Aisle'
-                    button.style.color = "green";
+                    button.value = 'Remove From Aisle';
+                    button.style.color = "orange";
                     addToAisle(product, true);
                 }
             } else {
 
                 addToAisle(product, false);
                 button.value = "AddToAisle";
-                button.style.color = "orange";
+                button.style.color = "green";
 
             }
 
@@ -289,13 +289,43 @@ function prepareAisleSlider(aisleHolder) {
         imag.src = tempProduct.productImages[0].externalURL;
         var aileDiv = document.createElement("div");
         aileDiv.appendChild(imag);
-        createAisleDeleteButton(aileDiv, tempProduct);
+        // createAisleDeleteButton(aileDiv, tempProduct);
+        //aisleHolder.appendChild(aileDiv);
+
+        var textContainer = document.createElement("div");
+        var provider = document.createTextNode(tempProduct.productProviders[0].store);
+        textContainer.appendChild(provider);
+        var br = document.createElement('br');
+        textContainer.appendChild(br);
+
+        var title = document.createTextNode(tempProduct.title);
+        textContainer.appendChild(title);
+        var br = document.createElement('br');
+        textContainer.appendChild(br);
+
+
+        var state = document.createTextNode(tempProduct.currentProductState);
+        textContainer.appendChild(state);
+        var br = document.createElement('br');
+        textContainer.appendChild(br);
+        createAisleDeleteButton(textContainer, tempProduct);
+        aileDiv.appendChild(textContainer);
         aisleHolder.appendChild(aileDiv);
     }
-     if (aisleProducts.length >= 3) {
+    var aisleSubmitButton = document.getElementById('submit_button');
+    aisleSubmitButton
+    if (aisleProducts.length >= 3) {
         changeButton(true, aisleProducts.length);
+
+        aisleSubmitButton.style.backgroundColor = "white";
+        aisleSubmitButton.style.color = "green";
+        aisleSubmitButton.style.outline = "solid orange";
+
     } else {
         changeButton(false, aisleProducts.length);
+        aisleSubmitButton.style.backgroundColor = "white";
+        aisleSubmitButton.style.color = "gray";
+        aisleSubmitButton.style.outline = "solid gray";
     }
     if (aisleProducts.length === 0) {
         var imag = document.createElement("img");
@@ -307,13 +337,17 @@ function prepareAisleSlider(aisleHolder) {
     aisleSldierReload();
 }
 function createAisleDeleteButton(div, product) {
+
+    var button = document.createElement("input");
+    button.type = "button";
+
+    button.value = "Remove From Aisle";
+    button.style.backgroundColor = "white";
+    button.style.color = "orange";
+    button.style.outline = "solid orange";
     var deleteImageDiv = document.createElement("div");
     deleteImageDiv.setAttribute('align', 'right');
-    var delImag = document.createElement("img");
-    delImag.src = 'images/delete.png';
-    delImag.width = 30;
-    delImag.height = 30;
-    deleteImageDiv.appendChild(delImag);
+    deleteImageDiv.appendChild(button);
 
     var obj = {
         handleEvent: function() {
@@ -326,16 +360,16 @@ function createAisleDeleteButton(div, product) {
             var aisleHolder = document.getElementById('aisle_holder_id');
             aisleHolder.innerHTML = "";
             prepareAisleSlider(aisleHolder);
-            
-           var  myButton = document.getElementById(product.id);
-           myButton.value = "AddToAisle";
+
+            var myButton = document.getElementById(product.id);
+            myButton.value = "AddToAisle";
             myButton.style.backgroundColor = "white";
-    myButton.style.color = "orange";
-     myButton.style.outline = "solid orange";
+            myButton.style.color = "green";
+            myButton.style.outline = "solid orange";
         },
         dude: product.title
     };
-    delImag.addEventListener("click", obj, false);
+    button.addEventListener("click", obj, false);
     div.appendChild(deleteImageDiv);
 }
 function onImageMouseOver(jsonObject) {
