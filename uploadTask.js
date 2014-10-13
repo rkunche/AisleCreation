@@ -71,7 +71,7 @@ function getHandler() {
             var imag = document.createElement("img");
             imag.src = "images/aisle_baground.png";
              
-     imag.width = 600;
+     imag.width = 800;
      imag.height = 600;
             aisleHolder.appendChild(imag);
             aisleSldierReload();
