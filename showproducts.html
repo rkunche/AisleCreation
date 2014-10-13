@@ -93,6 +93,8 @@
         <script>
 
             function getTags() {
+                document.getElementById('products_holder_id').setAttribute("style","width:800px");
+                 document.getElementById('aisle_holder_id').setAttribute("style","width:800px");
                 newheight = screen.height - 120;
                 getMe();
                 var fetchButton = document.getElementById("fetch_button_id");
@@ -424,8 +426,8 @@
             <p id='btnNext'  style="margin-right:30em;"><span id="slider-prev2"></span> | <span id="slider-next2"></span></p>
         </div>
 
-        <table align="center" style="border-spacing: 20px;"><tr>
-                <td><p id='products_text_id'> Select products from here</p> 
+        <table align="center"  style="border-spacing: 20px;"><tr>
+                <td  ><p id='products_text_id'> Select products from here</p> 
                     <div  id = 'products_holder_id' class="slider6">
                         <div> <img src ='images/aisle_baground.png' width="600" height="600"/></div>
 
@@ -433,7 +435,7 @@
 
                 </td> 
 
-                <td>
+                <td  >
                     <div class="outside"><p id='products_id'> Selected Products:</p> 
 
                         <input type='button' id='submit_button' value='Submit Aisle' onClick="onSubmitAisleButtonClick()"/> 
@@ -482,7 +484,7 @@
                 aisleSlider.reloadSlider({
                     nextSelector: '#slider-next2',
                     prevSelector: '#slider-prev2',
-                    slideWidth: 600,
+                    slideWidth:600,
                     adaptiveHeight: true,
                     nextText: 'Next →',
                     prevText: '← Back'
@@ -499,6 +501,12 @@
                     adaptiveHeight: true,
                     prevText: '← Back'
                 });
+            }
+            function movePorductsSlider(postion){
+                slider.goToSlide(postion);
+            }
+            function moveAisleSlider(postion){
+                aisleSlider.goToSlide(postion);
             }
             function changeButton(isAisleReadyToUpload, count) {
                 if (isAisleReadyToUpload) {

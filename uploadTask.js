@@ -19,6 +19,7 @@ var aisleProducts = [];
 var selectedProducts = [];
 function getCrawledProducts(tag, offset, limit, productState) {
     offsetval = offset;
+    var isProductSliderReloaded;
     //keyword
     if (productState === "NONE") {
         var url = "https://3dot1-dot-vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + tag + "&offset=" + offset + "&limit=" + limit + "&randomize=false";
@@ -62,15 +63,16 @@ function getHandler() {
         if (offsetval === '0' || offsetval === 0) {      
             products.clear();
             aisleProducts.clear();
-            //crearPorducts();
+            isProductSliderReloaded = false;
             var aisleHolder = document.getElementById('aisle_holder_id');
             var productsCount = document.getElementById('products_id');
-            aisleHolder.innerHTML = "";
+           aisleHolder.innerHTML = "";
             productsCount.innerHTML = "Selected Products: 0";
             var imag = document.createElement("img");
             imag.src = "images/aisle_baground.png";
-            imag.width = 400;
-            imag.height = 400;
+             
+     imag.width = 600;
+     imag.height = 600;
             aisleHolder.appendChild(imag);
             aisleSldierReload();
         }
@@ -152,8 +154,7 @@ function showProductsBxSlider() {
         var imag = document.createElement("img");
         try {
             imag.src = jsonObject.productImages[0].externalURL;
-            // imag.width = 400;
-            // imag.height = 400;
+       
             console.log(jsonObject.productImages[0].externalURL);
         } catch (e) {
             console.log("externalURL null")
@@ -260,6 +261,7 @@ function addToAisle(product, isAddToAisle) {
     var aisleHolder = document.getElementById('aisle_holder_id');
     // var productsCount = document.getElementById('products_id');
     aisleHolder.innerHTML = "";
+     
     if (isAddToAisle) {
         //adding to aisle
          ga('send', 'event', 'button', 'clcik', "AddToAisle");
@@ -267,14 +269,15 @@ function addToAisle(product, isAddToAisle) {
     } else {
         //removing from aisle
          ga('send', 'event', 'button', 'clcik', "RemoveFromAisle");
-        var index = aisleProducts.indexOf(product);
+      var index = aisleProducts.indexOf(product);
         if (index > -1) {
             aisleProducts.splice(index, 1);
         }
     }
-    prepareAisleSlider(aisleHolder);
+    var position = products.indexOf(product);
+    prepareAisleSlider(aisleHolder,position);
 }
-function prepareAisleSlider(aisleHolder) {
+function prepareAisleSlider(aisleHolder,index) {
     var productsCount = document.getElementById('products_id');
     if (aisleProducts.length < 3) {
         productsCount.innerHTML = "Selected Products: " + aisleProducts.length;
@@ -336,6 +339,12 @@ function prepareAisleSlider(aisleHolder) {
         aisleHolder.appendChild(imag);
     }
     aisleSldierReload();
+    if(!isProductSliderReloaded){
+        isProductSliderReloaded = true;
+    sliderReload();
+   movePorductsSlider(index);
+    }
+    
 }
 function createAisleDeleteButton(div, product) {
 
