@@ -283,7 +283,7 @@
             }
 
             function createAisleRequest() {   
-                if (occassion.length < 1)
+                if (occasion.length < 1)
                 {
                     showAlert("Please Select Occassion");
                     document.getElementById('Occassion_tag').scrollIntoView();
@@ -296,7 +296,8 @@
                     document.getElementById('LookingFor_tag').scrollIntoView();
                     return false;
                 }
-
+              alert("checking success");
+             
                 var url = "https://vue-server-dev.appspot.com/api/aisle";
                 if (XMLHttpRequest) {
                     request = new XMLHttpRequest();
@@ -307,7 +308,7 @@
                         request.setRequestHeader('Content-Type', 'application/json');
                         request.onreadystatechange = aisle_post_handler;
                         //aisle creation request.
-                        request.send(JSON.stringify({id: null, ownerUserId: userId, category: category, description: description, lookingFor: lookingFor, name: aisleOwnerName, occassion: occassion, currentAisleState: "CURATED", bookmarkCount: 0}));
+                       request.send(JSON.stringify({id: null, ownerUserId: userId, category: category, description: description, lookingFor: lookingFor, name: aisleOwnerName, occassion: occasion, currentAisleState: "CURATED", bookmarkCount: 0}));
                     }
                 }
             }
@@ -507,12 +508,19 @@
                 }
             }
             function onSubmitAisleButtonClick() {
-                aisleCount = aisleCount +1;
+                if(occasion === undefined || occasion.length < 1){
+                    alert("Please select occasion");
+                    retrun;
+                }
+                  if(lookingFor === undefined || lookingFor.length < 1){
+                    alert("Please select lookingFor");
+                    retrun;
+                }
+                aisleCount = aisleCount +1;              
                 ga('send', 'event', 'button', 'click', 'Submit Aisle', aisleCount);
-
                 uploadProductCount = 0;
-                getSelectedProducts();
-                alert(selectedProducts.length+" Added");
+                getSelectedProducts();              
+                createAisleRequest();
 
             }
         </script>
