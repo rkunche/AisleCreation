@@ -104,10 +104,18 @@
         var curatorID;
         var otherWindowObserver;
         var buttonText;
+        var request;
 
 
 
-
+        var webUser = {
+            firstName: "",
+            lastName: "",
+            fbId: "",
+            token: "",
+            imageUrl: "",
+            email:"",
+        };
         function readParams() {
             //ONLY ALLOWED STATIC USER
             //raju ID
@@ -127,6 +135,7 @@
 
         }
         function curateProducts() {
+            prepareLink();
             if (active_id === '') {
                 alert('select the user');
                 return;
@@ -137,6 +146,7 @@
             //  alert(requestProduct);
         }
         function cuarteAsiles() {
+            prepareLink();
             if (active_id === '') {
                 alert('select the user');
                 return;
@@ -161,53 +171,244 @@
                         <font color=Orange><b>Archive</b></font> products that are not in stock or do not have a product image:
                     </p>
                 </div>-->
-        <div id="content">
-            <p style="size: 40">
-                Product State:
-                <select id="userlist"  style="width:150;" onchange="prepareLink()">
-                    <option value="">Select user:</option>
-                    <option value="5505177142427648" >Raju</option>
-                    <option value="6419807607980032" >Sangeetha</option>
-                    <option value="5769457217568768" >Neem</option>
-                    <option value="5649648836411392" >Lakshminath</option>
-                    <option value="5638203017003008" >Vidya</option>
-                </select>
-                <br>
+        <script>
+            // This is called with the results from from FB.getLoginStatus().
+            function statusChangeCallback(response) {
+                console.log('statusChangeCallback');
+                console.log(response);
+                // The response object is returned with a status field that lets the
+                // app know the current login status of the person.
+                // Full docs on the response object can be found in the documentation
+                // for FB.getLoginStatus().
+                if (response.status === 'connected') {
+                    // Logged into your app and Facebook.
+                    console.log("connected");
+                    console.log("ACCESS TOKEN " + response.authResponse.accessToken);
+                    console.log("SIGNED REQUES:: " + response.authResponse.signedRequest);
+                    console.log("EXPIRES IN:: " + response.authResponse.expiresIn);
+                    console.log("USERID:: " + response.authResponse.userID);
+                    webUser.fbId = response.authResponse.userID;
+                    webUser.token = response.authResponse.accessToken;
+                    testAPI();
+                } else if (response.status === 'not_authorized') {
+                    // The person is logged into Facebook, but not your app.
+                    document.getElementById('status').innerHTML = 'Please log ' +
+                            'into this app.';
+                    console.log("The person is logged into Facebook, but not your app.");
+                } else {
+                    // The person is not logged into Facebook, so we're not sure if
+                    // they are logged into this app or not.
+                    document.getElementById('status').innerHTML = 'Please log ' +
+                            'into Facebook.';
+                    console.log("Person Not Logged in facebook and your app");
+                }
+            }
 
-            </p>
+            // This function is called when someone finishes with the Login
+            // Button.  See the onlogin handler attached to it in the sample
+            // code below.
+            function checkLoginState() {
+                FB.getLoginStatus(function(response) {
+                    statusChangeCallback(response);
+                });
+            }
 
-            <a class="myButton"id="curate_products_btn_id" onclick="curateProducts();" >Curate Products</a><br><br>
-            <a class="myButton" id="curate_asiles_btn_id" onclick="cuarteAsiles();" >Curate Aisles</a>
+            window.fbAsyncInit = function() {
+                FB.init({
+                    appId: '1485057308443130',
+                    cookie: true, // enable cookies to allow the server to access 
+                    // the session
+                    xfbml: true, // parse social plugins on this page
+                    version: 'v2.1' // use version 2.1
+                });
 
-            <p></p>
+                // Now that we've initialized the JavaScript SDK, we call 
+                // FB.getLoginStatus().  This function gets the state of the
+                // person visiting this page and can return one of three states to
+                // the callback you provide.  They can be:
+                //
+                // 1. Logged into your app ('connected')
+                // 2. Logged into Facebook, but not your app ('not_authorized')
+                // 3. Not logged into Facebook and can't tell if they are logged into
+                //    your app or not.
+                //
+                // These three cases are handled in the callback function.
+
+                FB.getLoginStatus(function(response) {
+                    statusChangeCallback(response);
+                });
+
+            };
+
+            // Load the SDK asynchronously
+            (function(d, s, id) {
+                var js, fjs = d.getElementsByTagName(s)[0];
+                if (d.getElementById(id))
+                    return;
+                js = d.createElement(s);
+                js.id = id;
+                js.src = "//connect.facebook.net/en_US/sdk.js";
+                fjs.parentNode.insertBefore(js, fjs);
+            }(document, 'script', 'facebook-jssdk'));
+
+            // Here we run a very simple test of the Graph API after login is
+            // successful.  See statusChangeCallback() for when this call is made.
+            function testAPI() {
+                console.log('Welcome!  Fetching your information.... ');
+                FB.api('/me', function(response) {
+                    console.log('Successful login for: ' + response.name);
+                     console.log('Successful login for: ' + response.email);
+                    document.getElementById('status').innerHTML =
+                            'Thanks for logging in, ' + response.name + '!';
+                    webUser.firstName = response.name;
+                    webUser.email = response.email;
+                });
+
+                FB.api(
+                        "/me/picture",
+                        {
+                            "redirect": false,
+                            "height": "200",
+                            "type": "normal",
+                            "width": "200"
+                        },
+                function(response) {
+                    if (response && !response.error) {
+                        console.log("result sucess " + response.data.url);
+                        document.getElementById('profile_pic_id').src = response.data.url;
+                        console.log(response.data.url.split('https://')[1],
+                                randomNumber = Math.floor(Math.random() * 256));
+                        webUser.imageUrl = response.data.url;
+                    } else {
+                        console.log("result profile pic failed response ");
+                    }
+                    console.log("NAMEW: " + webUser.firstName);
+                    console.log("URLW: " + webUser.imageUrl);
+                    console.log("USERIDW: " + webUser.fbId);
+                    console.log("TOKENW " + webUser.token);
+                    getUserWithFbId(webUser.fbId);
+                }
+                );
+            }
 
 
 
+            function getUserWithFbId(id) {
+                var url = "https://vue-server-dev.appspot.com/api/facebookuser/" + id;
+                if (XMLHttpRequest)
+                {
+                    request = new XMLHttpRequest();
+                    if ("withCredentials" in request)
+                    {
+                        // Firefox 3.5 and Safari 4
+                        request.open('GET', url, true);
+                        request.onreadystatechange = get_fbUse_handler;
+                        request.send();
+                    }
+                }
+            }
+            function get_fbUse_handler() {
+                if (request.readyState != 4)
+                    return;
+                if (request.status != 200 && request.status != 304) {
+                   // alert('User reqeust Error ' + request.status);
+                   console.log("Fb user is not there in server");
+                    createNewFbUser();
+                    return;
+                }
+                if (request.status == 200)
+                {
+
+                    var user = JSON.parse(request.responseText);
+                    var name = user.firstName + " " + user.lastName;
+                    document.getElementById("Name").value = name;
+                    document.getElementById("UserId").value = user.id;
+
+                    //alert('HTTP GET success: ' + urlUserID);
+
+                }
+
+            }
+
+            function createNewFbUser() {
+                var url = "https://vue-server-dev.appspot.com/api/user";
+                if (XMLHttpRequest) {
+                    request = new XMLHttpRequest();
+                    if ("withCredentials" in request) {
+                        // Firefox 3.5 and Safari 4
+                        request.open('PUT', url, true);
+                        request.setRequestHeader('Custom-Header', 'javascript-client');
+                        request.setRequestHeader('Content-Type', 'application/json');
+                        request.onreadystatechange = user_post_handler;
+                        //user creation post request
+                        request.send(JSON.stringify({id: null, email: null, firstName:webUser.firstName, lastName: " ", joinTime: null, deviceId: "1408621599681", gcmRegistrationId: null, facebookId:"FACEBOOK_ID_UNKNOWN", googlePlusId: "GOOGLE_PLUS_ID_UNKNOWN", facebookShortTermAcessToken: webUser.token, facebookLongTermAcessToken: null, userImageURL: webUser.imageUrl}));
+
+                    }
+                }
+            }
+            function user_post_handler() {
+                if (request.readyState != 4)
+                    return;
+                if (request.status == 200)
+                {
+                   // alert('HTTP POST success: ' + request.responseText);
+                    console.log(request.responseText);
+                }
+                if (request.status != 200 && request.status != 304) {
+                    //alert('HTTP POST error ' + request.status + 'Response ' + request.responseText);
+
+                    return;
+                }
+            }
+        </script>
+
+        <!--
+          Below we include the Login Button social plugin. This button uses
+          the JavaScript SDK to present a graphical Login button that triggers
+          the FB.login() function when clicked.
+        -->
+
+    <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+    </fb:login-button>
+    <div>
+        <image class = 'profile-img' src="" width="40" height ="40" id="profile_pic_id"/>
+        <div id="status">
         </div>
+    </div>
+    <div id="content">
+        <p style="size: 40">
+            Curator Name:
+            <select id="userlist"  style="width:150;" onchange="prepareLink()">
+                <option value="">Select user:</option>
+                <option value="5505177142427648" >Raju</option>
+                <option value="6419807607980032" >Sangeetha</option>
+                <option value="5769457217568768" >Neem</option>
+                <option value="5649648836411392" >Lakshminath</option>
+                <option value="5638203017003008" >Vidya</option>
+            </select>
+            <br>
+
+        </p>
+
+        <a class="myButton"id="curate_products_btn_id" onclick="curateProducts();" >Curate Products</a><br><br>
+        <a class="myButton" id="curate_asiles_btn_id" onclick="cuarteAsiles();" >Curate Aisles</a>
+
+        <p></p>
 
 
 
-    </body>
+    </div>
+
+
+
+</body>
 </html>
 <style>
-    .myButtonRED {
-        -moz-box-shadow: inset 0px 39px 0px -24px #e67a73;
-        -webkit-box-shadow: inset 0px 39px 0px -24px #e67a73;
-        box-shadow: inset 0px 39px 0px -24px #e67a73;
-        background-color: #e4685d;
-        -moz-border-radius: 4px;
-        -webkit-border-radius: 4px;
-        border-radius: 4px;
-        border: 1px solid #ffffff;
-        display: inline-block;
-        cursor: pointer;
-        color: #ffffff;
-        font-family: arial;
-        font-size: 15px;
-        padding: 6px 15px;
-        text-decoration: none;
-        text-shadow: 0px 1px 0px #b23e35;
-    }
+ .profile-img {
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+}
 
     #input
     {

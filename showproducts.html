@@ -145,7 +145,7 @@
                     //var temp2 = tag_string_array[static_categoryNames[k]];
                     //  tagSubCatelement.options[tagSubCatelement.options.length] = new Option('', '', false, false);
                     for (var i = 0; i < jsonResponse.length; i++) {
-                        console.log("Blocked list " + jsonResponse[i].tagString);
+                         
                         tagSubCatelement.options[tagSubCatelement.options.length] = new Option(jsonResponse[i].tagString, jsonResponse[i].tagString, false, false);
                         if (jsonResponse[i].tagCategory === "Occasion") {
                             occasionSubCatelement.options[occasionSubCatelement.options.length] = new Option(jsonResponse[i].tagString, jsonResponse[i].tagString, false, false);
@@ -436,7 +436,7 @@
                 </td> 
 
                 <td  >
-                    <div class="outside"><p id='products_id'> Selected Products:</p> 
+                    <div class="outside"><p id='products_id'> Selected Products *********:</p> 
 
                         <input type='button' id='submit_button' value='Submit Aisle' onClick="onSubmitAisleButtonClick()"/> 
                     </div>
