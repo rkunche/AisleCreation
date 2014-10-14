@@ -15,6 +15,7 @@ Array.prototype.clear = function() {
 var offsetval;
 var products = [];
 var aisleProducts = [];
+ var myVar;
 
 var selectedProducts = [];
 function getCrawledProducts(tag, offset, limit, productState) {
@@ -202,9 +203,14 @@ function showProductsBxSlider() {
         container.appendChild(textContainer);
         prodcuHolder.appendChild(container);
     }
-    sliderReload();
-     aisleSldierReload();
      sliderReload();
+     aisleSldierReload();
+     
+      myVar = setInterval(function() {
+                 sliderReload();
+                  clearInterval(myVar);
+            }, 1000);
+      
     //resize_images(400, 400, 400, 400);
 }
 function mouseroverEvent(image, product) {
