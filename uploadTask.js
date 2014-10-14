@@ -22,9 +22,9 @@ function getCrawledProducts(tag, offset, limit, productState) {
     var isProductSliderReloaded;
     //keyword
     if (productState === "NONE") {
-        var url = "https://3dot1-dot-vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + tag + "&offset=" + offset + "&limit=" + limit + "&randomize=false";
+        var url = "https://3dot1-dot-vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + tag + "&offset=" + offset + "&limit=" + limit + "&randomize=true";
     } else {
-        var url = "https://3dot1-dot-vue-server-dev.appspot.com/api/product/search/genericsearch?productstate=" + productState + "&queryString=" + tag + "&offset=" + offset + "&limit=" + limit + "&randomize=false";
+        var url = "https://3dot1-dot-vue-server-dev.appspot.com/api/product/search/genericsearch?currentProductState=" + productState + "&queryString=" + tag + "&offset=" + offset + "&limit=" + limit + "&randomize=false";
     }
 
     //var url ="https://3dot1.vue-server-dev.appspot.com/api/product/search/genericsearch?queryString="+tag+"&limit=20";

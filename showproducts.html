@@ -399,7 +399,7 @@
             <div> <H2 align="center" id="create_aisle_heading">Create Aisle</H2></div>
 
 
-            <img src=" " alt="Smiley face" width="42" height="42" style="margin-right:35px;">
+             
             LookingFor   <select id="LookingFor_tag" onchange="lookingForSelectionVal()" name="" style="width:150;" onchange="getSelectedValue();" >
             </select> Occasion  <select id="Occassion_tag" onchange="occasionSelectionVal()" name="selection" multiple="multiple"   style="width: 200px" >
             </select>   
@@ -424,6 +424,7 @@
 
         <table align="center"  style="border-spacing: 20px;"><tr>
                 <td  ><p id='products_text_id'> Select products from here</p> 
+                    
                     <div  id = 'products_holder_id' class="slider6">
                         <div> <img src ='images/aisle_baground.png' width="400" height="400"/></div>
 
@@ -432,15 +433,18 @@
                 </td> 
 
                 <td  >
+                    <div>
                     <div class="outside"><p id='products_id'> Selected Products:</p> 
 
                         <input type='button' id='submit_button' value='Submit Aisle' onClick="onSubmitAisleButtonClick()"/> 
                     </div>
+                     
+                        
                     <div id='aisle_holder_id' class="slider8">
                         <div> <img src ='images/aisle_baground.png' width="400" height="400"/></div>
                     </div>
 
-
+                    </div>
 
                 </td>
                 <!--<td width = 600 id='product_info_id'>
