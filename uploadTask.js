@@ -281,10 +281,10 @@ function addToAisle(product, isAddToAisle) {
 function prepareAisleSlider(aisleHolder,index) {
     var productsCount = document.getElementById('products_id');
     if (aisleProducts.length < 3) {
-        productsCount.innerHTML = "Selected Products *******: " + aisleProducts.length;
+        productsCount.innerHTML = "Selected Products: " + aisleProducts.length;
         productsCount.style.color = "Black";
     } else {
-        productsCount.innerHTML = "Selected Products *******: " + aisleProducts.length + " (Aisle Ready to Upload)";
+        productsCount.innerHTML = "Selected Products: " + aisleProducts.length;
         productsCount.style.color = "green";
     }
     for (j = 0; j < aisleProducts.length; j++) {
