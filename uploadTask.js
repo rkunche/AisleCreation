@@ -85,10 +85,13 @@ function getHandler() {
                 productProviders: jsonTempObject.productProviders, comments: jsonTempObject.comments, productTags: jsonTempObject.productTags, ratings: jsonTempObject.ratings
             };
             try{
+                //dont add product to aisle if provider or image not there in product
                 var url = productObject.productImages[0].externalURL;
+                var store = productObject.productProviders[0].store;
             }catch(e){
                 continue;
             }
+            //remove product in product image starts normal text.
                var startString = productObject.productImages[0].externalURL;
             startString = startString.substr(0, 4);
             if(startString !== "http"){
@@ -201,6 +204,7 @@ function showProductsBxSlider() {
     }
     sliderReload();
      aisleSldierReload();
+     sliderReload();
     //resize_images(400, 400, 400, 400);
 }
 function mouseroverEvent(image, product) {
