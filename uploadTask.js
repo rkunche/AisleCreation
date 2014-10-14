@@ -84,6 +84,17 @@ function getHandler() {
                 currentProductState: jsonTempObject.currentProductState, relatedProductIds: jsonTempObject.relatedProductIds, productImages: jsonTempObject.productImages,
                 productProviders: jsonTempObject.productProviders, comments: jsonTempObject.comments, productTags: jsonTempObject.productTags, ratings: jsonTempObject.ratings
             };
+            try{
+                var url = productObject.productImages[0].externalURL;
+            }catch(e){
+                continue;
+            }
+               var startString = productObject.productImages[0].externalURL;
+            startString = startString.substr(0, 4);
+            if(startString !== "http"){
+                continue;
+            }
+ 
             products.push(productObject);
             // }
         }
@@ -154,24 +165,26 @@ function showProductsBxSlider() {
         var imag = document.createElement("img");
         try {
             imag.src = jsonObject.productImages[0].externalURL;
-       
+             
             console.log(jsonObject.productImages[0].externalURL);
         } catch (e) {
             console.log("externalURL null")
-        }
+        }      
         //mouseroverEvent(imag, jsonObject);
         container.appendChild(imag);
         var textContainer = document.createElement("div");
+        if(jsonObject.productProviders[0] !== undefined && jsonObject.productProviders[0].store !== undefined){
         var provider = document.createTextNode(jsonObject.productProviders[0].store);
         textContainer.appendChild(provider);
         var br = document.createElement('br');
         textContainer.appendChild(br);
-
+    }
+        if(jsonObject.title !== undefined){
         var title = document.createTextNode(jsonObject.title);
         textContainer.appendChild(title);
         var br = document.createElement('br');
         textContainer.appendChild(br);
-
+    }
 
         var state = document.createTextNode(jsonObject.currentProductState);
         textContainer.appendChild(state);
