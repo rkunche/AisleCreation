@@ -60,23 +60,26 @@
             users.push(5169874951208960);
             users.push(5649648836411392); //lakshminath's id
             users.push(5638203017003008); //vidya's id
-               ga('create', 'UA-55582645-1', { 'userId': 6419807607980032 });
-                     ga('send', 'pageview');
+           
             var srchString = unescape(location.search.substring(1, location.search.length));
             var name = srchString.split("=");
 
-            creatorId = name[1];
+             creatorId = name[1];
+               ga('create', 'UA-55582645-1', { 'userId': creatorId });
+                ga('send', 'pageview');
+                console.log("user getting form fb");
+         
 
-            var boolval = false;
-            for (var i = 0; i < users.length; i++) {
-                if (creatorId == users[i])
-                    boolval = true;
-            }
-            if (!boolval) {
-                creatorId = 00;
-                alert("user does not exist");
-                return;
-            }
+//            var boolval = false;
+//            for (var i = 0; i < users.length; i++) {
+//                if (creatorId == users[i])
+//                    boolval = true;
+//            }
+//            if (!boolval) {
+//                creatorId = 00;
+//                alert("user does not exist");
+//                return;
+//            }
  
  var newheight = screen.height - 120;
  //document.getElementById("frameOneId").height= (newheight) + "px";

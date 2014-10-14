@@ -264,15 +264,11 @@
                 }
                 if (request.status == 200)
                 {
-
                     var user = JSON.parse(request.responseText);
                     aisleOwnerName = user.firstName + " " + user.lastName;
-
-                    userId = user.id;
-                    
-                    
-                   ga('create', 'UA-55582645-2', { 'userId': userId });
-                     ga('send', 'pageview');
+                    userId = user.id; 
+                    ga('create', 'UA-55582645-2', { 'userId': userId });
+                    ga('send', 'pageview');
                     // alert('HTTP GET success: ' + urlUserID);
 
                 }
@@ -429,7 +425,7 @@
         <table align="center"  style="border-spacing: 20px;"><tr>
                 <td  ><p id='products_text_id'> Select products from here</p> 
                     <div  id = 'products_holder_id' class="slider6">
-                        <div> <img src ='images/aisle_baground.png' width="600" height="600"/></div>
+                        <div> <img src ='images/aisle_baground.png' width="400" height="400"/></div>
 
                     </div>  
 
@@ -441,7 +437,7 @@
                         <input type='button' id='submit_button' value='Submit Aisle' onClick="onSubmitAisleButtonClick()"/> 
                     </div>
                     <div id='aisle_holder_id' class="slider8">
-                        <div> <img src ='images/aisle_baground.png' width="600" height="600"/></div>
+                        <div> <img src ='images/aisle_baground.png' width="400" height="400"/></div>
                     </div>
 
 
@@ -461,7 +457,7 @@
                 aisleSlider = $('.slider8').bxSlider({
                     nextSelector: '#slider-next2',
                     prevSelector: '#slider-prev2',
-                    slideWidth: 600,
+                    slideWidth: 400,
                     adaptiveHeight: true,
                     nextText: 'Next →',
                     prevText: '← Back'
@@ -473,7 +469,7 @@
                 slider = $('.slider6').bxSlider({
                     nextSelector: '#slider-next',
                     prevSelector: '#slider-prev',
-                    slideWidth: 600,
+                    slideWidth: 400,
                     adaptiveHeight: true,
                     nextText: 'Next →',
                     prevText: '← Back'
@@ -484,7 +480,7 @@
                 aisleSlider.reloadSlider({
                     nextSelector: '#slider-next2',
                     prevSelector: '#slider-prev2',
-                    slideWidth:600,
+                    slideWidth:400,
                     adaptiveHeight: true,
                     nextText: 'Next →',
                     prevText: '← Back'
@@ -497,7 +493,7 @@
                     nextSelector: '#slider-next',
                     prevSelector: '#slider-prev',
                     nextText: 'Next →',
-                    slideWidth: 600,
+                    slideWidth:400,
                     adaptiveHeight: true,
                     prevText: '← Back'
                 });

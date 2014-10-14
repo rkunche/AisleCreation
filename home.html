@@ -105,7 +105,7 @@
         var otherWindowObserver;
         var buttonText;
         var request;
-
+        var userID;
 
 
         var webUser = {
@@ -114,7 +114,7 @@
             fbId: "",
             token: "",
             imageUrl: "",
-            email:"",
+            email: "",
         };
         function readParams() {
             //ONLY ALLOWED STATIC USER
@@ -135,23 +135,42 @@
 
         }
         function curateProducts() {
+            var  warningText =  document.getElementById('fb_login_text_id');
+               
+            if(userID === undefined){
+           warningText.innerHTML = "Please Login with Facebook";
+               warningText.style.color = "RED";
+                //Alert("Please Login with Facebook");
+                return;
+            }
+              warningText.innerHTML = "";
+            console.log("user id is: "+userID);
             prepareLink();
-            if (active_id === '') {
+            if (userID === '') {
                 alert('select the user');
                 return;
             }
-            var requestProduct = "http://dev.curatevue.com/Product_Curation/ProductRequest.html?user=" + active_id;
+            var requestProduct = "http://dev.curatevue.com/Product_Curation/ProductRequest.html?user=" + userID;
             window.open(requestProduct, '_blank');
             window.focus();
             //  alert(requestProduct);
         }
         function cuarteAsiles() {
+            var  warningText =  document.getElementById('fb_login_text_id');
+                 
+            if(userID === undefined){
+                warningText.innerHTML = "Please Login with Facebook";
+                 warningText.style.color = "RED";
+                 return;
+            }
+             warningText.innerHTML = "";
+             console.log("user id is: "+userID);
             prepareLink();
-            if (active_id === '') {
+            if (userID === '') {
                 alert('select the user');
                 return;
             }
-            var requestAsile = "http://dev.curatevue.com/Aisle_Curation/iframe.html?user=" + active_id;
+            var requestAsile = "http://dev.curatevue.com/Aisle_Curation/iframe.html?user=" + userID;
             window.open(requestAsile, '_blank');
             window.focus();
             //alert(requestAsile);
@@ -257,7 +276,7 @@
                 console.log('Welcome!  Fetching your information.... ');
                 FB.api('/me', function(response) {
                     console.log('Successful login for: ' + response.name);
-                     console.log('Successful login for: ' + response.email);
+                    console.log('Successful login for: ' + response.email);
                     document.getElementById('status').innerHTML =
                             'Thanks for logging in, ' + response.name + '!';
                     webUser.firstName = response.name;
@@ -275,7 +294,9 @@
                 function(response) {
                     if (response && !response.error) {
                         console.log("result sucess " + response.data.url);
-                        document.getElementById('profile_pic_id').src = response.data.url;
+                        var image = document.getElementById('profile_pic_id');
+                        image.src = response.data.url;
+                      
                         console.log(response.data.url.split('https://')[1],
                                 randomNumber = Math.floor(Math.random() * 256));
                         webUser.imageUrl = response.data.url;
@@ -308,24 +329,19 @@
                 }
             }
             function get_fbUse_handler() {
-                if (request.readyState != 4)
+                if (request.readyState !== 4)
                     return;
-                if (request.status != 200 && request.status != 304) {
-                   // alert('User reqeust Error ' + request.status);
-                   console.log("Fb user is not there in server");
+                if (request.status !== 200 && request.status !== 304) {
+                    // alert('User reqeust Error ' + request.status);
+                    console.log("Fb user is not there in server");
                     createNewFbUser();
                     return;
                 }
-                if (request.status == 200)
+                if (request.status === 200)
                 {
-
-                    var user = JSON.parse(request.responseText);
-                    var name = user.firstName + " " + user.lastName;
-                    document.getElementById("Name").value = name;
-                    document.getElementById("UserId").value = user.id;
-
-                    //alert('HTTP GET success: ' + urlUserID);
-
+                    var userObject = JSON.parse(request.responseText);
+                    console.log("USER RETREIVED: "+request.responseText)
+                    userID = userObject.id;
                 }
 
             }
@@ -336,12 +352,12 @@
                     request = new XMLHttpRequest();
                     if ("withCredentials" in request) {
                         // Firefox 3.5 and Safari 4
-                        request.open('PUT', url, true);
+                        request.open('POST', url, true);
                         request.setRequestHeader('Custom-Header', 'javascript-client');
                         request.setRequestHeader('Content-Type', 'application/json');
                         request.onreadystatechange = user_post_handler;
                         //user creation post request
-                        request.send(JSON.stringify({id: null, email: null, firstName:webUser.firstName, lastName: " ", joinTime: null, deviceId: "1408621599681", gcmRegistrationId: null, facebookId:"FACEBOOK_ID_UNKNOWN", googlePlusId: "GOOGLE_PLUS_ID_UNKNOWN", facebookShortTermAcessToken: webUser.token, facebookLongTermAcessToken: null, userImageURL: webUser.imageUrl}));
+                        request.send(JSON.stringify({id: null, email: null, firstName: webUser.firstName, lastName: " ", joinTime: null, deviceId: "1408621599681", gcmRegistrationId: null, facebookId: webUser.fbId, googlePlusId: "GOOGLE_PLUS_ID_UNKNOWN", facebookShortTermAcessToken: webUser.token, facebookLongTermAcessToken: null, userImageURL: webUser.imageUrl}));
 
                     }
                 }
@@ -351,12 +367,14 @@
                     return;
                 if (request.status == 200)
                 {
-                   // alert('HTTP POST success: ' + request.responseText);
+                    // alert('HTTP POST success: ' + request.responseText);
                     console.log(request.responseText);
+                      var userObject = JSON.parse(request.responseText);
+                    userID = userObject.id;
                 }
                 if (request.status != 200 && request.status != 304) {
                     //alert('HTTP POST error ' + request.status + 'Response ' + request.responseText);
-
+                    console.log("error code ");
                     return;
                 }
             }
@@ -367,16 +385,15 @@
           the JavaScript SDK to present a graphical Login button that triggers
           the FB.login() function when clicked.
         -->
-
-    <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
-    </fb:login-button>
+        
     <div>
-        <image class = 'profile-img' src="" width="40" height ="40" id="profile_pic_id"/>
+        <image class = 'profile-img' src="" width="40" height="40" id="profile_pic_id"/>
         <div id="status">
         </div>
     </div>
-    <div id="content">
-        <p style="size: 40">
+        
+   <div id="content">
+      <!--   <p style="size: 40">
             Curator Name:
             <select id="userlist"  style="width:150;" onchange="prepareLink()">
                 <option value="">Select user:</option>
@@ -388,13 +405,17 @@
             </select>
             <br>
 
-        </p>
+        </p>-->
 
         <a class="myButton"id="curate_products_btn_id" onclick="curateProducts();" >Curate Products</a><br><br>
         <a class="myButton" id="curate_asiles_btn_id" onclick="cuarteAsiles();" >Curate Aisles</a>
 
         <p></p>
-
+<div id="fb_button_holder_id">
+            <p id="fb_login_text_id"></p>
+    <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+    </fb:login-button>
+            </div>
 
 
     </div>
@@ -404,11 +425,11 @@
 </body>
 </html>
 <style>
- .profile-img {
-    -moz-border-radius: 50%;
-    -webkit-border-radius: 50%;
-    border-radius: 50%;
-}
+    .profile-img {
+        -moz-border-radius: 50%;
+        -webkit-border-radius: 50%;
+        border-radius: 50%;
+    }
 
     #input
     {
