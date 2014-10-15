@@ -15,7 +15,7 @@ Array.prototype.clear = function() {
 var offsetval;
 var products = [];
 var aisleProducts = [];
- var myVar;
+ 
 
 var selectedProducts = [];
 function getCrawledProducts(tag, offset, limit, productState) {
@@ -176,6 +176,7 @@ function showProductsBxSlider() {
         }      
         //mouseroverEvent(imag, jsonObject);
         container.appendChild(imag);
+ 
         var textContainer = document.createElement("div");
         if(jsonObject.productProviders[0] !== undefined && jsonObject.productProviders[0].store !== undefined){
         var provider = document.createTextNode(jsonObject.productProviders[0].store);
@@ -205,11 +206,7 @@ function showProductsBxSlider() {
     }
      sliderReload();
      aisleSldierReload();
-     
-      myVar = setInterval(function() {
-                 sliderReload();
-                  clearInterval(myVar);
-            }, 1000);
+  
       
     //resize_images(400, 400, 400, 400);
 }

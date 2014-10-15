@@ -21,6 +21,7 @@
 
         <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"/>
         <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
+         <script type="text/javascript" src="jquery.csv-0.71.js"></script>
         <script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
         <script src="jquery.bxslider.js"></script>
         <link href="jquery.bxslider.css" rel="stylesheet" /> 
@@ -32,6 +33,7 @@
         <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/ui-lightness/jquery-ui.css" />
         <!--        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
                 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js"></script>-->
+        
         <script type="text/javascript" src="src/jquery.multiselect.js"></script>
         <script type="text/javascript" src="src/jquery.multiselect.filter.js"></script>
         <script type="text/javascript" src="assets/prettify.js"></script> 
@@ -55,6 +57,8 @@
             var aisleOwnerName;
             var uploadProductCount = 0;
             var aisleCount = 0;
+            var lookingForTag;
+            var titleTags = [];
             window.onmessage = function(e) {
                 var data = e.data.split("#");
                 if (data[0] === 'getSelectedProducts') {
@@ -138,29 +142,35 @@
                             jsonResponse.splice(t, 1);
                         }
                     }
-                    var tagSubCatelement = document.getElementById('select_tag');
+                    //var tagSubCatelement = document.getElementById('select_tag');
                     var occasionSubCatelement = document.getElementById('Occassion_tag');
                     var lookingForSubCatelement = document.getElementById('LookingFor_tag');
-                    document.getElementById("stateId").value = stateValue;
+                    //document.getElementById("stateId").value = stateValue;
                     //var temp2 = tag_string_array[static_categoryNames[k]];
                     //  tagSubCatelement.options[tagSubCatelement.options.length] = new Option('', '', false, false);
                     for (var i = 0; i < jsonResponse.length; i++) {
                          
-                        tagSubCatelement.options[tagSubCatelement.options.length] = new Option(jsonResponse[i].tagString, jsonResponse[i].tagString, false, false);
+                       // tagSubCatelement.options[tagSubCatelement.options.length] = new Option(jsonResponse[i].tagString, jsonResponse[i].tagString, false, false);
                         if (jsonResponse[i].tagCategory === "Occasion") {
                             occasionSubCatelement.options[occasionSubCatelement.options.length] = new Option(jsonResponse[i].tagString, jsonResponse[i].tagString, false, false);
                         }
+                             
                         if (jsonResponse[i].tagCategory === "Product Type") {
                             lookingForSubCatelement.options[lookingForSubCatelement.options.length] = new Option(jsonResponse[i].tagString, jsonResponse[i].tagString, false, false);
                         }
                     }
-                    $("select").multiselect({
+                    $("#Occassion_tag").multiselect({
                         multiple: false,
-                        header: "Select an option",
-                        noneSelectedText: "Select an Option",
+                        header: "Occasion",
+                        noneSelectedText: "Occasion",
                         selectedList: 1
                     }).multiselectfilter();
-
+  $("#LookingFor_tag").multiselect({
+                        multiple: false,
+                        header: "Product Type",
+                        noneSelectedText: "Product Type",
+                        selectedList: 1
+                    }).multiselectfilter();
                     $(function() {
                         var warning = $(".message");
 
@@ -191,13 +201,25 @@
                 ga('send', 'event', 'option', 'select', selectedValue);
                 occasion = selectedValue;
                 document.getElementById("Occassion_tag").value = selectedValue;
+                  document.getElementById('fetch_button_id').value = "Fetch" ;
             }
             function lookingForSelectionVal() {
                 var selectedValue = $("#LookingFor_tag").val();
+                
                 lookingFor = selectedValue;
                 ga('send', 'event', 'option', 'select', selectedValue);
-                document.getElementById("LookingFor_tag").value = selectedValue;
+                //document.getElementById("LookingFor_tag").value = selectedValue;
             }
+                       var titleTag = function(param) {
+                           alert(param.innerHTML);
+                           //refresh selectors.
+  document.getElementById("LookingFor_tag").value = "selectedValue";
+  document.getElementById("Occassion_tag").value = "selectedValue";
+  $('#LookingFor_tag').multiselect('refresh' );
+  $('#Occassion_tag').multiselect('refresh' );
+   
+  
+};
             function tagSelectionVal() {
                 var selectedValue = $("#select_tag").val();
                 offset = 0;
@@ -207,11 +229,11 @@
                 document.getElementById("select_tag").value = selectedValue;
             }
             function getSelectedValue() {
-                stateValue = $("#stateId").val();
+              //  stateValue = $("#stateId").val();
                  ga('send', 'event', 'option', 'select', stateValue);
-                document.getElementById('fetch_button_id').value = "Fetch";
+               // document.getElementById('fetch_button_id').value = "Fetch";
                 offset = 0;
-                document.getElementById("stateId").value = stateValue;
+               // document.getElementById("stateId").value = stateValue;
             }
 
             function getProducts() {
@@ -226,15 +248,17 @@
                      ga('send', 'event', 'button', 'click', 'Fetch');
                     document.getElementById('fetch_button_id').value = "Fetch More";
                 }
-                var tagKey = document.getElementById("select_tag").value;
+                
+              var occasionTag = document.getElementById("Occassion_tag").value;
+                lookingForTag = document.getElementById("LookingFor_tag").value;
 
 
 
-                if (tagKey === undefined || tagKey.length === 0) {
-                    alert("Please Select Tag");
+                if (occasionTag === undefined) {
+                    alert("Please Select OccasionTag");
                     return;
                 }
-                getCrawledProducts(tagKey, offset, limit, stateValue);
+                getCrawledProducts(occasionTag, offset, limit, stateValue);
 
                 //window.top.postMessage('getproducts#' + tagKey + "#" + offset + "#" + limit + "#" + stateValue, '*');
 
@@ -368,10 +392,50 @@
                 }
 
             }
+     function ajaxcallToPType(pathOfFileToReadFrom, list) {
+                    var datatype = '';
+ 
+                    var ajax = $.ajax({
+                        url: pathOfFileToReadFrom,
+                        async: false,
+                        success: function(csvd) {
+                            console.log('ajax succes: ' + csvd)
+                            datatype = $.csv2Array(csvd);
+                            console.log('ajax arry: ' + datatype)
 
+                        },
+                        dataType: "text",
+                    });
+                   
+                    ajax.complete(function(jqXHR) {
+                        // console.log('ajax complete ' + datatype);
+                        if (jqXHR.readyState === 4) {
+                            callfunction(datatype, list);
+                        }
+                    });
+                }
+
+                function callfunction(array, list) {
+                    
+                    for (var i = 0; i < array.length; i++) {
+                        var tmp = array[i];
+                        var line = tmp;
+                        for (var j = 0; j < line.length; j++) {
+                            v = line[j];
+                            v = $.trim(v);
+                            if (v !== '' && v.length > 0) {
+                                console.log('Words   :' + v + ':');
+                                list.push(v);
+                            }
+                        }
+                    }
+                    list.sort();
+                    console.log('sorted list: ' + list);
+                    
+                }
         </script>
 
-
+ 
 
 
 
@@ -384,7 +448,7 @@
 
         </table>  
         <div>
-            Fetch   <select id="stateId" name="" style="width:150;" onchange="getSelectedValue();">
+<!--            Fetch   <select id="stateId" name="" style="width:150;" onchange="getSelectedValue();">
                 <option value="NONE" title=" ">NONE</option>
                 <option value="CRAWLED" title=" ">CRAWLED</option>
                 <option value="CURATED" title=" ">CURATED</option>
@@ -393,27 +457,43 @@
                 <option value="ARCHIVED" title=" ">ARCHIVED</option>
 
             </select> Products with keyword  <select id="select_tag" onchange="tagSelectionVal()" name="selection" multiple="multiple"   style="width: 200px" >
-            </select>   
-            <input type='button' id="fetch_button_id" value='Fetch ' style="margin-left: 25px;"   onClick="getProducts()"/> 
-            <hr>
+            </select>   -->
+<!--            <input type='button' id="fetch_button_id" value='Fetch ' style="margin-left: 25px;"   onClick="getProducts()"/> -->
+<!--            <hr>-->
             <div> <H2 align="center" id="create_aisle_heading">Create Aisle</H2></div>
 
 
              
-            LookingFor   <select id="LookingFor_tag" onchange="lookingForSelectionVal()" name="" style="width:150;" onchange="getSelectedValue();" >
-            </select> Occasion  <select id="Occassion_tag" onchange="occasionSelectionVal()" name="selection" multiple="multiple"   style="width: 200px" >
-            </select>   
+                           <select id="LookingFor_tag" onchange="lookingForSelectionVal()" name="selection" multiple="multiple" style="width:150;"   >
+            </select> For  <select id="Occassion_tag" onchange="occasionSelectionVal()" name="selection" multiple="multiple"   style="width: 200px" >
+            </select> 
+             <input type='button' id="fetch_button_id" value='Fetch ' style="margin-left: 25px;"   onClick="getProducts()"/> 
+             OR      <select id="titleID"   style="width:150;"  multiple="multiple" name="selection">
+                <option value="NONE" title=" ">NONE</option>
+                <option value="CRAWLED" title=" ">CRAWLED</option>
+                <option value="CURATED" title=" ">CURATED</option>
+                <option value="CURATED_AND_VERIFIED" title=" ">CURATED_AND_VERIFIED</option>
+                <option value="NEEDS_RECURATION" title=" ">NEEDS_RECURATION</option>
+                <option value="ARCHIVED" title=" ">ARCHIVED</option></select>
+             <button class="link" id="btTagOne" onclick="titleTag(this)">Clicky</button>
+              <button class="link" id="btTagTwo" onclick="titleTag(this)">Clicky1</button>
+               <button class="link" id="btTagThree" onclick="titleTag(this)">Clicky2</button>
+                <button class="link" id="btTagFour" onclick="titleTag(this)">Clicky3</button>
+                 <button class="link" id="btTagFive" onclick="titleTag(this)">Clicky4</button>
+                  <button class="link" id="btTagSix" onclick="titleTag(this)">Clicky5</button>
+                   <button class="link" id="btTagSeven" onclick="titleTag(this)">Clicky6</button>
             <hr>
             <script type="text/javascript">
-                $("select").multiselect({
-                    multiple: false,
-                    header: "Select an option",
-                    noneSelectedText: "Select an Option",
-                    selectedList: 1
-                });
+              
+                 $("#titleID").multiselect({
+                        multiple: false,
+                        header: "Select Title",
+                        noneSelectedText: "Select Title",
+                        selectedList: 1
+                    }).multiselectfilter();
             </script>
         </div><br><br>
-        <div class="outside">
+       <div class="outside">
 
             <p id='btnPrevious' style="margin-left:30em;"><span id="slider-prev"></span> | <span id="slider-next"></span></p>
 
@@ -421,9 +501,10 @@
 
             <p id='btnNext'  style="margin-right:30em;"><span id="slider-prev2"></span> | <span id="slider-next2"></span></p>
         </div>
-
+       
+        
         <table align="center"  style="border-spacing: 20px;"><tr>
-                <td  ><p id='products_text_id'> Select products from here</p> 
+               <td  > <p id='products_text_id'> Select products from here</p>  
                     
                     <div  id = 'products_holder_id' class="slider6">
                         <div> <img src ='images/aisle_baground.png' width="400" height="400"/></div>
@@ -437,7 +518,7 @@
                     <div class="outside"><p id='products_id'> Selected Products:</p> 
 
                         <input type='button' id='submit_button' value='Submit Aisle' onClick="onSubmitAisleButtonClick()"/> 
-                    </div>
+                    </div> 
                      
                         
                     <div id='aisle_holder_id' class="slider8">
@@ -455,6 +536,16 @@
             </tr>
         </table>
         <script>
+            
+ 
+              $(document).ready(function() {
+                  document.getElementById("titleID").style.marginLeft="50px";
+                   document.getElementById("fetch_button_id").style.marginLeft="50px";
+                   document.getElementById("fetch_button_id").style.marginRight="50px";
+                    ajaxcallToPType('ProductTypesandoccationsAisleTitles.csv', titleTags);
+                    
+
+                });
             var aisleSlider;
             $(document).ready(function() {
 
@@ -531,6 +622,7 @@
                 createAisleRequest();
 
             }
+   
         </script>
     </body>
 
@@ -538,6 +630,7 @@
 </html>
 
 <style>
+     button.link { background:none;border:none; }
     .outside{
         text-align:center;
     }
