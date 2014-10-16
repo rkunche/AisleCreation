@@ -55,6 +55,7 @@
             var category;
             var occasion;
             var lookingFor;
+            var productType;
             var aisleOwnerName;
             var uploadProductCount = 0;
             var aisleCount = 0;
@@ -229,9 +230,12 @@
                 }
             }
             function occasionSelectionVal() {
+                productType = '';
                 var selectedValue = $("#Occassion_tag").val();
                 document.getElementById("titleID").value = "selectedValue";
                 $('#titleID').multiselect('refresh');
+                document.getElementById("productType_tag").value = "selectedValue";
+                $('#productType_tag').multiselect('refresh');
                 ga('send', 'event', 'option', 'select', selectedValue);
                 occasion = selectedValue;
                 document.getElementById("Occassion_tag").value = selectedValue;
@@ -252,9 +256,12 @@
 
             }
             function lookingForSelectionVal() {
+                productType = '';
                 var selectedValue = $("#LookingFor_tag").val();
                 document.getElementById("titleID").value = "selectedValue";
                 $('#titleID').multiselect('refresh');
+                document.getElementById("productType_tag").value = "selectedValue";
+                $('#productType_tag').multiselect('refresh');
                 lookingFor = selectedValue;
                 ga('send', 'event', 'option', 'select', selectedValue);
                 document.getElementById('btTagOne').innerHTML = " ";
@@ -275,8 +282,9 @@
                 var selectedValue = $("#productType_tag").val();
                 document.getElementById("titleID").value = "selectedValue";
                 $('#titleID').multiselect('refresh');
-
-
+                lookingFor = '';
+                occasion = '';
+                productType = selectedValue;
                 document.getElementById("LookingFor_tag").value = "selectedValue";
                 document.getElementById("Occassion_tag").value = "selectedValue";
 
@@ -285,7 +293,7 @@
 
 
 
-                lookingFor = selectedValue;
+
                 ga('send', 'event', 'option', 'select', selectedValue);
                 document.getElementById('btTagOne').innerHTML = " ";
 
@@ -389,6 +397,9 @@
                 $('#productType_tag').multiselect('refresh');
 
                 var tag = param.innerHTML;
+                productType = '';
+                occasion = '';
+                lookingFor = '';
 
 
                 getCrawledProducts(tag, offset, limit, stateValue);
@@ -425,20 +436,26 @@
                     document.getElementById('fetch_button_id').value = "Fetch More";
                 }
 
-                var occasionTag = document.getElementById("Occassion_tag").value;
-                lookingForTag = document.getElementById("LookingFor_tag").value;
+                // var occasionTag = document.getElementById("Occassion_tag").value;
+                //lookingForTag = document.getElementById("LookingFor_tag").value;
 
 
 
-                if (occasionTag === undefined) {
-                    alert("Please Select OccasionTag");
+
+                var searchString;
+                if (productType === '') {
+                    searchString = occasion;
+                    if (searchString == '') {
+                        searchString = lookingFor;
+                    }
+                } else {
+                    searchString = productType;
+                }
+                if (searchString === undefined || searchString === '') {
+                    alert("Please Select OccasionTag or Product Type");
                     return;
                 }
-                getCrawledProducts(occasionTag, offset, limit, stateValue);
-
-                //window.top.postMessage('getproducts#' + tagKey + "#" + offset + "#" + limit + "#" + stateValue, '*');
-
-
+                getCrawledProducts(searchString, offset, limit, stateValue);
             }
             function getUser(id) {
                 var url = "https://vue-server-dev.appspot.com/api/user/" + id;
@@ -645,8 +662,6 @@
                 for (var k = 0; k < filterArray.length; k++) {
                     if (filterArray[k].title !== undefined) {
                         itemArray.push(filterArray[k]);
-                        console.log("**************************************************** " + filterArray[k].title);
-                        console.log("**************************************************** " + filterArray[k].Tags);
 
                     }
 
@@ -733,7 +748,7 @@
                 <td  > <p id='products_text_id'> Select products from here</p>  
 
                     <div  id = 'products_holder_id' class="slider6">
-                        <div> <img src ='images/aisle_baground.png' /></div>
+                        <div> <img src ='images/aisle_bagroundvue.png' /></div>
 
                     </div>  
 

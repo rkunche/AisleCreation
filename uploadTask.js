@@ -19,7 +19,7 @@ var aisleProducts = [];
 
 var selectedProducts = [];
 function getCrawledProducts(tag, offset, limit, productState) {
- 
+console.log("serach tag is: "+tag);
     offsetval = offset;
     var isProductSliderReloaded;
     //keyword
@@ -355,7 +355,7 @@ function prepareAisleSlider(aisleHolder,index) {
     }
     if (aisleProducts.length === 0) {
         var imag = document.createElement("img");
-        imag.src = "images/aisle_baground.png";
+        imag.src = "images/aisle_bagroundvue.png";
         imag.width = 400;
         imag.height = 400;
         aisleHolder.appendChild(imag);
