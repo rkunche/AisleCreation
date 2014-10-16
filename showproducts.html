@@ -141,6 +141,72 @@
                         tagsrequest.send();
                     }
                 }
+                document.getElementById("btTagOne").style.color = "black";
+                document.getElementById("btTagTwo").style.color = "black";
+                document.getElementById("btTagThree").style.color = "black";
+                document.getElementById("btTagFour").style.color = "black";
+                document.getElementById("btTagFive").style.color = "black";
+                document.getElementById("btTagSix").style.color = "black";
+
+                document.getElementById("btTagTwo").onmouseover = function()
+                {
+                    this.style.color = "green";
+                }
+
+                document.getElementById("btTagTwo").onmouseout = function()
+                {
+                    this.style.color = "black";
+                }
+
+
+                document.getElementById("btTagOne").onmouseover = function()
+                {
+                    this.style.color = "green";
+                }
+
+                document.getElementById("btTagOne").onmouseout = function()
+                {
+                    this.style.color = "black";
+                }
+
+
+                document.getElementById("btTagThree").onmouseover = function()
+                {
+                    this.style.color = "green";
+                }
+
+                document.getElementById("btTagThree").onmouseout = function()
+                {
+                    this.style.color = "black";
+                }
+                document.getElementById("btTagFour").onmouseover = function()
+                {
+                    this.style.color = "green";
+                }
+
+                document.getElementById("btTagFour").onmouseout = function()
+                {
+                    this.style.color = "black";
+                }
+                document.getElementById("btTagFive").onmouseover = function()
+                {
+                    this.style.color = "green";
+                }
+
+                document.getElementById("btTagFive").onmouseout = function()
+                {
+                    this.style.color = "black";
+                }
+                document.getElementById("btTagSix").onmouseover = function()
+                {
+                    this.style.color = "green";
+                }
+
+                document.getElementById("btTagSix").onmouseout = function()
+                {
+                    this.style.color = "black";
+                }
+
             }
             function tagRespnseHandler() {
                 if (tagsrequest.readyState !== 4)
@@ -511,9 +577,12 @@
                     document.getElementById('LookingFor_tag').scrollIntoView();
                     return false;
                 }
-                alert("checking success");
+
 
                 var url = "https://vue-server-dev.appspot.com/api/aisle";
+                if (description === undefined) {
+                    description = null;
+                }
                 if (XMLHttpRequest) {
                     request = new XMLHttpRequest();
                     if ("withCredentials" in request) {
