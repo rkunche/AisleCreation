@@ -181,23 +181,41 @@ function showProductsBxSlider() {
         var textContainer = document.createElement("div");
         if(jsonObject.productProviders[0] !== undefined && jsonObject.productProviders[0].store !== undefined){
         var provider = document.createTextNode(jsonObject.productProviders[0].store);
-        textContainer.appendChild(provider);
+                 var span = document.createElement('span');
+span.style.fontSize = "15px";
+span.style.color="green";
+span.appendChild(provider);
+textContainer.appendChild(span);
+        
         var br = document.createElement('br');
         textContainer.appendChild(br);
     }
         if(jsonObject.title !== undefined){
         var title = document.createTextNode(jsonObject.title);
-        textContainer.appendChild(title);
+       
+             var span = document.createElement('span');
+span.style.fontSize = "20px";
+span.style.color="orange";
+span.appendChild(title);
+textContainer.appendChild(span);
+ //textContainer.appendChild(title);
         var br = document.createElement('br');
         textContainer.appendChild(br);
     }
 
         var state = document.createTextNode(jsonObject.currentProductState);
-        textContainer.appendChild(state);
+                var span = document.createElement('span');
+span.style.fontSize = "10px";
+span.style.color="green";
+span.appendChild(state);
+textContainer.appendChild(span);
+      
         var br = document.createElement('br');
         textContainer.appendChild(br);
 
-
+   var br = document.createElement('br');
+        textContainer.appendChild(br);
+          
 
         createButton(jsonObject, textContainer);
 
@@ -320,19 +338,36 @@ function prepareAisleSlider(aisleHolder,index) {
 
         var textContainer = document.createElement("div");
         var provider = document.createTextNode(tempProduct.productProviders[0].store);
-        textContainer.appendChild(provider);
+        
+        var span = document.createElement('span');
+span.style.fontSize = "15px";
+span.style.color="green";
+span.appendChild(provider);
+textContainer.appendChild(span);
         var br = document.createElement('br');
         textContainer.appendChild(br);
 
         var title = document.createTextNode(tempProduct.title);
-        textContainer.appendChild(title);
+           var span = document.createElement('span');
+span.style.fontSize = "20px";
+span.style.color="orange";
+span.appendChild(title);
+textContainer.appendChild(span);
+        //textContainer.appendChild(title);
         var br = document.createElement('br');
         textContainer.appendChild(br);
 
 
         var state = document.createTextNode(tempProduct.currentProductState);
-        textContainer.appendChild(state);
+                var span = document.createElement('span');
+span.style.fontSize = "10px";
+span.style.color="green";
+span.appendChild(state);
+textContainer.appendChild(span)
+        textContainer.appendChild(span);
         var br = document.createElement('br');
+        textContainer.appendChild(br);
+         var br = document.createElement('br');
         textContainer.appendChild(br);
         createAisleDeleteButton(textContainer, tempProduct);
         aileDiv.appendChild(textContainer);
@@ -354,10 +389,9 @@ function prepareAisleSlider(aisleHolder,index) {
         aisleSubmitButton.style.outline = "solid gray";
     }
     if (aisleProducts.length === 0) {
+      
         var imag = document.createElement("img");
-        imag.src = "images/aisle_bagroundvue.png";
-        imag.width = 400;
-        imag.height = 400;
+        imag.src = "images/aislebg.jpg";
         aisleHolder.appendChild(imag);
     }
     aisleSldierReload();
@@ -366,7 +400,7 @@ function prepareAisleSlider(aisleHolder,index) {
     sliderReload();
    movePorductsSlider(index);
     }
-    
+    moveAisleSlider(aisleProducts.length -1);
 }
 function createAisleDeleteButton(div, product) {
 
