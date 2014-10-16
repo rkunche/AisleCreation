@@ -19,6 +19,7 @@ var aisleProducts = [];
 
 var selectedProducts = [];
 function getCrawledProducts(tag, offset, limit, productState) {
+ 
     offsetval = offset;
     var isProductSliderReloaded;
     //keyword
@@ -70,10 +71,10 @@ function getHandler() {
            aisleHolder.innerHTML = "";
             productsCount.innerHTML = "Selected Products: 0";
             var imag = document.createElement("img");
-            imag.src = "images/aisle_baground.png";
+            imag.src = "images/aislebg.jpg";
              
-     imag.width = 400;
-     imag.height = 400;
+     //imag.width = 400;
+     //imag.height = 400;
             aisleHolder.appendChild(imag);
             aisleSldierReload();
         }

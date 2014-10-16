@@ -1,27 +1,28 @@
 <html>
     <head>
-    <script>
-            (function(i, s, o, g, r, a, m) {
-                i['GoogleAnalyticsObject'] = r;
-                i[r] = i[r] || function() {
-                    (i[r].q = i[r].q || []).push(arguments)
-                }, i[r].l = 1 * new Date();
-                a = s.createElement(o),
-                        m = s.getElementsByTagName(o)[0];
-                a.async = 1;
-                a.src = g;
-                m.parentNode.insertBefore(a, m)
-            })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-
-            ga('create', 'UA-55582645-2', 'auto');
-            ga('send', 'pageview');
-
-        </script>
+        <script>
+//            (function(i, s, o, g, r, a, m) {
+//                i['GoogleAnalyticsObject'] = r;
+//                i[r] = i[r] || function() {
+//                    (i[r].q = i[r].q || []).push(arguments)
+//                }, i[r].l = 1 * new Date();
+//                a = s.createElement(o),
+//                        m = s.getElementsByTagName(o)[0];
+//                a.async = 1;
+//                a.src = g;
+//                m.parentNode.insertBefore(a, m)
+//            })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+//
+//            ga('create', 'UA-55582645-2', 'auto');
+//            ga('create', 'UA-55582645-2', {'userId': userId});
+//            ga('send', 'pageview');
+//
+//        </script>
         <meta charset="utf-8">
 
         <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"/>
         <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
-         <script type="text/javascript" src="jquery.csv-0.71.js"></script>
+
         <script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
         <script src="jquery.bxslider.js"></script>
         <link href="jquery.bxslider.css" rel="stylesheet" /> 
@@ -33,7 +34,7 @@
         <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/ui-lightness/jquery-ui.css" />
         <!--        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
                 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js"></script>-->
-        
+        <script type="text/javascript" src="jquery.csv-0.71.js"></script>
         <script type="text/javascript" src="src/jquery.multiselect.js"></script>
         <script type="text/javascript" src="src/jquery.multiselect.filter.js"></script>
         <script type="text/javascript" src="assets/prettify.js"></script> 
@@ -59,6 +60,13 @@
             var aisleCount = 0;
             var lookingForTag;
             var titleTags = [];
+            var selectedWord;
+            var itemArray = [];
+            var subItem = [];
+            //prototype for clear the array values.
+            Array.prototype.clear = function() {
+                this.length = 0;
+            };
             window.onmessage = function(e) {
                 var data = e.data.split("#");
                 if (data[0] === 'getSelectedProducts') {
@@ -85,6 +93,21 @@
                 if (data[0] === 'User') {
 
                     if (data[1] !== '0') {
+                        (function(i, s, o, g, r, a, m) {
+                            i['GoogleAnalyticsObject'] = r;
+                            i[r] = i[r] || function() {
+                                (i[r].q = i[r].q || []).push(arguments)
+                            }, i[r].l = 1 * new Date();
+                            a = s.createElement(o),
+                                    m = s.getElementsByTagName(o)[0];
+                            a.async = 1;
+                            a.src = g;
+                            m.parentNode.insertBefore(a, m)
+                        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+                        // ga('create', 'UA-55582645-2', 'auto');
+                        ga('create', 'UA-55582645-2', {'userId': data[1]});
+                        ga('send', 'pageview');
                         getUser(data[1]);
                         // getUser("6419807607980032");
                     }
@@ -92,13 +115,13 @@
                 }
             };
         </script>
-    
+
 
         <script>
 
             function getTags() {
-                document.getElementById('products_holder_id').setAttribute("style","width:800px");
-                 document.getElementById('aisle_holder_id').setAttribute("style","width:800px");
+                document.getElementById('products_holder_id').setAttribute("style", "width:800px");
+                document.getElementById('aisle_holder_id').setAttribute("style", "width:800px");
                 newheight = screen.height - 120;
                 getMe();
                 var fetchButton = document.getElementById("fetch_button_id");
@@ -142,35 +165,44 @@
                             jsonResponse.splice(t, 1);
                         }
                     }
-                    //var tagSubCatelement = document.getElementById('select_tag');
+                    var productType = document.getElementById('productType_tag');
                     var occasionSubCatelement = document.getElementById('Occassion_tag');
                     var lookingForSubCatelement = document.getElementById('LookingFor_tag');
                     //document.getElementById("stateId").value = stateValue;
                     //var temp2 = tag_string_array[static_categoryNames[k]];
                     //  tagSubCatelement.options[tagSubCatelement.options.length] = new Option('', '', false, false);
                     for (var i = 0; i < jsonResponse.length; i++) {
-                         
-                       // tagSubCatelement.options[tagSubCatelement.options.length] = new Option(jsonResponse[i].tagString, jsonResponse[i].tagString, false, false);
+
+                        // tagSubCatelement.options[tagSubCatelement.options.length] = new Option(jsonResponse[i].tagString, jsonResponse[i].tagString, false, false);
                         if (jsonResponse[i].tagCategory === "Occasion") {
                             occasionSubCatelement.options[occasionSubCatelement.options.length] = new Option(jsonResponse[i].tagString, jsonResponse[i].tagString, false, false);
                         }
-                             
+
                         if (jsonResponse[i].tagCategory === "Product Type") {
                             lookingForSubCatelement.options[lookingForSubCatelement.options.length] = new Option(jsonResponse[i].tagString, jsonResponse[i].tagString, false, false);
+                            productType.options[productType.options.length] = new Option(jsonResponse[i].tagString, jsonResponse[i].tagString, false, false);
                         }
                     }
+                    ajaxcallToPType('OccasionsCuration.csv', titleTags);
                     $("#Occassion_tag").multiselect({
                         multiple: false,
                         header: "Occasion",
                         noneSelectedText: "Occasion",
                         selectedList: 1
                     }).multiselectfilter();
-  $("#LookingFor_tag").multiselect({
+                    $("#LookingFor_tag").multiselect({
                         multiple: false,
                         header: "Product Type",
                         noneSelectedText: "Product Type",
                         selectedList: 1
                     }).multiselectfilter();
+                    $("#productType_tag").multiselect({
+                        multiple: false,
+                        header: "Product Type",
+                        noneSelectedText: "Product Type",
+                        selectedList: 1
+                    }).multiselectfilter();
+
                     $(function() {
                         var warning = $(".message");
 
@@ -198,58 +230,202 @@
             }
             function occasionSelectionVal() {
                 var selectedValue = $("#Occassion_tag").val();
+                document.getElementById("titleID").value = "selectedValue";
+                $('#titleID').multiselect('refresh');
                 ga('send', 'event', 'option', 'select', selectedValue);
                 occasion = selectedValue;
                 document.getElementById("Occassion_tag").value = selectedValue;
-                  document.getElementById('fetch_button_id').value = "Fetch" ;
+                document.getElementById('fetch_button_id').value = "Fetch";
+
+                document.getElementById('btTagOne').innerHTML = " ";
+
+                document.getElementById('btTagTwo').innerHTML = " ";
+
+                document.getElementById('btTagThree').innerHTML = " ";
+
+
+                document.getElementById('btTagFour').innerHTML = " ";
+
+                document.getElementById('btTagFive').innerHTML = " ";
+
+                document.getElementById('btTagSix').innerHTML = " ";
+
             }
             function lookingForSelectionVal() {
                 var selectedValue = $("#LookingFor_tag").val();
-                
+                document.getElementById("titleID").value = "selectedValue";
+                $('#titleID').multiselect('refresh');
                 lookingFor = selectedValue;
                 ga('send', 'event', 'option', 'select', selectedValue);
+                document.getElementById('btTagOne').innerHTML = " ";
+
+                document.getElementById('btTagTwo').innerHTML = " ";
+
+                document.getElementById('btTagThree').innerHTML = " ";
+
+
+                document.getElementById('btTagFour').innerHTML = " ";
+
+                document.getElementById('btTagFive').innerHTML = " ";
+
+                document.getElementById('btTagSix').innerHTML = " ";
                 //document.getElementById("LookingFor_tag").value = selectedValue;
             }
-                       var titleTag = function(param) {
-                           alert(param.innerHTML);
-                           //refresh selectors.
-  document.getElementById("LookingFor_tag").value = "selectedValue";
-  document.getElementById("Occassion_tag").value = "selectedValue";
-  $('#LookingFor_tag').multiselect('refresh' );
-  $('#Occassion_tag').multiselect('refresh' );
-   
-  
-};
+            function productTypeTag() {
+                var selectedValue = $("#productType_tag").val();
+                document.getElementById("titleID").value = "selectedValue";
+                $('#titleID').multiselect('refresh');
+
+
+                document.getElementById("LookingFor_tag").value = "selectedValue";
+                document.getElementById("Occassion_tag").value = "selectedValue";
+
+                $('#LookingFor_tag').multiselect('refresh');
+                $('#Occassion_tag').multiselect('refresh');
+
+
+
+                lookingFor = selectedValue;
+                ga('send', 'event', 'option', 'select', selectedValue);
+                document.getElementById('btTagOne').innerHTML = " ";
+
+                document.getElementById('btTagTwo').innerHTML = " ";
+
+                document.getElementById('btTagThree').innerHTML = " ";
+
+
+                document.getElementById('btTagFour').innerHTML = " ";
+
+                document.getElementById('btTagFive').innerHTML = " ";
+
+                document.getElementById('btTagSix').innerHTML = " ";
+            }
+            function onTitleSelectionChange() {
+                var selectedValue = $("#titleID").val();
+                var position;
+                document.getElementById("LookingFor_tag").value = "selectedValue";
+                document.getElementById("Occassion_tag").value = "selectedValue";
+                document.getElementById("productType_tag").value = "selectedValue";
+                $('#LookingFor_tag').multiselect('refresh');
+                $('#Occassion_tag').multiselect('refresh');
+                $('#productType_tag').multiselect('refresh');
+                for (var i = 0; i < itemArray.length; i++) {
+                    console.log("TAGING: itemArray length " + itemArray[i].title.split(":")[0]);
+                    console.log("TAGING: itemArray length " + itemArray[i].title.split(":")[1]);
+                    if (itemArray[i].title.split(":")[1].localeCompare(selectedValue) === 0) {
+                        position = i;
+                        console.log("TAGING: position is " + position);
+                        break;
+                    }
+//                    if(itemArray[i].title.split(":")[1] === selectedValue){
+//                        position = i;
+//                        console.log("TAGING: position is "+position);
+//                        break;
+//                    }
+                }
+                var wordbtnOne = document.getElementById('btTagOne');
+                var wordbtnTwo = document.getElementById('btTagTwo');
+                var wordbtnThree = document.getElementById('btTagThree');
+                var wordbtnFour = document.getElementById('btTagFour');
+                var wordbtnFive = document.getElementById('btTagFive');
+                var wordbtnSix = document.getElementById('btTagSix');
+                var tagsArray = [];
+                if (position !== undefined) {
+                    var titleObject = itemArray[position];
+                    if (titleObject !== undefined) {
+                        console.log("TAGING: title object ");
+                        var tags;
+                        tags = titleObject.Tags.split(":")[1];
+                        console.log("TAGING: title object " + tags);
+                        tagsArray = tags.split(";");
+                    }
+                }
+                console.log("TAGING: tags count is " + tagsArray.length);
+                if (tagsArray.length >= 1) {
+
+                    document.getElementById("productType_tag").style.visibility = "hidden";
+                    console.log("TAGING:  hidding the product selection ");
+                }
+                if (tagsArray[0] !== undefined) {
+                    document.getElementById('btTagOne').innerHTML = tagsArray[0];
+                }
+                if (tagsArray[1] !== undefined) {
+                    document.getElementById('btTagTwo').innerHTML = tagsArray[1];
+                }
+                if (tagsArray[2] !== undefined) {
+                    document.getElementById('btTagThree').innerHTML = tagsArray[2];
+                }
+                if (tagsArray[3] !== undefined) {
+                    document.getElementById('btTagFour').innerHTML = tagsArray[3];
+                }
+                if (tagsArray[4] !== undefined) {
+                    document.getElementById('btTagFive').innerHTML = tagsArray[4];
+                }
+                if (tagsArray[5] !== undefined) {
+                    document.getElementById('btTagSix').innerHTML = tagsArray[5];
+                }
+
+                //var wordbtnOne = document.getElementById("titleID").value = selectedValue;
+
+
+
+            }
+            var titleTag = function(param) {
+                if (selectedWord === undefined) {
+                    selectedWord = param.innerHTML;
+                    offset = 0;
+                } else if (selectedWord === param.innerHTML) {
+                    offset = offset + limit;
+                } else {
+                    offset = 0;
+                }
+
+                //refresh selectors.
+                document.getElementById("LookingFor_tag").value = "selectedValue";
+                document.getElementById("Occassion_tag").value = "selectedValue";
+                document.getElementById("productType_tag").value = "selectedValue";
+                $('#LookingFor_tag').multiselect('refresh');
+                $('#Occassion_tag').multiselect('refresh');
+                $('#productType_tag').multiselect('refresh');
+
+                var tag = param.innerHTML;
+
+
+                getCrawledProducts(tag, offset, limit, stateValue);
+
+
+
+            }
             function tagSelectionVal() {
                 var selectedValue = $("#select_tag").val();
                 offset = 0;
-                 ga('send', 'event', 'option', 'select', selectedValue);
+                ga('send', 'event', 'option', 'select', selectedValue);
                 category = selectedValue;
                 document.getElementById('fetch_button_id').value = "Fetch";
                 document.getElementById("select_tag").value = selectedValue;
             }
             function getSelectedValue() {
-              //  stateValue = $("#stateId").val();
-                 ga('send', 'event', 'option', 'select', stateValue);
-               // document.getElementById('fetch_button_id').value = "Fetch";
+                //  stateValue = $("#stateId").val();
+                ga('send', 'event', 'option', 'select', stateValue);
+                // document.getElementById('fetch_button_id').value = "Fetch";
                 offset = 0;
-               // document.getElementById("stateId").value = stateValue;
+                // document.getElementById("stateId").value = stateValue;
             }
 
             function getProducts() {
                 document.getElementById('create_aisle_heading').scrollIntoView();
                 var buttonValue = document.getElementById('fetch_button_id').value;
                 if (buttonValue === "Fetch More") {
-                     ga('send', 'event', 'button', 'click', 'Fetch More');
+                    ga('send', 'event', 'button', 'click', 'Fetch More');
                     offset = offset + limit;
                     document.getElementById('fetch_button_id').value = "Fetch More";
                 } else {
                     offset = 0;
-                     ga('send', 'event', 'button', 'click', 'Fetch');
+                    ga('send', 'event', 'button', 'click', 'Fetch');
                     document.getElementById('fetch_button_id').value = "Fetch More";
                 }
-                
-              var occasionTag = document.getElementById("Occassion_tag").value;
+
+                var occasionTag = document.getElementById("Occassion_tag").value;
                 lookingForTag = document.getElementById("LookingFor_tag").value;
 
 
@@ -290,9 +466,9 @@
                 {
                     var user = JSON.parse(request.responseText);
                     aisleOwnerName = user.firstName + " " + user.lastName;
-                    userId = user.id; 
-                    ga('create', 'UA-55582645-2', { 'userId': userId });
-                    ga('send', 'pageview');
+                    userId = user.id;
+                    // ga('create', 'UA-55582645-2', {'userId': userId});
+                    //ga('send', 'pageview');
                     // alert('HTTP GET success: ' + urlUserID);
 
                 }
@@ -304,22 +480,22 @@
                 window.top.postMessage('getUser', '*');
             }
 
-            function createAisleRequest() {   
+            function createAisleRequest() {
                 if (occasion.length < 1)
                 {
                     showAlert("Please Select Occassion");
                     document.getElementById('Occassion_tag').scrollIntoView();
                     return false;
                 }
-                
+
                 if (lookingFor.length < 1)
                 {
                     showAlert("Please Select LookingFor");
                     document.getElementById('LookingFor_tag').scrollIntoView();
                     return false;
                 }
-              alert("checking success");
-             
+                alert("checking success");
+
                 var url = "https://vue-server-dev.appspot.com/api/aisle";
                 if (XMLHttpRequest) {
                     request = new XMLHttpRequest();
@@ -330,7 +506,7 @@
                         request.setRequestHeader('Content-Type', 'application/json');
                         request.onreadystatechange = aisle_post_handler;
                         //aisle creation request.
-                       request.send(JSON.stringify({id: null, ownerUserId: userId, category: category, description: description, lookingFor: lookingFor, name: aisleOwnerName, occassion: occasion, currentAisleState: "CURATED", bookmarkCount: 0}));
+                        request.send(JSON.stringify({id: null, ownerUserId: userId, category: category, description: description, lookingFor: lookingFor, name: aisleOwnerName, occassion: occasion, currentAisleState: "CURATED", bookmarkCount: 0}));
                     }
                 }
             }
@@ -392,50 +568,111 @@
                 }
 
             }
-     function ajaxcallToPType(pathOfFileToReadFrom, list) {
-                    var datatype = '';
- 
-                    var ajax = $.ajax({
-                        url: pathOfFileToReadFrom,
-                        async: false,
-                        success: function(csvd) {
-                            console.log('ajax succes: ' + csvd)
-                            datatype = $.csv2Array(csvd);
-                            console.log('ajax arry: ' + datatype)
+            function ajaxcallToPType(pathOfFileToReadFrom, list) {
+                var datatype = '';
 
-                        },
-                        dataType: "text",
-                    });
-                   
-                    ajax.complete(function(jqXHR) {
-                        // console.log('ajax complete ' + datatype);
-                        if (jqXHR.readyState === 4) {
-                            callfunction(datatype, list);
-                        }
-                    });
-                }
+                var ajax = $.ajax({
+                    url: pathOfFileToReadFrom,
+                    async: false,
+                    success: function(csvd) {
+                        console.log('ajax succes: ' + csvd)
+                        datatype = $.csv2Array(csvd);
+                        console.log('ajax arry: ' + datatype)
 
-                function callfunction(array, list) {
-                    
-                    for (var i = 0; i < array.length; i++) {
-                        var tmp = array[i];
-                        var line = tmp;
-                        for (var j = 0; j < line.length; j++) {
-                            v = line[j];
-                            v = $.trim(v);
-                            if (v !== '' && v.length > 0) {
-                                console.log('Words   :' + v + ':');
-                                list.push(v);
-                            }
+                    },
+                    dataType: "text",
+                });
+
+                ajax.complete(function(jqXHR) {
+                    // console.log('ajax complete ' + datatype);
+                    if (jqXHR.readyState === 4) {
+                        callfunction(datatype, list);
+                    }
+                });
+            }
+
+            function callfunction(array, list) {
+
+                for (var i = 0; i < array.length; i++) {
+                    var tmp = array[i];
+                    var line = tmp;
+                    for (var j = 0; j < line.length; j++) {
+                        v = line[j];
+                        v = $.trim(v);
+                        if (v !== '' && v.length > 0) {
+                            console.log('Words   :' + v + ':');
+                            list.push(v);
                         }
                     }
-                    list.sort();
-                    console.log('sorted list: ' + list);
-                    
                 }
+
+
+
+                var titleOBject = {title: "", Tags: ""};
+                var tempArray = [];
+                var filterArray = [];
+                for (var j = 0; j < list.length; j++) {
+                    var item = list[j];
+                    if (item.length > 4) {
+                        item = item.substr(0, 3);
+                        if (item === 'Tag') {
+                            if (tempArray.length >= 1) {
+                                tempArray.push(list[j]);
+                                var titleOBject = {title: "", Tags: ""};
+                                titleOBject.title = tempArray[0];
+                                titleOBject.Tags = tempArray[1];
+                                filterArray.push(titleOBject);
+                                tempArray.clear();
+                            }
+
+
+                            continue;
+                        }
+                        item = list[j];
+                        item = item.substr(0, 4);
+                        if (item === 'Titl') {
+                            tempArray.push(list[j]);
+
+                            continue;
+                        }
+                    }
+
+                }
+                itemArray.clear();
+                console.log('item array size: ' + itemArray.length);
+                console.log('sorted list1: ' + filterArray.length);
+
+                for (var k = 0; k < filterArray.length; k++) {
+                    if (filterArray[k].title !== undefined) {
+                        itemArray.push(filterArray[k]);
+                        console.log("**************************************************** " + filterArray[k].title);
+                        console.log("**************************************************** " + filterArray[k].Tags);
+
+                    }
+
+
+                }
+                filterArray.clear();
+
+                list.sort();
+                console.log('sorted list2: ' + itemArray.length);
+                for (var i = 0; i < itemArray.length; i++) {
+                    var aisleTitleCatelement = document.getElementById('titleID');
+
+                    var title = itemArray[i].title.split(":")[1];
+                    aisleTitleCatelement.options[aisleTitleCatelement.options.length] = new Option(title, title, false, false);
+                    $("#titleID").multiselect({
+                        multiple: false,
+                        header: "Select Title",
+                        noneSelectedText: "Select Title",
+                        selectedList: 1
+                    }).multiselectfilter();
+                }
+
+            }
         </script>
 
- 
+
 
 
 
@@ -448,52 +685,41 @@
 
         </table>  
         <div>
-<!--            Fetch   <select id="stateId" name="" style="width:150;" onchange="getSelectedValue();">
-                <option value="NONE" title=" ">NONE</option>
-                <option value="CRAWLED" title=" ">CRAWLED</option>
-                <option value="CURATED" title=" ">CURATED</option>
-                <option value="CURATED_AND_VERIFIED" title=" ">CURATED_AND_VERIFIED</option>
-                <option value="NEEDS_RECURATION" title=" ">NEEDS_RECURATION</option>
-                <option value="ARCHIVED" title=" ">ARCHIVED</option>
-
-            </select> Products with keyword  <select id="select_tag" onchange="tagSelectionVal()" name="selection" multiple="multiple"   style="width: 200px" >
-            </select>   -->
-<!--            <input type='button' id="fetch_button_id" value='Fetch ' style="margin-left: 25px;"   onClick="getProducts()"/> -->
-<!--            <hr>-->
+            <!--            Fetch   <select id="stateId" name="" style="width:150;" onchange="getSelectedValue();">
+                            <option value="NONE" title=" ">NONE</option>
+                            <option value="CRAWLED" title=" ">CRAWLED</option>
+                            <option value="CURATED" title=" ">CURATED</option>
+                            <option value="CURATED_AND_VERIFIED" title=" ">CURATED_AND_VERIFIED</option>
+                            <option value="NEEDS_RECURATION" title=" ">NEEDS_RECURATION</option>
+                            <option value="ARCHIVED" title=" ">ARCHIVED</option>
+            
+                        </select> Products with keyword  <select id="select_tag" onchange="tagSelectionVal()" name="selection" multiple="multiple"   style="width: 200px" >
+                        </select>   -->
+            <!--            <input type='button' id="fetch_button_id" value='Fetch ' style="margin-left: 25px;"   onClick="getProducts()"/> -->
+            <!--            <hr>-->
             <div> <H2 align="center" id="create_aisle_heading">Create Aisle</H2></div>
 
 
-             
-                           <select id="LookingFor_tag" onchange="lookingForSelectionVal()" name="selection" multiple="multiple" style="width:150;"   >
-            </select> For  <select id="Occassion_tag" onchange="occasionSelectionVal()" name="selection" multiple="multiple"   style="width: 200px" >
+
+            <select id="LookingFor_tag" onchange="lookingForSelectionVal()" name="selection" multiple="multiple" style="width:150;"   >
+            </select> &nbsp &nbsp &nbsp For &nbsp &nbsp &nbsp <select id="Occassion_tag" onchange="occasionSelectionVal()" name="selection" multiple="multiple"   style="width: 200px" >
             </select> 
-             <input type='button' id="fetch_button_id" value='Fetch ' style="margin-left: 25px;"   onClick="getProducts()"/> 
-             OR      <select id="titleID"   style="width:150;"  multiple="multiple" name="selection">
-                <option value="NONE" title=" ">NONE</option>
-                <option value="CRAWLED" title=" ">CRAWLED</option>
-                <option value="CURATED" title=" ">CURATED</option>
-                <option value="CURATED_AND_VERIFIED" title=" ">CURATED_AND_VERIFIED</option>
-                <option value="NEEDS_RECURATION" title=" ">NEEDS_RECURATION</option>
-                <option value="ARCHIVED" title=" ">ARCHIVED</option></select>
-             <button class="link" id="btTagOne" onclick="titleTag(this)">Clicky</button>
-              <button class="link" id="btTagTwo" onclick="titleTag(this)">Clicky1</button>
-               <button class="link" id="btTagThree" onclick="titleTag(this)">Clicky2</button>
-                <button class="link" id="btTagFour" onclick="titleTag(this)">Clicky3</button>
-                 <button class="link" id="btTagFive" onclick="titleTag(this)">Clicky4</button>
-                  <button class="link" id="btTagSix" onclick="titleTag(this)">Clicky5</button>
-                   <button class="link" id="btTagSeven" onclick="titleTag(this)">Clicky6</button>
+
+            <p>OR</p>     <select id="titleID"   onchange="onTitleSelectionChange()" name="selection"    multiple="multiple" style="width: 200px"  >
+            </select>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp  &nbsp
+            <select id="productType_tag" onchange="productTypeTag()" name="selection" multiple="multiple" style="width:150;"   ></select>
+            <button class="link" id="btTagOne" onclick="titleTag(this)"> </button>
+            <button class="link" id="btTagTwo" onclick="titleTag(this)"> </button>
+            <button class="link" id="btTagThree" onclick="titleTag(this)"> </button>
+            <button class="link" id="btTagFour" onclick="titleTag(this)"> </button>
+            <button class="link" id="btTagFive" onclick="titleTag(this)"> </button>
+            <button class="link" id="btTagSix" onclick="titleTag(this)"> </button>
+            <button class="link" id="btTagSeven" onclick="titleTag(this)"> </button>
+            <input type='button' id="fetch_button_id" value='Fetch ' style="margin-left: 25px;"   onClick="getProducts()"/> 
             <hr>
-            <script type="text/javascript">
-              
-                 $("#titleID").multiselect({
-                        multiple: false,
-                        header: "Select Title",
-                        noneSelectedText: "Select Title",
-                        selectedList: 1
-                    }).multiselectfilter();
-            </script>
+
         </div><br><br>
-       <div class="outside">
+        <div class="outside">
 
             <p id='btnPrevious' style="margin-left:30em;"><span id="slider-prev"></span> | <span id="slider-next"></span></p>
 
@@ -501,13 +727,13 @@
 
             <p id='btnNext'  style="margin-right:30em;"><span id="slider-prev2"></span> | <span id="slider-next2"></span></p>
         </div>
-       
-        
+
+
         <table align="center"  style="border-spacing: 20px;"><tr>
-               <td  > <p id='products_text_id'> Select products from here</p>  
-                    
+                <td  > <p id='products_text_id'> Select products from here</p>  
+
                     <div  id = 'products_holder_id' class="slider6">
-                        <div> <img src ='images/aisle_baground.png' width="400" height="400"/></div>
+                        <div> <img src ='images/aisle_baground.png' /></div>
 
                     </div>  
 
@@ -515,15 +741,15 @@
 
                 <td  >
                     <div>
-                    <div class="outside"><p id='products_id'> Selected Products:</p> 
+                        <div class="outside"><p id='products_id'> Selected Products:</p> 
 
-                        <input type='button' id='submit_button' value='Submit Aisle' onClick="onSubmitAisleButtonClick()"/> 
-                    </div> 
-                     
-                        
-                    <div id='aisle_holder_id' class="slider8">
-                        <div> <img src ='images/aisle_baground.png' width="400" height="400"/></div>
-                    </div>
+                            <input type='button' id='submit_button' value='Submit Aisle' onClick="onSubmitAisleButtonClick()"/> 
+                        </div> 
+
+
+                        <div id='aisle_holder_id' class="slider8">
+                            <div> <img src ='images/aislebg.jpg'  /></div>
+                        </div>
 
                     </div>
 
@@ -536,16 +762,16 @@
             </tr>
         </table>
         <script>
-            
- 
-              $(document).ready(function() {
-                  document.getElementById("titleID").style.marginLeft="50px";
-                   document.getElementById("fetch_button_id").style.marginLeft="50px";
-                   document.getElementById("fetch_button_id").style.marginRight="50px";
-                    ajaxcallToPType('ProductTypesandoccationsAisleTitles.csv', titleTags);
-                    
 
-                });
+
+            $(document).ready(function() {
+                document.getElementById("titleID").style.marginLeft = "50px";
+                document.getElementById("fetch_button_id").style.marginLeft = "50px";
+                document.getElementById("fetch_button_id").style.marginRight = "50px";
+                // ajaxcallToPType('OccasionsCuration.csv', titleTags);
+
+
+            });
             var aisleSlider;
             $(document).ready(function() {
 
@@ -575,7 +801,7 @@
                 aisleSlider.reloadSlider({
                     nextSelector: '#slider-next2',
                     prevSelector: '#slider-prev2',
-                    slideWidth:400,
+                    slideWidth: 400,
                     adaptiveHeight: true,
                     nextText: 'Next →',
                     prevText: '← Back'
@@ -588,15 +814,15 @@
                     nextSelector: '#slider-next',
                     prevSelector: '#slider-prev',
                     nextText: 'Next →',
-                    slideWidth:400,
+                    slideWidth: 400,
                     adaptiveHeight: true,
                     prevText: '← Back'
                 });
             }
-            function movePorductsSlider(postion){
+            function movePorductsSlider(postion) {
                 slider.goToSlide(postion);
             }
-            function moveAisleSlider(postion){
+            function moveAisleSlider(postion) {
                 aisleSlider.goToSlide(postion);
             }
             function changeButton(isAisleReadyToUpload, count) {
@@ -607,22 +833,22 @@
                 }
             }
             function onSubmitAisleButtonClick() {
-                if(occasion === undefined || occasion.length < 1){
+                if (occasion === undefined || occasion.length < 1) {
                     alert("Please select occasion");
                     retrun;
                 }
-                  if(lookingFor === undefined || lookingFor.length < 1){
+                if (lookingFor === undefined || lookingFor.length < 1) {
                     alert("Please select lookingFor");
                     retrun;
                 }
-                aisleCount = aisleCount +1;              
+                aisleCount = aisleCount + 1;
                 ga('send', 'event', 'button', 'click', 'Submit Aisle', aisleCount);
                 uploadProductCount = 0;
-                getSelectedProducts();              
+                getSelectedProducts();
                 createAisleRequest();
 
             }
-   
+
         </script>
     </body>
 
@@ -630,7 +856,13 @@
 </html>
 
 <style>
-     button.link { background:none;border:none; }
+    #or_id {
+
+
+        margin-right: 20px;
+        margin-left: 20px;
+    }
+    button.link { background:none;border:none; }
     .outside{
         text-align:center;
     }
