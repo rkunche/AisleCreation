@@ -28,10 +28,7 @@ console.log("serach tag is: "+tag);
     } else {
         var url = "https://3dot1-dot-vue-server-dev.appspot.com/api/product/search/genericsearch?currentProductState=" + productState + "&queryString=" + tag + "&offset=" + offset + "&limit=" + limit + "&randomize=false";
     }
-
-    //var url ="https://3dot1.vue-server-dev.appspot.com/api/product/search/genericsearch?queryString="+tag+"&limit=20";
-    // var url = "https://3dot1.vue-server-dev.appspot.com/api/product/search/tagsearch?tagstring=" + tag + "&limit=30";
-    // var url = "https://vue-server-dev.appspot.com/api/product/search?productstate=CURATED_AND_VERIFIED&offset="+offset+"&limit="+limit;
+ 
 
     console.log(url);
     if (XMLHttpRequest)
@@ -194,8 +191,8 @@ textContainer.appendChild(span);
         var title = document.createTextNode(jsonObject.title);
        
              var span = document.createElement('span');
-span.style.fontSize = "20px";
-span.style.color="orange";
+span.style.fontSize = "18px";
+span.style.color="#cf5300";
 span.appendChild(title);
 textContainer.appendChild(span);
  //textContainer.appendChild(title);
@@ -262,23 +259,23 @@ function createButton(product, div) {
                         }
                     }
                     if (count >= 1) {
-                        var r = confirm("Aisle has product from same Provider Do you want Add?");
+                        var r = confirm("Aisle has product from same Provider, Do you want to Add?");
                         if (r === true) {
                            
                             addToAisle(product, true);
                             button.value = "Remove From Aisle";
-                            button.style.color = "orange";
+                            button.style.color = "#cf5300";
                         } else {
 
                         }
                     } else {
                         addToAisle(product, true);
                         button.value = "Remove From Aisle";
-                        button.style.color = "orange";
+                        button.style.color = "#cf5300";
                     }
                 } else {
                     button.value = 'Remove From Aisle';
-                    button.style.color = "orange";
+                    button.style.color = "#cf5300";
                     addToAisle(product, true);
                 }
             } else {
@@ -349,8 +346,8 @@ textContainer.appendChild(span);
 
         var title = document.createTextNode(tempProduct.title);
            var span = document.createElement('span');
-span.style.fontSize = "20px";
-span.style.color="orange";
+span.style.fontSize = "18px";
+span.style.color="#cf5300";
 span.appendChild(title);
 textContainer.appendChild(span);
         //textContainer.appendChild(title);
@@ -409,7 +406,7 @@ function createAisleDeleteButton(div, product) {
 
     button.value = "Remove From Aisle";
     button.style.backgroundColor = "white";
-    button.style.color = "orange";
+    button.style.color = "#cf5300";
     button.style.outline = "solid orange";
     var deleteImageDiv = document.createElement("div");
     deleteImageDiv.setAttribute('align', 'left');
@@ -440,49 +437,7 @@ function createAisleDeleteButton(div, product) {
     div.appendChild(deleteImageDiv);
 }
 function onImageMouseOver(jsonObject) {
-//    console.log("mouse Event: " + jsonObject.id);
-//    var prodcutInfoTdEle = document.getElementById('product_info_id');
-//    prodcutInfoTdEle.innerHTML = "";
-//    var parentDiv = document.createElement("div");
-//    parentDiv.style.marginLeft = 16;
-//    var divTitle = document.createElement("div");
-//    var title = document.createTextNode("TITLE  :   \n" + jsonObject.title);
-//    divTitle.appendChild(title);
-//    parentDiv.appendChild(divTitle);
-//    var br = document.createElement("br");
-//    parentDiv.appendChild(br);
-//
-//    var description = document.createTextNode("DESCRIPTION  : \n    " + jsonObject.description);
-//    var divDescription = document.createElement("div");
-//    divDescription.appendChild(description);
-//    parentDiv.appendChild(divDescription);
-//    var br = document.createElement("br");
-//    parentDiv.appendChild(br);
-//
-//
-//
-//    var divCuratedState = document.createElement("div");
-//    var curatedState = document.createTextNode("CURATED_STATE : " + jsonObject.currentProductState);
-//    divCuratedState.appendChild(curatedState);
-//    parentDiv.appendChild(divCuratedState);
-//    var br = document.createElement("br");
-//    parentDiv.appendChild(br);
-//
-//    var divId = document.createElement("div");
-//    var id = document.createTextNode("PRODUCT_ID : " + jsonObject.id);
-//    divId.appendChild(id);
-//    parentDiv.appendChild(divId);
-//    var br = document.createElement("br");
-//    parentDiv.appendChild(br)
-//
-//
-//    var divProductOwnerAisleId = document.createElement("div");
-//    var ownerAisleId = document.createTextNode("OwnerAisleId : " + jsonObject.ownerAisleId);
-//    divProductOwnerAisleId.appendChild(ownerAisleId);
-//    parentDiv.appendChild(divProductOwnerAisleId);
-//
-//
-//    prodcutInfoTdEle.appendChild(parentDiv);
+ 
 }
 function resize_images(maxht, maxwt, minht, minwt) {
     var imgs = document.getElementsByTagName('img');
