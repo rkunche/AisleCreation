@@ -46,7 +46,7 @@
             var tagsrequest;
             var stateValue = 'CURATED';
             var offset = 0;
-            var limit = 20;
+            var limit = 8;
             var aisleOwnerName = "Anonymous";
             var request;
             var newheight;
@@ -66,6 +66,10 @@
             var subItem = [];
             var aisleTitle;
             var titleWord;
+            var primaryTag;
+            var primaryValue;
+            var secodryValue;
+            var number_aisle_added;
             //prototype for clear the array values.
             Array.prototype.clear = function() {
                 this.length = 0;
@@ -85,12 +89,12 @@
                 }
                 if (data[0] === 'getproducts') {
 
-                    getCrawledProducts(data[1], data[2], data[3], data[4]);
+                    getCrawledProducts(data[1], null, null, data[2], data[3], data[4]);
                 }
                 if (data[0] === 'getAllAisles') {
                     getAllAislesByUser(data[1]);
                 }
-                if (data[0] == 'clearProducsts') {
+                if (data[0] === 'clearProducsts') {
                     crearPorducts();
                 }
                 if (data[0] === 'User') {
@@ -125,16 +129,28 @@
             function getTags() {
                 document.getElementById('products_holder_id').setAttribute("style", "width:800px");
                 document.getElementById('aisle_holder_id').setAttribute("style", "width:800px");
+
                 newheight = screen.height - 120;
                 getMe();
                 var fetchButton = document.getElementById("fetch_button_id");
                 fetchButton.style.backgroundColor = "white";
                 fetchButton.style.color = "green";
                 fetchButton.style.outline = "solid orange";
-                  var fetchButton_occasion = document.getElementById("fetch_button_id_occasion");
-                 fetchButton_occasion.style.backgroundColor = "white";
-                 fetchButton_occasion.style.color = "green";
-                 fetchButton_occasion.style.outline = "solid orange";
+                var fetchButton_occasion = document.getElementById("fetch_button_id_opt1");
+                fetchButton_occasion.style.backgroundColor = "white";
+                fetchButton_occasion.style.color = "green";
+                fetchButton_occasion.style.outline = "solid orange";
+
+                var fetchButton_occasion = document.getElementById("fetch_button_op2");
+                fetchButton_occasion.style.backgroundColor = "white";
+                fetchButton_occasion.style.color = "green";
+                fetchButton_occasion.style.outline = "solid orange";
+
+                var fetchButton_occasion = document.getElementById("fetch_more_button_id");
+                fetchButton_occasion.style.backgroundColor = "white";
+                fetchButton_occasion.style.color = "green";
+                fetchButton_occasion.style.outline = "solid orange";
+
                 var url = "https://vue-server-dev.appspot.com/api/producttags/all";
                 if (XMLHttpRequest)
                 {
@@ -219,11 +235,10 @@
                     return;
                 if (tagsrequest.status === 200)
                 {
-
                     var tagString = tagsrequest.responseText;
                     var jsonResponse = JSON.parse(tagString);
                     var blocked = [];
-                    console.log("tags are downloaded " + jsonResponse.length);
+
                     for (var k = 0; k < jsonResponse.length; k++) {
                         var tagObject = jsonResponse[k];
                         if (tagObject.tagString.charAt(0) === tagObject.tagString.charAt(0).toLowerCase()) {
@@ -240,7 +255,8 @@
                     }
                     var productType = document.getElementById('productType_tag');
                     var occasionSubCatelement = document.getElementById('Occassion_tag');
-                    var lookingForSubCatelement = document.getElementById('LookingFor_tag');
+                    var lookingForSubCatelement = document.getElementById('occasionProductType');
+                    var titleProductType = document.getElementById('title_ProductType');
                     //document.getElementById("stateId").value = stateValue;
                     //var temp2 = tag_string_array[static_categoryNames[k]];
                     //  tagSubCatelement.options[tagSubCatelement.options.length] = new Option('', '', false, false);
@@ -254,6 +270,7 @@
                         if (jsonResponse[i].tagCategory === "Product Type") {
                             lookingForSubCatelement.options[lookingForSubCatelement.options.length] = new Option(jsonResponse[i].tagString, jsonResponse[i].tagString, false, false);
                             productType.options[productType.options.length] = new Option(jsonResponse[i].tagString, jsonResponse[i].tagString, false, false);
+                            titleProductType.options[titleProductType.options.length] = new Option(jsonResponse[i].tagString, jsonResponse[i].tagString, false, false);
                         }
                     }
                     ajaxcallToPType('OccasionsCuration.csv', titleTags);
@@ -263,10 +280,10 @@
                         noneSelectedText: "Occasion",
                         selectedList: 1
                     }).multiselectfilter();
-                    $("#LookingFor_tag").multiselect({
+                    $("#occasionProductType").multiselect({
                         multiple: false,
                         header: "Product Type",
-                        noneSelectedText: "Product Type",
+                        noneSelectedText: "Product Type (optinal)",
                         selectedList: 1
                     }).multiselectfilter();
                     $("#productType_tag").multiselect({
@@ -275,12 +292,18 @@
                         noneSelectedText: "Product Type",
                         selectedList: 1
                     }).multiselectfilter();
+                    $("#title_ProductType").multiselect({
+                        multiple: false,
+                        header: "Product Type",
+                        noneSelectedText: "Product Type  (optinal)",
+                        selectedList: 1
+                    }).multiselectfilter();
 
                     $(function() {
                         var warning = $(".message");
 
                         $("select").multiselect({
-                            header: "Choose only TWO items!",
+                            header: "Aisle Title",
                             click: function(e) {
 
                                 if ($(this).multiselect("widget").find("input:checked").length > 1) {
@@ -301,132 +324,114 @@
                     return;
                 }
             }
+            function checkAisleAddedInfo() {
+                var submitFlag = false;
+                aisleProductsCount();
+                if (number_aisle_added >= 3) {
+                    var r2 = confirm("Aisle has " + number_aisle_added + " products, from " + primaryTag + " Do you want to submit?");
+                    if (r2 === true) {
+                        submitFlag = true;
+                    } else {
+                        submitFlag = false;
+                    }
+                }
+                if (submitFlag === true) {
+                    aisleCount = aisleCount + 1;
+                    ga('send', 'event', 'button', 'click', 'Submit Aisle', aisleCount);
+                    uploadProductCount = 0;
+                    getSelectedProducts();
+                    createAisleRequest();
+                }
+                clearProducts();
+            }
             function occasionSelectionVal() {
-                        document.getElementById('fetch_button_id').style.visibility="hidden";
-                document.getElementById('fetch_button_id_occasion').style.visibility="visible";
-               
+                secodryValue = null;
+                checkAisleAddedInfo();
                 var selectedValue = $("#Occassion_tag").val();
-                document.getElementById("titleID").value = "selectedValue";
-                $('#titleID').multiselect('refresh');
-                aisleTitle = null;
-                productType = '';
-                occasion = selectedValue;
-                titleWord = null;
-                
-                document.getElementById("productType_tag").value = "selectedValue";
-                $('#productType_tag').multiselect('refresh');
-                ga('send', 'event', 'option', 'select', selectedValue);
-                
-                document.getElementById("Occassion_tag").value = selectedValue;
-                document.getElementById('fetch_button_id').value = "Fetch";
+                offset = 0;
+                primaryTag = "OCCASION";
+                resetOptionOne();
+                resetOptionThree();
+                document.getElementById('tag_id').innerHTML = "Creating an aisle for Occasion: '" + selectedValue + "'";
+                document.getElementById('titleID').value = "Fetch with Title";
+                document.getElementById('fetch_button_id_opt1').value = "Fetch with ProductType";
+                document.getElementById('fetch_button_op2').value = "Fetch with Occasion";
+                occasion = selectedValue[0];
+                primaryValue = selectedValue;
+                ga('send', 'event', 'option', 'select', selectedValue[0]);
 
-                document.getElementById('btTagOne').innerHTML = " ";
-
-                document.getElementById('btTagTwo').innerHTML = " ";
-
-                document.getElementById('btTagThree').innerHTML = " ";
-
-
-                document.getElementById('btTagFour').innerHTML = " ";
-
-                document.getElementById('btTagFive').innerHTML = " ";
-
-                document.getElementById('btTagSix').innerHTML = " ";
 
             }
-            function lookingForSelectionVal() {
-                  document.getElementById('fetch_button_id').style.visibility="hidden";
-                document.getElementById('fetch_button_id_occasion').style.visibility="visible";
-                productType = '';
-                titleWord = null
-                var selectedValue = $("#LookingFor_tag").val();
-                document.getElementById("titleID").value = "selectedValue";
-                $('#titleID').multiselect('refresh');
-                aisleTitle = null;
-                document.getElementById("productType_tag").value = "selectedValue";
-                $('#productType_tag').multiselect('refresh');
-                lookingFor = selectedValue;
-                ga('send', 'event', 'option', 'select', selectedValue);
-                document.getElementById('btTagOne').innerHTML = " ";
-
-                document.getElementById('btTagTwo').innerHTML = " ";
-
-                document.getElementById('btTagThree').innerHTML = " ";
-
-
-                document.getElementById('btTagFour').innerHTML = " ";
-
-                document.getElementById('btTagFive').innerHTML = " ";
-
-                document.getElementById('btTagSix').innerHTML = " ";
-                //document.getElementById("LookingFor_tag").value = selectedValue;
+            function occasionProduct_Type() {
+                if (occasion === null || occasion === undefined) {
+                    document.getElementById("occasionProductType").value = "selectedValue";
+                    $('#occasionProductType').multiselect('refresh');
+                    alert("Please select occasion first");
+                    return;
+                }
+                var selectedValue = $("#occasionProductType").val();
+                secodryValue = selectedValue[0];
+                document.getElementById('tag_id').innerHTML = "Creating an aisle for Occasion:: '" + occasion + "'" + " With Product: '" + secodryValue + "'";
+                offset = 0;
             }
+            function titleProduct_Type() {
+                if (aisleTitle === null || aisleTitle === undefined) {
+                    document.getElementById("title_ProductType").value = "selectedValue";
+                    $('#title_ProductType').multiselect('refresh');
+                    alert("Please select title first");
+                    return;
+                }
+                var selectedValue = $("#title_ProductType").val();
+                secodryValue = selectedValue[0];
+               // document.getElementById('tag_id').innerHTML = "Creating an aisle :: '" + aisleTitle + "'" + "With Product: '" + secodryValue + "'"; 
+            }
+
             function productTypeTag() {
+                secodryValue = null;
                 var selectedValue = $("#productType_tag").val();
-                 document.getElementById('fetch_button_id_occasion').style.visibility="hidden";
-                 document.getElementById('fetch_button_id').style.visibility="visible";
-                document.getElementById("titleID").value = "selectedValue";
-                $('#titleID').multiselect('refresh');
-                aisleTitle = null;
-                lookingFor = '';
-                occasion = '';
-                titleWord = null;
-                productType = selectedValue;
-                document.getElementById("LookingFor_tag").value = "selectedValue";
-                document.getElementById("Occassion_tag").value = "selectedValue";
+                checkAisleAddedInfo();
 
-                $('#LookingFor_tag').multiselect('refresh');
-                $('#Occassion_tag').multiselect('refresh');
+                offset = 0;
+                primaryTag = "PRODUCT_TYPE";
 
+                productType = selectedValue[0];
+                primaryValue = selectedValue[0];
+                document.getElementById('tag_id').innerHTML = "Creating an aisle with Product Type: '" + selectedValue + "'";
+                document.getElementById('titleID').value = "Fetch with Title";
+                document.getElementById('fetch_button_id_opt1').value = "Fetch with ProductType";
+                document.getElementById('fetch_button_op2').value = "Fetch with Occasion";
+                resetOptionTwo();
+                resetOptionThree();
+                ga('send', 'event', 'option', 'select', selectedValue[0]);
 
-
-
-                ga('send', 'event', 'option', 'select', selectedValue);
-                document.getElementById('btTagOne').innerHTML = " ";
-
-                document.getElementById('btTagTwo').innerHTML = " ";
-
-                document.getElementById('btTagThree').innerHTML = " ";
-
-
-                document.getElementById('btTagFour').innerHTML = " ";
-
-                document.getElementById('btTagFive').innerHTML = " ";
-
-                document.getElementById('btTagSix').innerHTML = " ";
             }
             function onTitleSelectionChange() {
-                document.getElementById('fetch_button_id_occasion').style.visibility="hidden";
-                document.getElementById('fetch_button_id').style.visibility="visible";
-                var selectedValue = $("#titleID").val();
+                secodryValue = null;
                 var position;
-                aisleTitle = selectedValue;
-                document.getElementById("LookingFor_tag").value = "selectedValue";
-                document.getElementById("Occassion_tag").value = "selectedValue";
-                document.getElementById("productType_tag").value = "selectedValue";
-                $('#LookingFor_tag').multiselect('refresh');
-                $('#Occassion_tag').multiselect('refresh');
-                $('#productType_tag').multiselect('refresh');
+                var selectedValue = $("#titleID").val();
+                checkAisleAddedInfo();
+                offset = 0;
+                primaryTag = "TITLE";
+                resetOptionOne();
+                resetOptionTwo();
+
+                document.getElementById('tag_id').innerHTML = "Creating an aisle title: '" + selectedValue + "'";
+                document.getElementById('titleID').value = "Fetch with Title";
+                document.getElementById('fetch_button_id_opt1').value = "Fetch with ProductType";
+                document.getElementById('fetch_button_op2').value = "Fetch with Occasion";
+                aisleTitle = selectedValue ;
+                primaryValue = selectedValue ;
+
                 for (var i = 0; i < itemArray.length; i++) {
                     console.log("TAGING: itemArray length " + itemArray[i].title.split(":")[0]);
                     console.log("TAGING: itemArray length " + itemArray[i].title.split(":")[1]);
-                    if (itemArray[i].title.split(":")[1].localeCompare(selectedValue) === 0) {
+                    if (itemArray[i].title.split(":")[1].localeCompare(selectedValue ) === 0) {
                         position = i;
                         console.log("TAGING: position is " + position);
                         break;
                     }
-//                    if(itemArray[i].title.split(":")[1] === selectedValue){
-//                        position = i;
-//                        console.log("TAGING: position is "+position);
-//                        break;
-//                    }
                 }
-                var wordbtnOne = document.getElementById('btTagOne');
-                var wordbtnTwo = document.getElementById('btTagTwo');
-                var wordbtnThree = document.getElementById('btTagThree');
-                var wordbtnFour = document.getElementById('btTagFour');
-                var wordbtnFive = document.getElementById('btTagFive');
-                var wordbtnSix = document.getElementById('btTagSix');
+
                 var tagsArray = [];
                 if (position !== undefined) {
                     var titleObject = itemArray[position];
@@ -463,114 +468,139 @@
                     document.getElementById('btTagSix').innerHTML = tagsArray[5];
                 }
 
-                //var wordbtnOne = document.getElementById("titleID").value = selectedValue;
-
-
-
             }
             var titleTag = function(param) {
+                 offset = 0;
                 if (selectedWord === undefined) {
                     selectedWord = param.innerHTML;
-                    offset = 0;
-                } else if (selectedWord === param.innerHTML) {
-                    offset = offset + limit;
-                } else {
-                    offset = 0;
+                   
+                }
+//                else if (selectedWord === param.innerHTML) {
+//                    offset = offset + limit;
+//                } else {
+//                    offset = 0;
+//                }
+                var tag = param.innerHTML;
+                titleWord = tag;
+                // document.getElementById('fetch_button_id').value = "Fetch More";
+                var filterWord = document.getElementById('filter_word_opt3').value;
+                if (filterWord === '') {
+                    filterWord = null;
+                }
+                getCrawledProducts(tag, secodryValue, filterWord, offset, limit, stateValue, true);
+            };
+
+//OPTION ONE button click 
+            function getProductWithProductType() {
+
+                if (productType === null || productType === undefined) {
+                    alert("Please Select ProductType");
+                    return;
                 }
 
-                //refresh selectors.
-                document.getElementById("LookingFor_tag").value = "selectedValue";
-                document.getElementById("Occassion_tag").value = "selectedValue";
-                document.getElementById("productType_tag").value = "selectedValue";
-                $('#LookingFor_tag').multiselect('refresh');
-                $('#Occassion_tag').multiselect('refresh');
-                $('#productType_tag').multiselect('refresh');
+//                var fetchWithProductBtnValue = document.getElementById('fetch_button_id_opt1').value;
+//                if (fetchWithProductBtnValue === "Fetch with ProductType") {
+//                    offset = 0;
+//                    document.getElementById('fetch_button_id_opt1').value = "Fetch More";
+//                } else {
+//                    offset = offset + limit;
+//                }
+                var filterWord = document.getElementById('filter_word_opt1').value;
+                if (filterWord === '') {
+                    filterWord = null;
+                }
+                getCrawledProducts(productType, null, filterWord, offset, limit, stateValue, true);
 
-                var tag = param.innerHTML;
+            }
+
+            function resetOptionOne() {
+                 secodryValue = null;
+                document.getElementById("productType_tag").value = "selectedValue";
+                $('#productType_tag').multiselect('refresh');
+                document.getElementById('fetch_button_id_opt1').value = 'Fetch with ProductType';
                 productType = '';
+                document.getElementById('filter_word_opt1').value = "";
+            }
+            function resetOptionTwo() {
+                    secodryValue = null;
+                document.getElementById("occasionProductType").value = "selectedValue";
+                $('#occasionProductType').multiselect('refresh');
+                document.getElementById("Occassion_tag").value = "selectedValue";
+                $('#Occassion_tag').multiselect('refresh');
+                document.getElementById('fetch_button_op2').value = 'Fetch with Occasion';
                 occasion = '';
                 lookingFor = '';
-
-                 titleWord = tag;
-                  document.getElementById('fetch_button_id').value = "Fetch More";
-                getCrawledProducts(tag, offset, limit, stateValue);
-
-
-
+                document.getElementById('filter_word_opt2').value = "";
             }
-            function tagSelectionVal() {
-                var selectedValue = $("#select_tag").val();
-                offset = 0;
-                ga('send', 'event', 'option', 'select', selectedValue);
-                category = selectedValue;
-                document.getElementById('fetch_button_id').value = "Fetch";
-                document.getElementById("select_tag").value = selectedValue;
+            function resetOptionThree() {
+                 secodryValue = null;
+                document.getElementById('fetch_button_id').value = 'Fetch with Title';
+                document.getElementById('btTagOne').innerHTML = " ";
+
+                document.getElementById('btTagTwo').innerHTML = " ";
+
+                document.getElementById('btTagThree').innerHTML = " ";
+
+                document.getElementById('btTagFour').innerHTML = " ";
+
+                document.getElementById('btTagFive').innerHTML = " ";
+
+                document.getElementById('btTagSix').innerHTML = " ";
+                document.getElementById("titleID").value = "selectedValue";
+                $('#titleID').multiselect('refresh');
+                document.getElementById("title_ProductType").value = "selectedValue";
+                $('#title_ProductType').multiselect('refresh');
+                aisleTitle = null;
+                lookingFor = '';
+                document.getElementById('filter_word_opt3').value = "";
             }
-            function getSelectedValue() {
-                //  stateValue = $("#stateId").val();
-                ga('send', 'event', 'option', 'select', stateValue);
-                // document.getElementById('fetch_button_id').value = "Fetch";
-                offset = 0;
-                // document.getElementById("stateId").value = stateValue;
-            }
-            function getProductWithOccasion(){
-       
-                     var searchString;
-                    searchString = occasion;
-                    if (  searchString === undefined || searchString === '' ) {
-                        searchString = lookingFor;
-                         
-                    }
-                
-                if (searchString === undefined || searchString === '') {
-                    alert("Please Select OccasionTag or Product Type");
+
+            function fetchProductWithOccasion() {
+                if (occasion === null || occasion === undefined) {
+                    alert("Please Select Occasion");
                     return;
-                } 
-                var buttonValue = document.getElementById('fetch_button_id_occasion').value; 
-                 if(buttonValue === "Fetch More"){
-                      ga('send', 'event', 'button', 'click', 'Fetch More');
-                    offset = offset + limit;
-                    document.getElementById('fetch_button_id_occasion').value = "Fetch More";
-                } else {
-                     offset = 0;
-                    ga('send', 'event', 'button', 'click', 'Fetch');
-                    document.getElementById('fetch_button_id_occasion').value = "Fetch More";
                 }
-                document.getElementById('fetch_button_id').value = "Fetch";
-                getCrawledProducts(searchString, offset, limit, stateValue);
-                 
+//                 var fetchWithProductBtnValue = document.getElementById('fetch_button_op2').value;
+//                if (fetchWithProductBtnValue === "Fetch with Occasion") {
+//                    offset = 0;
+//                    document.getElementById('fetch_button_op2').value = "Fetch More";
+//                } else {
+//                    offset = offset + limit;
+//                }
+                var filterWord = document.getElementById('filter_word_opt2').value;
+                if (filterWord === '') {
+                    filterWord = null;
+                }
+                if (secodryValue !== null && secodryValue !== undefined) {
+                    getCrawledProducts(occasion, secodryValue, filterWord, offset, limit, stateValue, true);
+                } else {
+                    getCrawledProducts(occasion, secodryValue, filterWord, offset, limit, stateValue, true);
+                }
             }
             function getProducts() {
-                var searchString;
-                if(titleWord !== null){
-                    searchString = titleWord;
-                }else{
-                if (productType === '') {
-                    searchString = occasion;
-                    if (searchString === '') {
-                        searchString = lookingFor;
-                    }
-                } else {
-                    searchString = productType;
-                }
-               
-            }  
-             if (searchString === undefined || searchString === '') {
+                var searchStringOne;
+                 var searchStringTwo;
+                 var selectedValue = $("#titleID").val();
+                 var tagTwo = $("#title_ProductType").val();
+                 searchStringOne = selectedValue[0];
+                 searchStringTwo = tagTwo[0];
+                 if(searchStringOne === undefined || searchStringOne.length < 2){
+                    searchStringOne = null; 
+                 }
+                 if(searchStringTwo === undefined || searchStringTwo.length < 2){
+                     searchStringTwo = null;
+                 }
+                offset = 0;
+                if (searchStringOne === undefined || searchStringOne === '') {
                     alert("Please Select Title or Product Type");
                     return;
                 }
-                var buttonValue = document.getElementById('fetch_button_id').value;
-                if (buttonValue === "Fetch More") {
-                    ga('send', 'event', 'button', 'click', 'Fetch More');
-                    offset = offset + limit;
-                    document.getElementById('fetch_button_id').value = "Fetch More";
-                } else {
-                    offset = 0;
-                    ga('send', 'event', 'button', 'click', 'Fetch');
-                    document.getElementById('fetch_button_id').value = "Fetch More";
+ 
+                var filterWord = document.getElementById('filter_word_opt3').value;
+                if (filterWord === '') {
+                    filterWord = null;
                 }
-                document.getElementById('fetch_button_id_occasion').value = "Fetch";
-                getCrawledProducts(searchString, offset, limit, stateValue);
+                getCrawledProducts(searchStringOne, searchStringTwo, filterWord, offset, limit, stateValue, true);
             }
             function getUser(id) {
                 var url = "https://vue-server-dev.appspot.com/api/user/" + id;
@@ -588,13 +618,13 @@
                 }
             }
             function get_handler_aisle() {
-                if (request.readyState != 4)
+                if (request.readyState !== 4)
                     return;
-                if (request.status != 200 && request.status != 304) {
+                if (request.status !== 200 && request.status !== 304) {
                     alert('User reqeust Error ' + request.status);
                     return;
                 }
-                if (request.status == 200)
+                if (request.status === 200)
                 {
                     var user = JSON.parse(request.responseText);
                     aisleOwnerName = user.firstName + " " + user.lastName;
@@ -608,26 +638,42 @@
             }
 
             function getMe() {
-
                 window.top.postMessage('getUser', '*');
             }
 
             function createAisleRequest() {
-               category ="Fashion & Style";
- 
-                if(lookingFor === undefined || lookingFor === '' || lookingFor.length <= 1){
-                    if(productType !== undefined && productType !== '' && productType.length > 1){
-                    lookingFor = productType;
+                category = "Fashion & Style";
+
+                if (lookingFor === undefined || lookingFor === '') {
+                    if (productType !== undefined && productType !== '') {
+                        lookingFor = productType;
+                    }
                 }
+                if (aisleTitle === undefined || aisleTitle === '') {
+                    aisleTitle = null;
                 }
-               if(aisleTitle === undefined || aisleTitle === '' || aisleTitle.length<= 1){
-                   aisleTitle = null;
-               }
-               if(occasion === undefined || occasion === '' || occasion.length<=1){
-                   occasion = null;
-               }
+                if (occasion === undefined || occasion === '') {
+                    occasion = null;
+                }
+                if (lookingFor === undefined || lookingFor === '') {
+                    lookingFor = null;
+                }
+                if (occasion === null && lookingFor === null && aisleTitle === null) {
+                    alert("Please select Occasion or Product Type");
+                }
                 var url = "https://vue-server-dev.appspot.com/api/aisle";
-              
+
+                if (occasion !== null) {
+
+                }
+                if (aisleTitle !== null) {
+
+                }
+                if (lookingFor !== null) {
+
+                }
+
+
                 if (XMLHttpRequest) {
                     request = new XMLHttpRequest();
                     if ("withCredentials" in request) {
@@ -637,7 +683,9 @@
                         request.setRequestHeader('Content-Type', 'application/json');
                         request.onreadystatechange = aisle_post_handler;
                         //aisle creation request.
-                        request.send(JSON.stringify({id: null, ownerUserId: userId, category: category, description: null, lookingFor: lookingFor, name: aisleTitle, occassion: occasion, currentAisleState: "CURATED", bookmarkCount: 0}));
+                        request.send(JSON.stringify({id: null, ownerUserId: userId, category: category, description: null, lookingFor: lookingFor, name: aisleTitle, productList: null, occassion: occasion, currentAisleState: "CURATED", bookmarkCount: 0}));
+
+                        console.log(JSON.stringify({id: null, ownerUserId: userId, category: category, description: null, lookingFor: lookingFor, name: aisleTitle, productList: null, occassion: occasion, currentAisleState: "CURATED", bookmarkCount: 0}));
                     }
                 }
             }
@@ -704,7 +752,7 @@
 
                 var ajax = $.ajax({
                     url: pathOfFileToReadFrom,
-                    async: false,
+                    async: true,
                     success: function(csvd) {
                         console.log('ajax succes: ' + csvd);
                         datatype = $.csv2Array(csvd);
@@ -770,9 +818,6 @@
 
                 }
                 itemArray.clear();
-                console.log('item array size: ' + itemArray.length);
-                console.log('sorted list1: ' + filterArray.length);
-
                 for (var k = 0; k < filterArray.length; k++) {
                     if (filterArray[k].title !== undefined) {
                         itemArray.push(filterArray[k]);
@@ -783,21 +828,20 @@
                 }
                 filterArray.clear();
 
-                list.sort();
-                console.log('sorted list2: ' + itemArray.length);
+                list.sort();               
                 for (var i = 0; i < itemArray.length; i++) {
                     var aisleTitleCatelement = document.getElementById('titleID');
 
                     var title = itemArray[i].title.split(":")[1];
                     aisleTitleCatelement.options[aisleTitleCatelement.options.length] = new Option(title, title, false, false);
-                    $("#titleID").multiselect({
-                        multiple: false,
-                        header: "Select Title",
-                        noneSelectedText: "Select Title",
-                        selectedList: 1
-                    }).multiselectfilter();
-                }
 
+                }
+                $("#titleID").multiselect({
+                    multiple: false,
+                    header: "Aisle Title",
+                    noneSelectedText: "Aisle Title",
+                    selectedList: 1
+                }).multiselectfilter();
             }
         </script>
 
@@ -828,16 +872,24 @@
             <!--            <hr>-->
             <div> <H2 align="center" id="create_aisle_heading">Create Aisle</H2></div>
 
-
-
-            <select id="LookingFor_tag" onchange="lookingForSelectionVal()" name="selection" multiple="multiple" style="width:150;"   >
-            </select> &nbsp &nbsp &nbsp For &nbsp &nbsp &nbsp <select id="Occassion_tag" onchange="occasionSelectionVal()" name="selection" multiple="multiple"   style="width: 200px" >
-            </select> 
-              <input type='button' id="fetch_button_id_occasion" value='Fetch ' style="margin-left: 50px;"   onClick="getProductWithOccasion()"/> 
-            <p>OR</p>     <select id="titleID"   onchange="onTitleSelectionChange()" name="selection"    multiple="multiple" style="width: 200px"  >
-            </select>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp  &nbsp &nbsp
+            <p>Option 1:</p>
             <select id="productType_tag" onchange="productTypeTag()" name="selection" multiple="multiple" style="width:150;"   ></select>
-            <input type='button' id="fetch_button_id" value='Fetch ' style="margin-left: 5px;"   onClick="getProducts()"/> 
+            &nbsp &nbsp <input type="text" placeHolder="Enter filter word(optional)" id="filter_word_opt1"/>  &nbsp &nbsp <input type='button' id="fetch_button_id_opt1" value='Fetch with ProductType'   onClick="getProductWithProductType()"/> 
+            <p>Option 2:</p>
+            <select id="Occassion_tag" onchange="occasionSelectionVal()" name="selection" multiple="multiple"   style="width: 200px" >
+            </select>  &nbsp &nbsp   
+            <select id="occasionProductType" onchange="occasionProduct_Type()" name="selection" multiple="multiple" style="width:150;"   >
+            </select> &nbsp &nbsp
+            <input type="text" placeHolder="Enter filter word(optional)" id="filter_word_opt2"/>
+            &nbsp &nbsp     <input type='button' id="fetch_button_op2" value='Fetch with Occasion' style="margin-left: 5px;"   onClick="fetchProductWithOccasion()"/> 
+
+            <p>Option 3:</p>    <select id="titleID"   onchange="onTitleSelectionChange()" name="selection"    multiple="multiple" style="width: 150px"  >
+            </select> &nbsp &nbsp   
+            <select id="title_ProductType" onchange="titleProduct_Type()" name="selection" multiple="multiple" style="width:150px;"   >
+            </select> &nbsp &nbsp
+            <input type="text" placeHolder="Enter filter word(optional)" id="filter_word_opt3"/>
+            <input type='button' id="fetch_button_id" value='Fetch with Title' onClick="getProducts()" align="left"/> 
+
             <button class="link" id="btTagOne" onclick="titleTag(this)"> </button>
             <button class="link" id="btTagTwo" onclick="titleTag(this)"> </button>
             <button class="link" id="btTagThree" onclick="titleTag(this)"> </button>
@@ -845,10 +897,14 @@
             <button class="link" id="btTagFive" onclick="titleTag(this)"> </button>
             <button class="link" id="btTagSix" onclick="titleTag(this)"> </button>
             <button class="link" id="btTagSeven" onclick="titleTag(this)"> </button>
-            
+            <p align="center" id="tag_id">Creating an aisle with Product Type</p>
             <hr>
 
-        </div><br><br>
+        </div> 
+        <input type='button' id="fetch_more_button_id" value='Fetch More' onClick="fetchMore()"  style="margin-left:30em;"
+               /> 
+
+        <br>
         <div class="outside">
 
             <p id='btnPrevious' style="margin-left:30em;"><span id="slider-prev"></span> | <span id="slider-next"></span></p>
@@ -963,14 +1019,6 @@
                 }
             }
             function onSubmitAisleButtonClick() {
-                if (occasion === undefined || occasion.length < 1) {
-                    alert("Please select occasion");
-                    retrun;
-                }
-                if (lookingFor === undefined || lookingFor.length < 1) {
-                    alert("Please select lookingFor");
-                    retrun;
-                }
                 aisleCount = aisleCount + 1;
                 ga('send', 'event', 'button', 'click', 'Submit Aisle', aisleCount);
                 uploadProductCount = 0;
