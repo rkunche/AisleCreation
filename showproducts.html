@@ -853,7 +853,7 @@
     </head>
 
     <body onLoad="getTags()">
-
+<div id="header"><h4>Create Aisle By Selecting one of the below options</h4></div>
         <table id="product">
 
         </table>  
@@ -870,7 +870,7 @@
                         </select>   -->
             <!--            <input type='button' id="fetch_button_id" value='Fetch ' style="margin-left: 25px;"   onClick="getProducts()"/> -->
             <!--            <hr>-->
-            <div> <H2 align="center" id="create_aisle_heading">Create Aisle</H2></div>
+<!--            <div> <H2 align="center" id="create_aisle_heading">Create Aisle</H2></div>-->
 
             <p>Option 1:</p>
             <select id="productType_tag" onchange="productTypeTag()" name="selection" multiple="multiple" style="width:150;"   ></select>
@@ -1150,6 +1150,12 @@
         color:#ffffff;
         background-color:#000099;
     }
-
+ #header {
+                background-color:white;
+                color:black;
+                text-align:center;
+                padding:4px;
+                box-shadow: 2px 2px 2px 1px #aaaaaa;
+            }
 </style>
 
