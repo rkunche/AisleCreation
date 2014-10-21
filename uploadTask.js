@@ -27,18 +27,41 @@ var tag_three;
 var queryStringArray = [];
 var queryString;
 var loopCount = 0;
-
-function getCrawledProducts(tag, pTypeTag, filterTag, offset, limit, productState, clearAisle) {
+var moveSliderPosition = 0;
+var OPTION_ONE = "option_one";
+var OPTION_TWO = "option_two";
+var OPTION_THREE = "option_three";
+var OPTION_FOUR = "option_four";
+var current_option;
+var requestType;
+var FRESH_REQUEST= "fresh_request";
+var FETCH_MORE_REQUEST = "fetch_more_request";
+  var isProductSliderReloaded;
+function getCrawledProducts(tag, pTypeTag, filterTag, offset, limit, productState, clearAisle, option) {
+    requestType = FRESH_REQUEST;
     queryStringArray.clear();
-    tag_one = tag;
-    tag_two = pTypeTag;
-    tag_three = filterTag;
+    console.log(option);
+    current_option = option;
+    if (tag !== null && tag !== undefined){
+        if(option !== OPTION_THREE){
+        tag_one = "~" + tag;
+    } else {
+         tag_one = tag;
+    }
+    }
+
+    if (pTypeTag !== null && pTypeTag !== undefined)
+        tag_two = "~" + pTypeTag;
+
+    if (filterTag !== null && filterTag !== undefined)
+        tag_three = "~" + filterTag;
+
     loopCount = 0;
     queryString = null;
 
     clearAisleState = clearAisle;
     offsetval = offset;
-    var isProductSliderReloaded;
+  
 
     if (pTypeTag === null && filterTag === null) {
         randomize = true;
@@ -52,8 +75,9 @@ function getCrawledProducts(tag, pTypeTag, filterTag, offset, limit, productStat
     } else {
         queryStringMappingPool();
         queryString = queryStringArray[0];
-        var offset = getRandomInt();
-        url = "https://vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + queryString + "&offset=" + offset + "&limit=" + limit + "&randomize=false";
+        //var offset = getRandomInt();
+        var offset = 0;
+        url = "https://vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + queryString + "&offset=" + offset + "&limit=" + limit + "&randomize=true";
 
     }
     getProductsCall(url);
@@ -120,6 +144,9 @@ function getHandler() {
                 aisleSldierReload();
             }
         }
+        if(requestType === FETCH_MORE_REQUEST){
+            products.clear();
+        }
         for (var i = 0; i < jsonResponse.length; i++) {
             var jsonTempObject = jsonResponse[i];
             // if (jsonTempObject.currentProductState === "CURATED" || jsonTempObject.currentProductState === "CURATED_AND_VERIFIED") {
@@ -143,16 +170,16 @@ function getHandler() {
             }
             if (productObject.currentProductState !== "ARCHIVED") {
                 var matched = false;
-                 for(var j=0;j<products.length;j++){
-                     var id = products[j].id;
-                     if(id === productObject.id){
-                         matched = true;
-                         break;
-                     }
-                 }
-                 //make sure that no duplicate products are added.
-              if(!matched)
-                products.push(productObject);
+                for (var j = 0; j < products.length; j++) {
+                    var id = products[j].id;
+                    if (id === productObject.id) {
+                        matched = true;
+                        break;
+                    }
+                }
+                //make sure that no duplicate products are added.
+                if (!matched)
+                    products.push(productObject);
             } else {
                 console.log("ARCHIVED PRODUCT FILTERED HERE");
             }
@@ -185,9 +212,11 @@ function fetchMore() {
         url = "https://vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + tag_one + "&offset=" + offset + "&limit=" + limit + "&randomize=true";
     } else {
         offset = offset + limit;
-        url = "https://vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + queryString + "&offset=" + offset + "&limit=" + limit + "&randomize=false";
+        url = "https://vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + queryString + "&offset=" + offset + "&limit=" + limit + "&randomize=true";
     }
+     requestType = FETCH_MORE_REQUEST;
     getProductsCall(url);
+    moveSliderPosition = products.length;
 }
 
 function getNewQueryString() {
@@ -204,8 +233,9 @@ function getNewQueryString() {
         }
     }
     console.log("queryString is: " + queryString);
-    offset = getRandomInt();
-    var url = "https://vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + queryString + "&offset=" + offset + "&limit=" + limit + "&randomize=false";
+    //offset = getRandomInt();
+    offset = 0;
+    var url = "https://vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + queryString + "&offset=" + offset + "&limit=" + limit + "&randomize=true";
 
     loopCount++;
     getProductsCall(url);
@@ -213,9 +243,30 @@ function getNewQueryString() {
 //Load all possible queryString values into Array
 function queryStringMappingPool() {
     var queryString;
+    if (tag_one === undefined) {
+        tag_one = null;
+    }
+    if (tag_two === undefined) {
+        tag_two = null;
+    }
+    if (tag_three === undefined) {
+        tag_three = null;
+    }
 
     if (tag_one !== null && tag_two !== null && tag_three !== null) {
-        queryString = tag_one + " " + tag_two + " " + tag_three;
+        if(current_option === OPTION_TWO){
+           queryString = tag_one + " " + tag_two + " AND " + tag_three; 
+        }else if(current_option === OPTION_THREE) {
+        var wordsArray = tag_one.split(" ");
+        queryString = tag_two+" "+tag_three;
+         for(var t=0; t<wordsArray.length; t++){
+             if(wordsArray[t].trim() !== '')
+            queryString = queryString +" OR "+wordsArray[t]; 
+         }
+         console.log("Title: Query: "+queryString);
+      } else {
+          queryString = tag_one + " " + tag_two + " " + tag_three;
+      }
 
         queryStringArray.push(queryString);
     }
@@ -234,7 +285,9 @@ function queryStringMappingPool() {
 
         queryStringArray.push(queryString);
     }
-
+    if (tag_three !== null) {
+        queryStringArray.push(tag_three);
+    }
     if (tag_one !== null) {
         queryStringArray.push(tag_one);
 
@@ -243,8 +296,9 @@ function queryStringMappingPool() {
         queryStringArray.push(tag_two);
 
     }
-    if (tag_three !== null) {
-        queryStringArray.push(tag_three);
+    
+    for (var j = 0; j < queryStringArray.length; j++) {
+        console.log(queryStringArray[j]);
     }
 }
 function clearProducts() {
@@ -258,8 +312,26 @@ function clearProducts() {
     var productsCount = document.getElementById('products_id');
     productsCount.innerHTML = "Selected Products: 0";
     productsCount.style.color = "Black";
-    aisleSldierReload();  
+   
     aisleProducts.clear();
+    showProductsBxSlider();
+    
+    
+      var prodcuHolder = document.getElementById('products_holder_id');
+    prodcuHolder.innerHTML = "";
+     var container = document.createElement("div");
+       var imag = document.createElement("img");
+        try {
+            imag.src = 'images/aisle_bagroundvue.png';
+
+            //console.log(jsonObject.productImages[0].externalURL);
+        } catch (e) {
+            console.log("externalURL null")
+        }
+     container.appendChild(imag);
+       prodcuHolder.appendChild(container);
+        sliderReload();
+         aisleSldierReload();
 }
 function getAllAislesByUser(id) {
     var url = "https://3dot1-dot-vue-server-dev.appspot.com/api/aisles/user/" + id;
@@ -366,6 +438,8 @@ function showProductsBxSlider() {
     }
     sliderReload();
     aisleSldierReload();
+    // if(moveSliderPosition !==  0)
+    // movePorductsSlider(moveSliderPosition);
 
 
     //resize_images(400, 400, 400, 400);
@@ -381,14 +455,29 @@ function mouseroverEvent(image, product) {
 
 }
 function createButton(product, div) {
-
+    var flag = false;
+    for (var k = 0; k < aisleProducts.length; k++) {
+        if (aisleProducts[k].id === product.id) {
+            flag = true;
+            break;
+        }
+    }
     var button = document.createElement("input");
     button.type = "button";
     button.id = product.id;
-    button.value = "AddToAisle";
-    button.style.backgroundColor = "white";
-    button.style.color = "green";
-    button.style.outline = "solid orange";
+    if (!flag) {
+
+        button.value = "AddToAisle";
+        button.style.backgroundColor = "white";
+        button.style.color = "green";
+        button.style.outline = "solid orange";
+    } else {
+
+        button.value = "Remove From Aisle";
+        button.style.backgroundColor = "white";
+        button.style.color = "#cf5300";
+        button.style.outline = "solid orange";
+    }
     var obj = {
         handleEvent: function() {
             var buttonText = button.value;

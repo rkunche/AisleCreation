@@ -19,7 +19,7 @@
 //
 //        </script>
         <meta charset="utf-8">
-
+        <script language="javascript" type="text/javascript" src="autocomplete.js"></script>
         <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"/>
         <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
 
@@ -70,6 +70,7 @@
             var primaryValue;
             var secodryValue;
             var number_aisle_added;
+            var allTags = [];
             //prototype for clear the array values.
             Array.prototype.clear = function() {
                 this.length = 0;
@@ -88,8 +89,7 @@
                     }
                 }
                 if (data[0] === 'getproducts') {
-
-                    getCrawledProducts(data[1], null, null, data[2], data[3], data[4]);
+ 
                 }
                 if (data[0] === 'getAllAisles') {
                     getAllAislesByUser(data[1]);
@@ -260,8 +260,9 @@
                     //document.getElementById("stateId").value = stateValue;
                     //var temp2 = tag_string_array[static_categoryNames[k]];
                     //  tagSubCatelement.options[tagSubCatelement.options.length] = new Option('', '', false, false);
+                    allTags.clear();
                     for (var i = 0; i < jsonResponse.length; i++) {
-
+                        allTags.push(jsonResponse[i].tagString);
                         // tagSubCatelement.options[tagSubCatelement.options.length] = new Option(jsonResponse[i].tagString, jsonResponse[i].tagString, false, false);
                         if (jsonResponse[i].tagCategory === "Occasion") {
                             occasionSubCatelement.options[occasionSubCatelement.options.length] = new Option(jsonResponse[i].tagString, jsonResponse[i].tagString, false, false);
@@ -283,7 +284,7 @@
                     $("#occasionProductType").multiselect({
                         multiple: false,
                         header: "Product Type",
-                        noneSelectedText: "Product Type (optinal)",
+                        noneSelectedText: "Product Type (optional)",
                         selectedList: 1
                     }).multiselectfilter();
                     $("#productType_tag").multiselect({
@@ -295,7 +296,7 @@
                     $("#title_ProductType").multiselect({
                         multiple: false,
                         header: "Product Type",
-                        noneSelectedText: "Product Type  (optinal)",
+                        noneSelectedText: "Product Type  (optional)",
                         selectedList: 1
                     }).multiselectfilter();
 
@@ -383,7 +384,7 @@
                 }
                 var selectedValue = $("#title_ProductType").val();
                 secodryValue = selectedValue[0];
-               // document.getElementById('tag_id').innerHTML = "Creating an aisle :: '" + aisleTitle + "'" + "With Product: '" + secodryValue + "'"; 
+                // document.getElementById('tag_id').innerHTML = "Creating an aisle :: '" + aisleTitle + "'" + "With Product: '" + secodryValue + "'"; 
             }
 
             function productTypeTag() {
@@ -419,13 +420,13 @@
                 document.getElementById('titleID').value = "Fetch with Title";
                 document.getElementById('fetch_button_id_opt1').value = "Fetch with ProductType";
                 document.getElementById('fetch_button_op2').value = "Fetch with Occasion";
-                aisleTitle = selectedValue ;
-                primaryValue = selectedValue ;
+                aisleTitle = selectedValue;
+                primaryValue = selectedValue;
 
                 for (var i = 0; i < itemArray.length; i++) {
                     console.log("TAGING: itemArray length " + itemArray[i].title.split(":")[0]);
                     console.log("TAGING: itemArray length " + itemArray[i].title.split(":")[1]);
-                    if (itemArray[i].title.split(":")[1].localeCompare(selectedValue ) === 0) {
+                    if (itemArray[i].title.split(":")[1].localeCompare(selectedValue) === 0) {
                         position = i;
                         console.log("TAGING: position is " + position);
                         break;
@@ -469,11 +470,12 @@
                 }
 
             }
+            //title keyword click
             var titleTag = function(param) {
-                 offset = 0;
+                offset = 0;
                 if (selectedWord === undefined) {
                     selectedWord = param.innerHTML;
-                   
+
                 }
 //                else if (selectedWord === param.innerHTML) {
 //                    offset = offset + limit;
@@ -487,10 +489,10 @@
                 if (filterWord === '') {
                     filterWord = null;
                 }
-                getCrawledProducts(tag, secodryValue, filterWord, offset, limit, stateValue, true);
+                getCrawledProducts(tag, secodryValue, filterWord, offset, limit, stateValue, true,OPTION_FOUR);
             };
 
-//OPTION ONE button click 
+//OPTION 1 button click 
             function getProductWithProductType() {
 
                 if (productType === null || productType === undefined) {
@@ -509,12 +511,12 @@
                 if (filterWord === '') {
                     filterWord = null;
                 }
-                getCrawledProducts(productType, null, filterWord, offset, limit, stateValue, true);
+                getCrawledProducts(productType, null, filterWord, offset, limit, stateValue, true,OPTION_ONE);
 
             }
 
             function resetOptionOne() {
-                 secodryValue = null;
+                secodryValue = null;
                 document.getElementById("productType_tag").value = "selectedValue";
                 $('#productType_tag').multiselect('refresh');
                 document.getElementById('fetch_button_id_opt1').value = 'Fetch with ProductType';
@@ -522,7 +524,7 @@
                 document.getElementById('filter_word_opt1').value = "";
             }
             function resetOptionTwo() {
-                    secodryValue = null;
+                secodryValue = null;
                 document.getElementById("occasionProductType").value = "selectedValue";
                 $('#occasionProductType').multiselect('refresh');
                 document.getElementById("Occassion_tag").value = "selectedValue";
@@ -533,7 +535,7 @@
                 document.getElementById('filter_word_opt2').value = "";
             }
             function resetOptionThree() {
-                 secodryValue = null;
+                secodryValue = null;
                 document.getElementById('fetch_button_id').value = 'Fetch with Title';
                 document.getElementById('btTagOne').innerHTML = " ";
 
@@ -554,7 +556,7 @@
                 lookingFor = '';
                 document.getElementById('filter_word_opt3').value = "";
             }
-
+//option 2 button click
             function fetchProductWithOccasion() {
                 if (occasion === null || occasion === undefined) {
                     alert("Please Select Occasion");
@@ -571,36 +573,35 @@
                 if (filterWord === '') {
                     filterWord = null;
                 }
-                if (secodryValue !== null && secodryValue !== undefined) {
-                    getCrawledProducts(occasion, secodryValue, filterWord, offset, limit, stateValue, true);
-                } else {
-                    getCrawledProducts(occasion, secodryValue, filterWord, offset, limit, stateValue, true);
-                }
+                 getCrawledProducts(occasion, secodryValue, filterWord, offset, limit, stateValue, true,OPTION_TWO);
+                
             }
-            function getProducts() {
+            //option 3 button click
+            function getProductsWithTitle() {
                 var searchStringOne;
-                 var searchStringTwo;
-                 var selectedValue = $("#titleID").val();
-                 var tagTwo = $("#title_ProductType").val();
-                 searchStringOne = selectedValue[0];
-                 searchStringTwo = tagTwo[0];
-                 if(searchStringOne === undefined || searchStringOne.length < 2){
-                    searchStringOne = null; 
-                 }
-                 if(searchStringTwo === undefined || searchStringTwo.length < 2){
-                     searchStringTwo = null;
-                 }
+                var searchStringTwo;
+                var selectedValue = $("#titleID").val();
+                var tagTwo = $("#title_ProductType").val();
+                searchStringOne = selectedValue;
+                searchStringTwo = tagTwo[0];
+                if (searchStringOne === undefined || searchStringOne.length < 2) {
+                    searchStringOne = null;
+                }
+                if (searchStringTwo === undefined || searchStringTwo.length < 2) {
+                    searchStringTwo = null;
+                }
                 offset = 0;
                 if (searchStringOne === undefined || searchStringOne === '') {
                     alert("Please Select Title or Product Type");
                     return;
                 }
- 
+
                 var filterWord = document.getElementById('filter_word_opt3').value;
                 if (filterWord === '') {
                     filterWord = null;
                 }
-                getCrawledProducts(searchStringOne, searchStringTwo, filterWord, offset, limit, stateValue, true);
+                 
+                getCrawledProducts(searchStringOne, searchStringTwo, filterWord, offset, limit, stateValue, true,OPTION_THREE);
             }
             function getUser(id) {
                 var url = "https://vue-server-dev.appspot.com/api/user/" + id;
@@ -828,7 +829,7 @@
                 }
                 filterArray.clear();
 
-                list.sort();               
+                list.sort();
                 for (var i = 0; i < itemArray.length; i++) {
                     var aisleTitleCatelement = document.getElementById('titleID');
 
@@ -853,54 +854,46 @@
     </head>
 
     <body onLoad="getTags()">
-<div id="header"><h4>Create Aisle By Selecting one of the below options</h4></div>
+        <div id="header"><h4>Create Aisle By Selecting one of the below options</h4></div>
         <table id="product">
 
         </table>  
-        <div>
-            <!--            Fetch   <select id="stateId" name="" style="width:150;" onchange="getSelectedValue();">
-                            <option value="NONE" title=" ">NONE</option>
-                            <option value="CRAWLED" title=" ">CRAWLED</option>
-                            <option value="CURATED" title=" ">CURATED</option>
-                            <option value="CURATED_AND_VERIFIED" title=" ">CURATED_AND_VERIFIED</option>
-                            <option value="NEEDS_RECURATION" title=" ">NEEDS_RECURATION</option>
-                            <option value="ARCHIVED" title=" ">ARCHIVED</option>
-            
-                        </select> Products with keyword  <select id="select_tag" onchange="tagSelectionVal()" name="selection" multiple="multiple"   style="width: 200px" >
-                        </select>   -->
-            <!--            <input type='button' id="fetch_button_id" value='Fetch ' style="margin-left: 25px;"   onClick="getProducts()"/> -->
-            <!--            <hr>-->
-<!--            <div> <H2 align="center" id="create_aisle_heading">Create Aisle</H2></div>-->
+        <p>Option 1:</p>
+        <select id="productType_tag" onchange="productTypeTag()" name="selection" multiple="multiple" style="width:150;"   ></select>
+        &nbsp &nbsp <input type="text" placeHolder="Enter filter word(optional)" id="filter_word_opt1" autoComplete="mygroup1"/> 
+        <script language="javascript" type="text/javascript">
+            autoComplete.Set("mygroup1", allTags);</script>
+        &nbsp &nbsp <input type='button' id="fetch_button_id_opt1" value='Fetch with ProductType'   onClick="getProductWithProductType()"/> 
+        <p>Option 2:</p>
+        <select id="Occassion_tag" onchange="occasionSelectionVal()" name="selection" multiple="multiple"   style="width: 200px" >
+        </select>  &nbsp &nbsp   
+        <select id="occasionProductType" onchange="occasionProduct_Type()" name="selection" multiple="multiple" style="width:150;"   >
+        </select> &nbsp &nbsp
+        <input type="text" placeHolder="Enter filter word(optional)" id="filter_word_opt2" autoComplete="mygroup2"/>
+        <script language="javascript" type="text/javascript">
+            autoComplete.Set("mygroup2", allTags);</script>
+        &nbsp &nbsp     <input type='button' id="fetch_button_op2" value='Fetch with Occasion' style="margin-left: 5px;"   onClick="fetchProductWithOccasion()"/> 
+        <p>Option 3:</p>    <select id="titleID"   onchange="onTitleSelectionChange()" name="selection"    multiple="multiple" style="width: 150px"  >
+        </select> &nbsp &nbsp   
+        <select id="title_ProductType" onchange="titleProduct_Type()" name="selection" multiple="multiple" style="width:150px;"   >
+        </select> &nbsp &nbsp
+        <input type="text" placeHolder="Enter filter word(optional)" id="filter_word_opt3" autoComplete="mygroup3" />
+        <script language="javascript" type="text/javascript">
+            autoComplete.Set("mygroup3", allTags);
+        </script>
+        <input type='button' id="fetch_button_id" value='Fetch with Title' onClick="getProductsWithTitle()" align="left"/> 
 
-            <p>Option 1:</p>
-            <select id="productType_tag" onchange="productTypeTag()" name="selection" multiple="multiple" style="width:150;"   ></select>
-            &nbsp &nbsp <input type="text" placeHolder="Enter filter word(optional)" id="filter_word_opt1"/>  &nbsp &nbsp <input type='button' id="fetch_button_id_opt1" value='Fetch with ProductType'   onClick="getProductWithProductType()"/> 
-            <p>Option 2:</p>
-            <select id="Occassion_tag" onchange="occasionSelectionVal()" name="selection" multiple="multiple"   style="width: 200px" >
-            </select>  &nbsp &nbsp   
-            <select id="occasionProductType" onchange="occasionProduct_Type()" name="selection" multiple="multiple" style="width:150;"   >
-            </select> &nbsp &nbsp
-            <input type="text" placeHolder="Enter filter word(optional)" id="filter_word_opt2"/>
-            &nbsp &nbsp     <input type='button' id="fetch_button_op2" value='Fetch with Occasion' style="margin-left: 5px;"   onClick="fetchProductWithOccasion()"/> 
+        <button class="link" id="btTagOne" onclick="titleTag(this)"> </button>
+        <button class="link" id="btTagTwo" onclick="titleTag(this)"> </button>
+        <button class="link" id="btTagThree" onclick="titleTag(this)"> </button>
+        <button class="link" id="btTagFour" onclick="titleTag(this)"> </button>
+        <button class="link" id="btTagFive" onclick="titleTag(this)"> </button>
+        <button class="link" id="btTagSix" onclick="titleTag(this)"> </button>
+        <button class="link" id="btTagSeven" onclick="titleTag(this)"> </button>
+        <p align="center" id="tag_id">Creating an aisle with Product Type</p>
+        <hr>
 
-            <p>Option 3:</p>    <select id="titleID"   onchange="onTitleSelectionChange()" name="selection"    multiple="multiple" style="width: 150px"  >
-            </select> &nbsp &nbsp   
-            <select id="title_ProductType" onchange="titleProduct_Type()" name="selection" multiple="multiple" style="width:150px;"   >
-            </select> &nbsp &nbsp
-            <input type="text" placeHolder="Enter filter word(optional)" id="filter_word_opt3"/>
-            <input type='button' id="fetch_button_id" value='Fetch with Title' onClick="getProducts()" align="left"/> 
 
-            <button class="link" id="btTagOne" onclick="titleTag(this)"> </button>
-            <button class="link" id="btTagTwo" onclick="titleTag(this)"> </button>
-            <button class="link" id="btTagThree" onclick="titleTag(this)"> </button>
-            <button class="link" id="btTagFour" onclick="titleTag(this)"> </button>
-            <button class="link" id="btTagFive" onclick="titleTag(this)"> </button>
-            <button class="link" id="btTagSix" onclick="titleTag(this)"> </button>
-            <button class="link" id="btTagSeven" onclick="titleTag(this)"> </button>
-            <p align="center" id="tag_id">Creating an aisle with Product Type</p>
-            <hr>
-
-        </div> 
         <input type='button' id="fetch_more_button_id" value='Fetch More' onClick="fetchMore()"  style="margin-left:30em;"
                /> 
 
@@ -967,7 +960,8 @@
                     slideWidth: 400,
                     adaptiveHeight: true,
                     nextText: 'Next →',
-                    prevText: '← Back'
+                    prevText: '← Back',
+                    infiniteLoop: false
                 });
             });
             var slider;
@@ -979,7 +973,8 @@
                     slideWidth: 400,
                     adaptiveHeight: true,
                     nextText: 'Next →',
-                    prevText: '← Back'
+                    prevText: '← Back',
+                     infiniteLoop: false
                 });
             });
 
@@ -990,7 +985,8 @@
                     slideWidth: 400,
                     adaptiveHeight: true,
                     nextText: 'Next →',
-                    prevText: '← Back'
+                    prevText: '← Back',
+                     infiniteLoop: false
                 });
             }
 
@@ -1002,7 +998,8 @@
                     nextText: 'Next →',
                     slideWidth: 400,
                     adaptiveHeight: true,
-                    prevText: '← Back'
+                    prevText: '← Back',
+                     infiniteLoop: false
                 });
             }
             function movePorductsSlider(postion) {
@@ -1150,12 +1147,12 @@
         color:#ffffff;
         background-color:#000099;
     }
- #header {
-                background-color:white;
-                color:black;
-                text-align:center;
-                padding:4px;
-                box-shadow: 2px 2px 2px 1px #aaaaaa;
-            }
+    #header {
+        background-color:white;
+        color:black;
+        text-align:center;
+        padding:4px;
+        box-shadow: 2px 2px 2px 1px #aaaaaa;
+    }
 </style>
 
