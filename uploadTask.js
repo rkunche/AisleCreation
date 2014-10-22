@@ -16,6 +16,8 @@ Array.prototype.clear = function() {
 var offsetval;
 var products = [];
 var aisleProducts = [];
+var queryStringIndex = -1;
+var providerStringIndex = -1;
 //add providers here.
 var providersList = [
     "asos.com",
@@ -62,8 +64,10 @@ var FRESH_REQUEST = "fresh_request";
 var FETCH_MORE_REQUEST = "fetch_more_request";
 var isProductSliderReloaded;
 var requestInProgress = false;
+var EMPTY_RESPONSE = 3;
 function getCrawledProducts(tag, pTypeTag, filterTag, offset, limit, option) {
     requestType = FRESH_REQUEST;
+    providerStringIndex = -1
     currentProvider = null;
     queryStringArray.clear();
     console.log(option);
@@ -124,21 +128,12 @@ function getHandler() {
         return;
     if (request.status === 200)
     {
-
+        if(loopCount < 20){
+           getNewQueryString();
+           return;
+       }
         var jsonResponse = JSON.parse(request.responseText);
-
-        if (jsonResponse.length < 3) {
-            console.log("RESPONSE COUNT: " + jsonResponse.length);
-            if (loopCount < queryStringArray.length) {
-                //if response is less than three try with other quers strings.
-                //getNewQueryString();
-            }
-        }
-        //alert('HTTP GET success: ' +jsonResponse.length  );
-        //clear the old data in array and populate with new product data.
-        //products.clear();
-
-        if (request.responseText.length < 3) {
+        if (request.responseText.length < EMPTY_RESPONSE) {
             //alert("No products was found with "+currentProvider);
              if (loopCount < providersList.length) {
             getNewQueryString();
@@ -254,31 +249,39 @@ function fetchMore() {
 
 function getNewQueryString() {
     offsetval = 'NOT ZERO';
-    if(queryString === null || queryString === undefined){
+//    if(queryString === null || queryString === undefined){
+//        queryString = queryStringArray[0];
+//    } else if (queryString !== null && queryString === queryStringArray[queryStringArray.length - 1]) {
+//        queryString = queryStringArray[0];
+//    } else {
+//        var index = queryStringArray.indexOf(queryString);
+//        if (index === -1) {
+//            queryString = queryStringArray[0];
+//        } else {
+//            for (var j = 0; j < queryStringArray.length; j++) {
+//                if (queryStringArray[j] !== queryString && j > index) {
+//                    queryString = queryStringArray[j];
+//                    break;
+//                }
+//            }
+//        }
+//    }
+    //TODO: check this condition.
+    if(queryStringIndex === -1 || queryStringIndex >= queryStringArray.length -1 ||queryStringIndex< 0){
         queryString = queryStringArray[0];
-    } else if (queryString !== null && queryString === queryStringArray[queryStringArray.length - 1]) {
-        queryString = queryStringArray[0];
+        queryStringIndex = 0;
     } else {
-        var index = queryStringArray.indexOf(queryString);
-        if (index === -1) {
-            queryString = queryStringArray[0];
-        } else {
-            for (var j = 0; j < queryStringArray.length; j++) {
-                if (queryStringArray[j] !== queryString && j > index) {
-                    queryString = queryStringArray[j];
-                    break;
-                }
-            }
-        }
+        queryString = queryStringArray[queryStringIndex+1];
+        queryStringIndex++;
     }
+    
     console.log("queryString is: " + queryString);
-    console.log("queryString is queryStringArray : " + queryStringArray);
+   // console.log("queryString is queryStringArray : " + queryStringArray);
     //offset = getRandomInt();
     offset = 0;
     var providerString = getProvider();
     queryString = queryString + " " + providerString;
     var url = "https://vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + queryString + "&offset=" + offset + "&limit=" + limit + "&randomize=true";
-
     loopCount++;
     getProductsCall(url);
 }
@@ -751,32 +754,41 @@ function getSelectedProducts() {
 
 }
 function getProvider() {
-    loopCount++;
-    if (currentProvider === null) {
+     if(providerStringIndex === -1 || providerStringIndex >= providersList.length -1 ||providerStringIndex< 0){
         currentProvider = providersList[0];
-        return currentProvider;
-    } else if (currentProvider !== null && currentProvider === providersList[providersList.length - 1]) {
-        //if the current provider is at the end of the list pick the starting one.
-        currentProvider = providersList[0];
-        return currentProvider;
+        providerStringIndex = 0;
     } else {
-        var index = providersList.indexOf(currentProvider);
-        if (index === -1) {
-            //no providers found, then fetch starting one.
-            currentProvider = providersList[0];
-            return currentProvider;
-        }
-        //to fetch the current provider in sequential order.
-        for (var j = 0; j < providersList.length; j++) {
-            if (providersList[j] !== currentProvider && j > index) {
-                currentProvider = providersList[j];
-                console.log("5 " + currentProvider);
-                break;
-            }
-
-        }
-        return currentProvider;
+        currentProvider = queryStringArray[providerStringIndex+1];
+        providerStringIndex++;
     }
+    //TODO: simplify this code.
+    loopCount++;
+//    if (currentProvider === null) {
+//        currentProvider = providersList[0];
+//        return currentProvider;
+//    } else if (currentProvider !== null && currentProvider === providersList[providersList.length - 1]) {
+//        //if the current provider is at the end of the list pick the starting one.
+//        currentProvider = providersList[0];
+//        return currentProvider;
+//    } else {
+//        var index = providersList.indexOf(currentProvider);
+//        if (index === -1) {
+//            //no providers found, then fetch starting one.
+//            currentProvider = providersList[0];
+//            return currentProvider;
+//        }
+//        //to fetch the current provider in sequential order.
+//        for (var j = 0; j < providersList.length; j++) {
+//            if (providersList[j] !== currentProvider && j > index) {
+//                currentProvider = providersList[j];
+//                console.log("5 " + currentProvider);
+//                break;
+//            }
+//
+//        }
+//        return currentProvider;
+//    }
+    return currentProvider;
 }
 function aisleProductsCount() {
     number_aisle_added = aisleProducts.length;
