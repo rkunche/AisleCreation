@@ -127,6 +127,8 @@
             users.push(5169874951208960);
             users.push(5649648836411392); //lakshminath's id
             users.push(5638203017003008); //vidya's id
+ document.getElementById('fb_logout_id').style.visibility="hidden";
+ document.getElementById('fb_login_div_id').style.visibility="visible";
         }
 
         var active_id = '';
@@ -326,6 +328,9 @@
                     console.log("URLW: " + webUser.imageUrl);
                     console.log("USERIDW: " + webUser.fbId);
                     console.log("TOKENW " + webUser.token);
+ 
+ document.getElementById('fb_logout_id').style.visibility="visible";
+ document.getElementById('fb_login_div_id').style.visibility="hidden";
                     getUserWithFbId(webUser.fbId);
                 }
                 );
@@ -397,6 +402,17 @@
                     return;
                 }
             }
+
+function fb_logout(){
+FB.logout(function(response) {
+ document.getElementById('fb_logout_id').style.visibility="hidden";
+ document.getElementById('fb_login_div_id').style.visibility="visible";
+document.getElementById('status').innerHTML = "";
+ var image = document.getElementById('profile_pic_id');
+image.src =  "";
+   alert("you have logged out successfully from fb.");
+});
+}
         </script>
 
         <!--
@@ -409,6 +425,7 @@
         <image class = 'profile-img' src="" width="40" height="40" id="profile_pic_id"/>
         <div id="status">
         </div>
+<div id="fb_logout_id"><input type="button" value="logout" onClick="fb_logout()"/></div>
     </div>
         
    <div id="content">
@@ -432,8 +449,10 @@
         <p></p>
 <div id="fb_button_holder_id">
             <p id="fb_login_text_id"></p>
-    <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+ <div id="fb_login_div_id">
+    <fb:login-button scope="public_profile,email" onlogin="checkLoginState();" display: none>
     </fb:login-button>
+</div>
             </div>
 
 

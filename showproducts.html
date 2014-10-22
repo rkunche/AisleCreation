@@ -44,7 +44,7 @@
         <script src="uploadTask.js" type="text/javascript"></script>
         <script>
             var tagsrequest;
-            var stateValue = 'CURATED';
+            
             var offset = 0;
             var limit = 8;
             var aisleOwnerName = "Anonymous";
@@ -60,7 +60,7 @@
             var uploadProductCount = 0;
             var aisleCount = 0;
             var lookingForTag;
-            var titleTags = [];
+            var titleTags = [];      
             var selectedWord;
             var itemArray = [];
             var subItem = [];
@@ -257,9 +257,6 @@
                     var occasionSubCatelement = document.getElementById('Occassion_tag');
                     var lookingForSubCatelement = document.getElementById('occasionProductType');
                     var titleProductType = document.getElementById('title_ProductType');
-                    //document.getElementById("stateId").value = stateValue;
-                    //var temp2 = tag_string_array[static_categoryNames[k]];
-                    //  tagSubCatelement.options[tagSubCatelement.options.length] = new Option('', '', false, false);
                     allTags.clear();
                     for (var i = 0; i < jsonResponse.length; i++) {
                         allTags.push(jsonResponse[i].tagString);
@@ -273,8 +270,12 @@
                             productType.options[productType.options.length] = new Option(jsonResponse[i].tagString, jsonResponse[i].tagString, false, false);
                             titleProductType.options[titleProductType.options.length] = new Option(jsonResponse[i].tagString, jsonResponse[i].tagString, false, false);
                         }
+                        if(jsonResponse[i].tagCategory === "Product description"){
+                            console.log(jsonResponse[i].tagString);
+                        }
                     }
                     ajaxcallToPType('OccasionsCuration.csv', titleTags);
+                    ajaxcallToReadWordsList('wordslist.csv',allTags);
                     $("#Occassion_tag").multiselect({
                         multiple: false,
                         header: "Occasion",
@@ -477,11 +478,6 @@
                     selectedWord = param.innerHTML;
 
                 }
-//                else if (selectedWord === param.innerHTML) {
-//                    offset = offset + limit;
-//                } else {
-//                    offset = 0;
-//                }
                 var tag = param.innerHTML;
                 titleWord = tag;
                 // document.getElementById('fetch_button_id').value = "Fetch More";
@@ -489,30 +485,22 @@
                 if (filterWord === '') {
                     filterWord = null;
                 }
-                getCrawledProducts(tag, secodryValue, filterWord, offset, limit, stateValue, true,OPTION_FOUR);
+                getCrawledProducts(tag, secodryValue, filterWord, offset, limit,OPTION_FOUR);
             };
 
-//OPTION 1 button click 
+            //OPTION 1 button click 
             function getProductWithProductType() {
 
-                if (productType === null || productType === undefined) {
+                if (productType === null || productType === undefined || productType === '') {
                     alert("Please Select ProductType");
                     return;
                 }
-
-//                var fetchWithProductBtnValue = document.getElementById('fetch_button_id_opt1').value;
-//                if (fetchWithProductBtnValue === "Fetch with ProductType") {
-//                    offset = 0;
-//                    document.getElementById('fetch_button_id_opt1').value = "Fetch More";
-//                } else {
-//                    offset = offset + limit;
-//                }
+                 offset = 0;
                 var filterWord = document.getElementById('filter_word_opt1').value;
                 if (filterWord === '') {
                     filterWord = null;
                 }
-                getCrawledProducts(productType, null, filterWord, offset, limit, stateValue, true,OPTION_ONE);
-
+                getCrawledProducts(productType, null, filterWord, offset, limit,OPTION_ONE);
             }
 
             function resetOptionOne() {
@@ -558,22 +546,16 @@
             }
 //option 2 button click
             function fetchProductWithOccasion() {
-                if (occasion === null || occasion === undefined) {
+                if (occasion === null || occasion === undefined || occasion === '') {
                     alert("Please Select Occasion");
                     return;
                 }
-//                 var fetchWithProductBtnValue = document.getElementById('fetch_button_op2').value;
-//                if (fetchWithProductBtnValue === "Fetch with Occasion") {
-//                    offset = 0;
-//                    document.getElementById('fetch_button_op2').value = "Fetch More";
-//                } else {
-//                    offset = offset + limit;
-//                }
+                 offset = 0;
                 var filterWord = document.getElementById('filter_word_opt2').value;
                 if (filterWord === '') {
                     filterWord = null;
                 }
-                 getCrawledProducts(occasion, secodryValue, filterWord, offset, limit, stateValue, true,OPTION_TWO);
+                 getCrawledProducts(occasion, secodryValue, filterWord, offset, limit,OPTION_TWO);
                 
             }
             //option 3 button click
@@ -583,7 +565,14 @@
                 var selectedValue = $("#titleID").val();
                 var tagTwo = $("#title_ProductType").val();
                 searchStringOne = selectedValue;
+                if(selectedValue === null){
+                alert("Please Select Title");
+                return;
+            }
+               if(tagTwo !== null){
                 searchStringTwo = tagTwo[0];
+            }
+            
                 if (searchStringOne === undefined || searchStringOne.length < 2) {
                     searchStringOne = null;
                 }
@@ -591,17 +580,14 @@
                     searchStringTwo = null;
                 }
                 offset = 0;
-                if (searchStringOne === undefined || searchStringOne === '') {
-                    alert("Please Select Title or Product Type");
-                    return;
-                }
+               
 
                 var filterWord = document.getElementById('filter_word_opt3').value;
                 if (filterWord === '') {
                     filterWord = null;
                 }
                  
-                getCrawledProducts(searchStringOne, searchStringTwo, filterWord, offset, limit, stateValue, true,OPTION_THREE);
+                getCrawledProducts(searchStringOne, searchStringTwo, filterWord, offset, limit,OPTION_THREE);
             }
             function getUser(id) {
                 var url = "https://vue-server-dev.appspot.com/api/user/" + id;
@@ -780,7 +766,7 @@
                         v = line[j];
                         v = $.trim(v);
                         if (v !== '' && v.length > 0) {
-                            console.log('Words   :' + v + ':');
+                           
                             list.push(v);
                         }
                     }
@@ -844,6 +830,47 @@
                     selectedList: 1
                 }).multiselectfilter();
             }
+            //read words from csv
+     function ajaxcallToReadWordsList(pathOfFileToReadFrom, list) {
+                var datatype = '';
+
+                var ajax = $.ajax({
+                    url: pathOfFileToReadFrom,
+                    async: true,
+                    success: function(csvd) {
+                        console.log('ajax succes: ' + csvd);
+                        datatype = $.csv2Array(csvd);
+                        console.log('ajax arry: ' + datatype);
+
+                    },
+                    dataType: "text",
+                });
+
+                ajax.complete(function(jqXHR) {
+                    // console.log('ajax complete ' + datatype);
+                    if (jqXHR.readyState === 4) {
+                        readWords(datatype, list);
+                    }
+                });
+            }
+            function readWords(array, list){
+                     for (var i = 0; i < array.length; i++) {
+                    var tmp = array[i];
+                    var line = tmp;
+                    for (var j = 0; j < line.length; j++) {
+                        v = line[j];
+                        v = $.trim(v);
+                        if (v !== '' && v.length > 0) {
+                            console.log('List of Words   :' + v + ':');
+                            var word = v.split(":")[0];
+                            list.push(word);
+                        }
+                    }
+                } 
+                for(var k=0;k<list.length;k++){
+                    console.log('FINAL LIST of Words   :'+list[k]);
+                }
+            }
         </script>
 
 
@@ -898,14 +925,14 @@
                /> 
 
         <br>
-        <div class="outside">
+<!--        <div class="outside">
 
             <p id='btnPrevious' style="margin-left:30em;"><span id="slider-prev"></span> | <span id="slider-next"></span></p>
 
 
 
             <p id='btnNext'  style="margin-right:30em;"><span id="slider-prev2"></span> | <span id="slider-next2"></span></p>
-        </div>
+        </div>-->
 
 
         <table align="center"  style="border-spacing: 20px;"><tr>
@@ -955,12 +982,8 @@
             $(document).ready(function() {
 
                 aisleSlider = $('.slider8').bxSlider({
-                    nextSelector: '#slider-next2',
-                    prevSelector: '#slider-prev2',
                     slideWidth: 400,
-                    adaptiveHeight: true,
-                    nextText: 'Next →',
-                    prevText: '← Back',
+                    adaptiveHeight: true,                 
                     infiniteLoop: false
                 });
             });
@@ -968,24 +991,16 @@
 
             $(document).ready(function() {
                 slider = $('.slider6').bxSlider({
-                    nextSelector: '#slider-next',
-                    prevSelector: '#slider-prev',
                     slideWidth: 400,
                     adaptiveHeight: true,
-                    nextText: 'Next →',
-                    prevText: '← Back',
                      infiniteLoop: false
                 });
             });
 
             function aisleSldierReload() {
                 aisleSlider.reloadSlider({
-                    nextSelector: '#slider-next2',
-                    prevSelector: '#slider-prev2',
                     slideWidth: 400,
                     adaptiveHeight: true,
-                    nextText: 'Next →',
-                    prevText: '← Back',
                      infiniteLoop: false
                 });
             }
@@ -993,12 +1008,8 @@
             function sliderReload() {
                 //e.preventDefault();
                 slider.reloadSlider({
-                    nextSelector: '#slider-next',
-                    prevSelector: '#slider-prev',
-                    nextText: 'Next →',
                     slideWidth: 400,
                     adaptiveHeight: true,
-                    prevText: '← Back',
                      infiniteLoop: false
                 });
             }

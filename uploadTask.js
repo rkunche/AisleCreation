@@ -8,7 +8,7 @@ var currentPostion = 0;
 var currentImage = 0;
 var selected = [];
 var aisles = [];
-var clearAisleState;
+
 //prototype for clear the array values.
 Array.prototype.clear = function() {
     this.length = 0;
@@ -16,6 +16,30 @@ Array.prototype.clear = function() {
 var offsetval;
 var products = [];
 var aisleProducts = [];
+//add providers here.
+var providersList = [
+    "asos.com",
+    "bluefly.com",
+    "etsy.com",
+    "foxgown.com",
+    "hm.com",
+    "igigi.com",
+    "justfab.com",
+    "moddeals.com",
+    "neimanmarcus.com",
+    "sammydress.com",
+    "shopbop.com",
+    "stylesforless.com",
+    "talbots.com",
+    "target.com",
+    "urbanog.com",
+    "yoox.com",
+    "zappos.com",
+    "zulily.com",
+    "macys.com",
+    "nordstrom.com",
+    "express.com"];
+var currentProvider;
 
 var randomize;
 
@@ -34,20 +58,23 @@ var OPTION_THREE = "option_three";
 var OPTION_FOUR = "option_four";
 var current_option;
 var requestType;
-var FRESH_REQUEST= "fresh_request";
+var FRESH_REQUEST = "fresh_request";
 var FETCH_MORE_REQUEST = "fetch_more_request";
-  var isProductSliderReloaded;
-function getCrawledProducts(tag, pTypeTag, filterTag, offset, limit, productState, clearAisle, option) {
+var isProductSliderReloaded;
+var requestInProgress = false;
+function getCrawledProducts(tag, pTypeTag, filterTag, offset, limit, option) {
     requestType = FRESH_REQUEST;
+    currentProvider = null;
     queryStringArray.clear();
     console.log(option);
     current_option = option;
-    if (tag !== null && tag !== undefined){
-        if(option !== OPTION_THREE){
-        tag_one = "~" + tag;
-    } else {
-         tag_one = tag;
-    }
+    offsetval = offset;
+    if (tag !== null && tag !== undefined) {
+        if (option !== OPTION_THREE) {
+            tag_one = "~" + tag;
+        } else {
+            tag_one = tag;
+        }
     }
 
     if (pTypeTag !== null && pTypeTag !== undefined)
@@ -59,31 +86,33 @@ function getCrawledProducts(tag, pTypeTag, filterTag, offset, limit, productStat
     loopCount = 0;
     queryString = null;
 
-    clearAisleState = clearAisle;
-    offsetval = offset;
-  
-
     if (pTypeTag === null && filterTag === null) {
         randomize = true;
     } else {
         randomize = false;
     }
     var url;
+    var providerString = getProvider();
     if (randomize) {
+        tag = tag + " " + providerString;
         //only one primay tag request set randomize to true.
         url = "https://vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + tag + "&offset=" + offset + "&limit=" + limit + "&randomize=true";
     } else {
         queryStringMappingPool();
         queryString = queryStringArray[0];
+        queryString = queryString + " " + providerString;
         //var offset = getRandomInt();
         var offset = 0;
         url = "https://vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + queryString + "&offset=" + offset + "&limit=" + limit + "&randomize=true";
 
     }
+    products.clear();
     getProductsCall(url);
 }
 //ajax call to server to fetch products.
 function getProductsCall(url) {
+
+
     console.log("REQUESTED URL: " + url);
     if (XMLHttpRequest)
     {
@@ -93,6 +122,7 @@ function getProductsCall(url) {
             // Firefox 3.5 and Safari 4
             request.open('GET', url, true);
             request.onreadystatechange = getHandler;
+            requestInProgress = true;
             request.send();
         }
     }
@@ -105,6 +135,7 @@ function getHandler() {
     {
 
         var jsonResponse = JSON.parse(request.responseText);
+
         if (jsonResponse.length < 3) {
             console.log("RESPONSE COUNT: " + jsonResponse.length);
             if (loopCount < queryStringArray.length && randomize === false) {
@@ -125,26 +156,27 @@ function getHandler() {
             products.clear();
 
             isProductSliderReloaded = false;
-            if (clearAisleState) {
-                aisleProducts.clear();
-                var aisleHolder = document.getElementById('aisle_holder_id');
-                var productsCount = document.getElementById('products_id');
-                aisleHolder.innerHTML = "";
-                productsCount.innerHTML = "Selected Products: 0";
-                var imag = document.createElement("img");
-                imag.src = "images/aislebg.jpg";
-                var aisleSubmitButton = document.getElementById('submit_button');
-                aisleSubmitButton.style.backgroundColor = "white";
-                aisleSubmitButton.style.color = "gray";
-                aisleSubmitButton.style.outline = "solid gray";
-                var productsCount = document.getElementById('products_id');
-                productsCount.style.color = "Black";
 
-                aisleHolder.appendChild(imag);
-                aisleSldierReload();
-            }
+            aisleProducts.clear();
+            var aisleHolder = document.getElementById('aisle_holder_id');
+            var productsCount = document.getElementById('products_id');
+            aisleHolder.innerHTML = "";
+            productsCount.innerHTML = "Selected Products: 0";
+            var imag = document.createElement("img");
+            imag.src = "images/aislebg.jpg";
+            var aisleSubmitButton = document.getElementById('submit_button');
+            aisleSubmitButton.style.backgroundColor = "white";
+            aisleSubmitButton.style.color = "gray";
+            aisleSubmitButton.style.outline = "solid gray";
+            var productsCount = document.getElementById('products_id');
+            productsCount.style.color = "Black";
+
+            aisleHolder.appendChild(imag);
+            aisleSldierReload();
+
         }
-        if(requestType === FETCH_MORE_REQUEST){
+        if (requestType === FETCH_MORE_REQUEST) {
+
             products.clear();
         }
         for (var i = 0; i < jsonResponse.length; i++) {
@@ -189,7 +221,7 @@ function getHandler() {
         // prepare();
         showProductsBxSlider();
     }
-    if (request.status != 200 && request.status != 304) {
+    if (request.status !== 200 && request.status !== 304) {
         alert('HTTP GET error ' + request.status);
         return;
     }
@@ -204,17 +236,24 @@ function getRandomInt() {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 function fetchMore() {
+    if (requestInProgress) {
+        //current request is not processed 
+        return;
+    }
     offsetval = 'NOT ZERO';
     loopCount = 0;
     var url;
+    var providerString = getProvider();
     if (randomize) {
         offset = offset + limit;
-        url = "https://vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + tag_one + "&offset=" + offset + "&limit=" + limit + "&randomize=true";
+        var tempString = tag_one + " " + providerString;
+        url = "https://vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + tempString + "&offset=" + offset + "&limit=" + limit + "&randomize=true";
     } else {
         offset = offset + limit;
-        url = "https://vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + queryString + "&offset=" + offset + "&limit=" + limit + "&randomize=true";
+        var tempString = queryString + " " + providerString;
+        url = "https://vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + tempString + "&offset=" + offset + "&limit=" + limit + "&randomize=true";
     }
-     requestType = FETCH_MORE_REQUEST;
+    requestType = FETCH_MORE_REQUEST;
     getProductsCall(url);
     moveSliderPosition = products.length;
 }
@@ -235,6 +274,8 @@ function getNewQueryString() {
     console.log("queryString is: " + queryString);
     //offset = getRandomInt();
     offset = 0;
+    var providerString = getProvider();
+    queryString = queryString + " " + providerString;
     var url = "https://vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + queryString + "&offset=" + offset + "&limit=" + limit + "&randomize=true";
 
     loopCount++;
@@ -254,19 +295,19 @@ function queryStringMappingPool() {
     }
 
     if (tag_one !== null && tag_two !== null && tag_three !== null) {
-        if(current_option === OPTION_TWO){
-           queryString = tag_one + " " + tag_two + " AND " + tag_three; 
-        }else if(current_option === OPTION_THREE) {
-        var wordsArray = tag_one.split(" ");
-        queryString = tag_two+" "+tag_three;
-         for(var t=0; t<wordsArray.length; t++){
-             if(wordsArray[t].trim() !== '')
-            queryString = queryString +" OR "+wordsArray[t]; 
-         }
-         console.log("Title: Query: "+queryString);
-      } else {
-          queryString = tag_one + " " + tag_two + " " + tag_three;
-      }
+        if (current_option === OPTION_TWO) {
+            queryString = tag_one + " " + tag_two + " AND " + tag_three;
+        } else if (current_option === OPTION_THREE) {
+            var wordsArray = tag_one.split(" ");
+            queryString = tag_two + " " + tag_three;
+            for (var t = 0; t < wordsArray.length; t++) {
+                if (wordsArray[t].trim() !== '')
+                    queryString = queryString + " OR " + wordsArray[t];
+            }
+            console.log("Title: Query: " + queryString);
+        } else {
+            queryString = tag_one + " " + tag_two + " " + tag_three;
+        }
 
         queryStringArray.push(queryString);
     }
@@ -296,7 +337,7 @@ function queryStringMappingPool() {
         queryStringArray.push(tag_two);
 
     }
-    
+
     for (var j = 0; j < queryStringArray.length; j++) {
         console.log(queryStringArray[j]);
     }
@@ -312,26 +353,26 @@ function clearProducts() {
     var productsCount = document.getElementById('products_id');
     productsCount.innerHTML = "Selected Products: 0";
     productsCount.style.color = "Black";
-   
+
     aisleProducts.clear();
     showProductsBxSlider();
-    
-    
-      var prodcuHolder = document.getElementById('products_holder_id');
-    prodcuHolder.innerHTML = "";
-     var container = document.createElement("div");
-       var imag = document.createElement("img");
-        try {
-            imag.src = 'images/aisle_bagroundvue.png';
 
-            //console.log(jsonObject.productImages[0].externalURL);
-        } catch (e) {
-            console.log("externalURL null")
-        }
-     container.appendChild(imag);
-       prodcuHolder.appendChild(container);
-        sliderReload();
-         aisleSldierReload();
+
+    var prodcuHolder = document.getElementById('products_holder_id');
+    prodcuHolder.innerHTML = "";
+    var container = document.createElement("div");
+    var imag = document.createElement("img");
+    try {
+        imag.src = 'images/aisle_bagroundvue.png';
+
+        //console.log(jsonObject.productImages[0].externalURL);
+    } catch (e) {
+        console.log("externalURL null")
+    }
+    container.appendChild(imag);
+    prodcuHolder.appendChild(container);
+    sliderReload();
+    aisleSldierReload();
 }
 function getAllAislesByUser(id) {
     var url = "https://3dot1-dot-vue-server-dev.appspot.com/api/aisles/user/" + id;
@@ -438,6 +479,7 @@ function showProductsBxSlider() {
     }
     sliderReload();
     aisleSldierReload();
+    requestInProgress = false;
     // if(moveSliderPosition !==  0)
     // movePorductsSlider(moveSliderPosition);
 
@@ -660,20 +702,18 @@ function createAisleDeleteButton(div, product) {
 
 
             var myButton = document.getElementById(product.id);
-
-            myButton.value = "AddToAisle";
-            myButton.style.backgroundColor = "white";
-            myButton.style.color = "green";
-            myButton.style.outline = "solid orange";
+            if (myButton !== null && myButton !== undefined) {
+                myButton.value = "AddToAisle";
+                myButton.style.backgroundColor = "white";
+                myButton.style.color = "green";
+                myButton.style.outline = "solid orange";
+            }
 
             ga('send', 'event', 'button', 'clcik', "RemoveFromAisle");
             var aisleHolder = document.getElementById('aisle_holder_id');
             aisleHolder.innerHTML = "";
 
             prepareAisleSlider(aisleHolder);
-
-            console.log("deleted product Id: " + product.id);
-            console.log("deleted product Id: " + myButton.setAttribute());
         },
         dude: product.title
     };
@@ -708,6 +748,40 @@ function getSelectedProducts() {
         }
     }
 
+}
+function getProvider() {
+    console.log("1 " + currentProvider);
+    //if the current provider is at the end of the list pick the starting one.
+    if (currentProvider !== null && currentProvider === providersList[providersList.length - 1]) {
+        currentProvider = providersList[0];
+        return currentProvider;
+    }
+
+    if (currentProvider === null) {
+        currentProvider = providersList[0];
+        console.log("2 " + currentProvider);
+        return currentProvider;
+    } else {
+         
+        var index = providersList.indexOf(currentProvider);
+        if (index === -1) {
+            //no providers found, then fetch starting one.
+            currentProvider = providersList[0];
+            console.log("3 " + currentProvider);
+            return currentProvider;
+        }
+        //to fetch the current provider in sequential order.
+        for (var j = 0; j < providersList.length; j++) {
+            console.log("4 " + currentProvider);
+            if (providersList[j] !== currentProvider && j > index) {
+                currentProvider = providersList[j];
+                console.log("5 " + currentProvider);
+                break;
+            }
+
+        }
+        return currentProvider;
+    }
 }
 function aisleProductsCount() {
     number_aisle_added = aisleProducts.length;
