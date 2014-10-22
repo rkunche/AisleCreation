@@ -93,12 +93,12 @@ function getCrawledProducts(tag, pTypeTag, filterTag, offset, limit, option) {
     }
     var url;
     var providerString = getProvider();
+     queryStringMappingPool();
     if (randomize) {
         tag = tag + " " + providerString;
         //only one primay tag request set randomize to true.
         url = "https://vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + tag + "&offset=" + offset + "&limit=" + limit + "&randomize=true";
-    } else {
-        queryStringMappingPool();
+    } else {       
         queryString = queryStringArray[0];
         queryString = queryString + " " + providerString;
         //var offset = getRandomInt();
@@ -138,9 +138,9 @@ function getHandler() {
 
         if (jsonResponse.length < 3) {
             console.log("RESPONSE COUNT: " + jsonResponse.length);
-            if (loopCount < queryStringArray.length && randomize === false) {
+            if (loopCount < queryStringArray.length) {
                 //if response is less than three try with other quers strings.
-                getNewQueryString();
+                //getNewQueryString();
             }
         }
         //alert('HTTP GET success: ' +jsonResponse.length  );
@@ -148,7 +148,10 @@ function getHandler() {
         //products.clear();
 
         if (request.responseText.length < 3) {
-            //alert("No products was found with this tag");
+            //alert("No products was found with "+currentProvider);
+             if (loopCount < providersList.length) {
+            getNewQueryString();
+             }
             return;
         }
 
@@ -238,7 +241,7 @@ function getRandomInt() {
 function fetchMore() {
     if (requestInProgress) {
         //current request is not processed 
-        return;
+      //  return;
     }
     offsetval = 'NOT ZERO';
     loopCount = 0;
@@ -260,18 +263,25 @@ function fetchMore() {
 
 function getNewQueryString() {
     offsetval = 'NOT ZERO';
-    var index = queryStringArray.indexOf(queryString);
-    if (index === -1) {
+    if(queryString === null || queryString === undefined){
+        queryString = queryStringArray[0];
+    } else if (queryString !== null && queryString === queryStringArray[queryStringArray.length - 1]) {
         queryString = queryStringArray[0];
     } else {
-        for (var j = 0; j < queryStringArray.length; j++) {
-            if (queryStringArray[j] !== queryString && j > index) {
-                queryString = queryStringArray[j];
-                break;
+        var index = queryStringArray.indexOf(queryString);
+        if (index === -1) {
+            queryString = queryStringArray[0];
+        } else {
+            for (var j = 0; j < queryStringArray.length; j++) {
+                if (queryStringArray[j] !== queryString && j > index) {
+                    queryString = queryStringArray[j];
+                    break;
+                }
             }
         }
     }
     console.log("queryString is: " + queryString);
+    console.log("queryString is queryStringArray : " + queryStringArray);
     //offset = getRandomInt();
     offset = 0;
     var providerString = getProvider();
@@ -750,29 +760,23 @@ function getSelectedProducts() {
 
 }
 function getProvider() {
-    console.log("1 " + currentProvider);
-    //if the current provider is at the end of the list pick the starting one.
-    if (currentProvider !== null && currentProvider === providersList[providersList.length - 1]) {
-        currentProvider = providersList[0];
-        return currentProvider;
-    }
-
+    loopCount++;
     if (currentProvider === null) {
         currentProvider = providersList[0];
-        console.log("2 " + currentProvider);
+        return currentProvider;
+    } else if (currentProvider !== null && currentProvider === providersList[providersList.length - 1]) {
+        //if the current provider is at the end of the list pick the starting one.
+        currentProvider = providersList[0];
         return currentProvider;
     } else {
-
         var index = providersList.indexOf(currentProvider);
         if (index === -1) {
             //no providers found, then fetch starting one.
             currentProvider = providersList[0];
-            console.log("3 " + currentProvider);
             return currentProvider;
         }
         //to fetch the current provider in sequential order.
         for (var j = 0; j < providersList.length; j++) {
-            console.log("4 " + currentProvider);
             if (providersList[j] !== currentProvider && j > index) {
                 currentProvider = providersList[j];
                 console.log("5 " + currentProvider);
