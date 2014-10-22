@@ -44,7 +44,7 @@
         <script src="uploadTask.js" type="text/javascript"></script>
         <script>
             var tagsrequest;
-            
+
             var offset = 0;
             var limit = 8;
             var aisleOwnerName = "Anonymous";
@@ -60,7 +60,7 @@
             var uploadProductCount = 0;
             var aisleCount = 0;
             var lookingForTag;
-            var titleTags = [];      
+            var titleTags = [];
             var selectedWord;
             var itemArray = [];
             var subItem = [];
@@ -89,7 +89,7 @@
                     }
                 }
                 if (data[0] === 'getproducts') {
- 
+
                 }
                 if (data[0] === 'getAllAisles') {
                     getAllAislesByUser(data[1]);
@@ -129,28 +129,11 @@
             function getTags() {
                 document.getElementById('products_holder_id').setAttribute("style", "width:800px");
                 document.getElementById('aisle_holder_id').setAttribute("style", "width:800px");
-
                 newheight = screen.height - 120;
                 getMe();
-                var fetchButton = document.getElementById("fetch_button_id");
-                fetchButton.style.backgroundColor = "white";
-                fetchButton.style.color = "green";
-                fetchButton.style.outline = "solid orange";
-                var fetchButton_occasion = document.getElementById("fetch_button_id_opt1");
-                fetchButton_occasion.style.backgroundColor = "white";
-                fetchButton_occasion.style.color = "green";
-                fetchButton_occasion.style.outline = "solid orange";
-
-                var fetchButton_occasion = document.getElementById("fetch_button_op2");
-                fetchButton_occasion.style.backgroundColor = "white";
-                fetchButton_occasion.style.color = "green";
-                fetchButton_occasion.style.outline = "solid orange";
-
-                var fetchButton_occasion = document.getElementById("fetch_more_button_id");
-                fetchButton_occasion.style.backgroundColor = "white";
-                fetchButton_occasion.style.color = "green";
-                fetchButton_occasion.style.outline = "solid orange";
-
+                enableButton(4);
+                var button_fetchMore = document.getElementById('fetch_more_button_id');
+                setStyleToButton(button_fetchMore, true);
                 var url = "https://vue-server-dev.appspot.com/api/producttags/all";
                 if (XMLHttpRequest)
                 {
@@ -163,72 +146,33 @@
                         tagsrequest.send();
                     }
                 }
-                document.getElementById("btTagOne").style.color = "black";
-                document.getElementById("btTagTwo").style.color = "black";
-                document.getElementById("btTagThree").style.color = "black";
-                document.getElementById("btTagFour").style.color = "black";
-                document.getElementById("btTagFive").style.color = "black";
-                document.getElementById("btTagSix").style.color = "black";
+                //sets the text mouse events for the title words.
+                var buttonOne = document.getElementById("btTagOne");
+                var buttonTwo = document.getElementById("btTagTwo");
+                var buttonThree = document.getElementById("btTagThree");
+                var buttonFour = document.getElementById("btTagFour");
+                var buttonFive = document.getElementById("btTagFive");
+                var buttonSix = document.getElementById("btTagSix");
 
-                document.getElementById("btTagTwo").onmouseover = function()
+
+                textMouseEvents(buttonOne);
+                textMouseEvents(buttonTwo);
+                textMouseEvents(buttonThree);
+                textMouseEvents(buttonFour);
+                textMouseEvents(buttonFive);
+                textMouseEvents(buttonSix);
+            }
+            function textMouseEvents(button_var) {
+                button_var.style.color = "black";
+                button_var.onmouseover = function()
                 {
                     this.style.color = "green";
                 }
 
-                document.getElementById("btTagTwo").onmouseout = function()
+                button_var.onmouseout = function()
                 {
                     this.style.color = "black";
                 }
-
-
-                document.getElementById("btTagOne").onmouseover = function()
-                {
-                    this.style.color = "green";
-                }
-
-                document.getElementById("btTagOne").onmouseout = function()
-                {
-                    this.style.color = "black";
-                }
-
-
-                document.getElementById("btTagThree").onmouseover = function()
-                {
-                    this.style.color = "green";
-                }
-
-                document.getElementById("btTagThree").onmouseout = function()
-                {
-                    this.style.color = "black";
-                }
-                document.getElementById("btTagFour").onmouseover = function()
-                {
-                    this.style.color = "green";
-                }
-
-                document.getElementById("btTagFour").onmouseout = function()
-                {
-                    this.style.color = "black";
-                }
-                document.getElementById("btTagFive").onmouseover = function()
-                {
-                    this.style.color = "green";
-                }
-
-                document.getElementById("btTagFive").onmouseout = function()
-                {
-                    this.style.color = "black";
-                }
-                document.getElementById("btTagSix").onmouseover = function()
-                {
-                    this.style.color = "green";
-                }
-
-                document.getElementById("btTagSix").onmouseout = function()
-                {
-                    this.style.color = "black";
-                }
-
             }
             function tagRespnseHandler() {
                 if (tagsrequest.readyState !== 4)
@@ -270,12 +214,12 @@
                             productType.options[productType.options.length] = new Option(jsonResponse[i].tagString, jsonResponse[i].tagString, false, false);
                             titleProductType.options[titleProductType.options.length] = new Option(jsonResponse[i].tagString, jsonResponse[i].tagString, false, false);
                         }
-                        if(jsonResponse[i].tagCategory === "Product description"){
+                        if (jsonResponse[i].tagCategory === "Product description") {
                             console.log(jsonResponse[i].tagString);
                         }
                     }
                     ajaxcallToPType('OccasionsCuration.csv', titleTags);
-                    ajaxcallToReadWordsList('wordslist.csv',allTags);
+                    ajaxcallToReadWordsList('wordslist.csv', allTags);
                     $("#Occassion_tag").multiselect({
                         multiple: false,
                         header: "Occasion",
@@ -326,6 +270,47 @@
                     return;
                 }
             }
+            //toggling button colors when primary type selection.
+            function enableButton(option) {
+                var buttonVar1 = document.getElementById('fetch_button_id_opt1');
+                var buttonVar2 = document.getElementById('fetch_button_op2');
+                var buttonVar3 = document.getElementById('fetch_button_id');
+                if (option === 1) {
+                    setStyleToButton(buttonVar1, true);
+                    setStyleToButton(buttonVar2, false);
+                    setStyleToButton(buttonVar3, false);
+                }
+                if (option === 2) {
+                    setStyleToButton(buttonVar1, false);
+                    setStyleToButton(buttonVar2, true);
+                    setStyleToButton(buttonVar3, false);
+                }
+                if (option === 3) {
+                    setStyleToButton(buttonVar1, false);
+                    setStyleToButton(buttonVar2, false);
+                    setStyleToButton(buttonVar3, true);
+                }
+
+                if (option === 4) {
+                    setStyleToButton(buttonVar1, false);
+                    setStyleToButton(buttonVar2, false);
+                    setStyleToButton(buttonVar3, false);
+                }
+
+
+
+            }
+            function setStyleToButton(btn, flag) {
+                if (flag) {
+                    btn.style.backgroundColor = "white";
+                    btn.style.color = "green";
+                    btn.style.outline = "solid orange";
+                } else {
+                    btn.style.backgroundColor = "white";
+                    btn.style.color = "black";
+                    btn.style.outline = "gray";
+                }
+            }
             function checkAisleAddedInfo() {
                 var submitFlag = false;
                 aisleProductsCount();
@@ -361,6 +346,7 @@
                 occasion = selectedValue[0];
                 primaryValue = selectedValue;
                 ga('send', 'event', 'option', 'select', selectedValue[0]);
+                enableButton(2);
 
 
             }
@@ -404,6 +390,7 @@
                 document.getElementById('fetch_button_op2').value = "Fetch with Occasion";
                 resetOptionTwo();
                 resetOptionThree();
+                enableButton(1);
                 ga('send', 'event', 'option', 'select', selectedValue[0]);
 
             }
@@ -469,7 +456,7 @@
                 if (tagsArray[5] !== undefined) {
                     document.getElementById('btTagSix').innerHTML = tagsArray[5];
                 }
-
+                enableButton(3);
             }
             //title keyword click
             var titleTag = function(param) {
@@ -485,7 +472,7 @@
                 if (filterWord === '') {
                     filterWord = null;
                 }
-                getCrawledProducts(tag, secodryValue, filterWord, offset, limit,OPTION_FOUR);
+                getCrawledProducts(tag, secodryValue, filterWord, offset, limit, OPTION_FOUR);
             };
 
             //OPTION 1 button click 
@@ -495,12 +482,12 @@
                     alert("Please Select ProductType");
                     return;
                 }
-                 offset = 0;
+                offset = 0;
                 var filterWord = document.getElementById('filter_word_opt1').value;
                 if (filterWord === '') {
                     filterWord = null;
                 }
-                getCrawledProducts(productType, null, filterWord, offset, limit,OPTION_ONE);
+                getCrawledProducts(productType, null, filterWord, offset, limit, OPTION_ONE);
             }
 
             function resetOptionOne() {
@@ -550,13 +537,13 @@
                     alert("Please Select Occasion");
                     return;
                 }
-                 offset = 0;
+                offset = 0;
                 var filterWord = document.getElementById('filter_word_opt2').value;
                 if (filterWord === '') {
                     filterWord = null;
                 }
-                 getCrawledProducts(occasion, secodryValue, filterWord, offset, limit,OPTION_TWO);
-                
+                getCrawledProducts(occasion, secodryValue, filterWord, offset, limit, OPTION_TWO);
+
             }
             //option 3 button click
             function getProductsWithTitle() {
@@ -565,14 +552,14 @@
                 var selectedValue = $("#titleID").val();
                 var tagTwo = $("#title_ProductType").val();
                 searchStringOne = selectedValue;
-                if(selectedValue === null){
-                alert("Please Select Title");
-                return;
-            }
-               if(tagTwo !== null){
-                searchStringTwo = tagTwo[0];
-            }
-            
+                if (selectedValue === null) {
+                    alert("Please Select Title");
+                    return;
+                }
+                if (tagTwo !== null) {
+                    searchStringTwo = tagTwo[0];
+                }
+
                 if (searchStringOne === undefined || searchStringOne.length < 2) {
                     searchStringOne = null;
                 }
@@ -580,14 +567,14 @@
                     searchStringTwo = null;
                 }
                 offset = 0;
-               
+
 
                 var filterWord = document.getElementById('filter_word_opt3').value;
                 if (filterWord === '') {
                     filterWord = null;
                 }
-                 
-                getCrawledProducts(searchStringOne, searchStringTwo, filterWord, offset, limit,OPTION_THREE);
+
+                getCrawledProducts(searchStringOne, searchStringTwo, filterWord, offset, limit, OPTION_THREE);
             }
             function getUser(id) {
                 var url = "https://vue-server-dev.appspot.com/api/user/" + id;
@@ -766,7 +753,7 @@
                         v = line[j];
                         v = $.trim(v);
                         if (v !== '' && v.length > 0) {
-                           
+
                             list.push(v);
                         }
                     }
@@ -831,7 +818,7 @@
                 }).multiselectfilter();
             }
             //read words from csv
-     function ajaxcallToReadWordsList(pathOfFileToReadFrom, list) {
+            function ajaxcallToReadWordsList(pathOfFileToReadFrom, list) {
                 var datatype = '';
 
                 var ajax = $.ajax({
@@ -853,8 +840,8 @@
                     }
                 });
             }
-            function readWords(array, list){
-                     for (var i = 0; i < array.length; i++) {
+            function readWords(array, list) {
+                for (var i = 0; i < array.length; i++) {
                     var tmp = array[i];
                     var line = tmp;
                     for (var j = 0; j < line.length; j++) {
@@ -866,9 +853,9 @@
                             list.push(word);
                         }
                     }
-                } 
-                for(var k=0;k<list.length;k++){
-                    console.log('FINAL LIST of Words   :'+list[k]);
+                }
+                for (var k = 0; k < list.length; k++) {
+                    console.log('FINAL LIST of Words   :' + list[k]);
                 }
             }
         </script>
@@ -925,14 +912,14 @@
                /> 
 
         <br>
-<!--        <div class="outside">
-
-            <p id='btnPrevious' style="margin-left:30em;"><span id="slider-prev"></span> | <span id="slider-next"></span></p>
-
-
-
-            <p id='btnNext'  style="margin-right:30em;"><span id="slider-prev2"></span> | <span id="slider-next2"></span></p>
-        </div>-->
+        <!--        <div class="outside">
+        
+                    <p id='btnPrevious' style="margin-left:30em;"><span id="slider-prev"></span> | <span id="slider-next"></span></p>
+        
+        
+        
+                    <p id='btnNext'  style="margin-right:30em;"><span id="slider-prev2"></span> | <span id="slider-next2"></span></p>
+                </div>-->
 
 
         <table align="center"  style="border-spacing: 20px;"><tr>
@@ -983,7 +970,7 @@
 
                 aisleSlider = $('.slider8').bxSlider({
                     slideWidth: 400,
-                    adaptiveHeight: true,                 
+                    adaptiveHeight: true,
                     infiniteLoop: false
                 });
             });
@@ -993,7 +980,7 @@
                 slider = $('.slider6').bxSlider({
                     slideWidth: 400,
                     adaptiveHeight: true,
-                     infiniteLoop: false
+                    infiniteLoop: false
                 });
             });
 
@@ -1001,7 +988,7 @@
                 aisleSlider.reloadSlider({
                     slideWidth: 400,
                     adaptiveHeight: true,
-                     infiniteLoop: false
+                    infiniteLoop: false
                 });
             }
 
@@ -1010,7 +997,7 @@
                 slider.reloadSlider({
                     slideWidth: 400,
                     adaptiveHeight: true,
-                     infiniteLoop: false
+                    infiniteLoop: false
                 });
             }
             function movePorductsSlider(postion) {

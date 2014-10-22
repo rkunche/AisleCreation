@@ -762,7 +762,7 @@ function getProvider() {
         console.log("2 " + currentProvider);
         return currentProvider;
     } else {
-         
+
         var index = providersList.indexOf(currentProvider);
         if (index === -1) {
             //no providers found, then fetch starting one.
