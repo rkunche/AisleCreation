@@ -94,18 +94,9 @@ function getCrawledProducts(tag, pTypeTag, filterTag, offset, limit, option) {
     var url;
     var providerString = getProvider();
      queryStringMappingPool();
-    if (randomize) {
-        tag = tag + " " + providerString;
-        //only one primay tag request set randomize to true.
-        url = "https://vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + tag + "&offset=" + offset + "&limit=" + limit + "&randomize=true";
-    } else {       
-        queryString = queryStringArray[0];
-        queryString = queryString + " " + providerString;
-        //var offset = getRandomInt();
-        var offset = 0;
-        url = "https://vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + queryString + "&offset=" + offset + "&limit=" + limit + "&randomize=true";
-
-    }
+     queryString = queryStringArray[0];
+     var tempQueryString = queryString + " " + providerString;
+       url = "https://vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + tempQueryString + "&offset=" + offset + "&limit=" + limit + "&randomize=true";
     products.clear();
     getProductsCall(url);
 }
