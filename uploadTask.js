@@ -1,14 +1,6 @@
 
-var ul;
-var li_items;
-var imageNumber = 5;
-var imageWidth = 300;
-var prev, next;
-var currentPostion = 0;
-var currentImage = 0;
 var selected = [];
 var aisles = [];
-
 //prototype for clear the array values.
 Array.prototype.clear = function() {
     this.length = 0;
@@ -17,7 +9,7 @@ var offsetval;
 var products = [];
 var aisleProducts = [];
 var queryStringIndex = -1;
-var providerStringIndex = -1;
+var providerStringIndex = 0;
 //add providers here.
 var providersList = [
     "asos.com",
@@ -42,11 +34,7 @@ var providersList = [
     "nordstrom.com",
     "express.com"];
 var currentProvider;
-
-var randomize;
-
 var selectedProducts = [];
-
 var tag_one;
 var tag_two;
 var tag_three;
@@ -65,49 +53,42 @@ var FETCH_MORE_REQUEST = "fetch_more_request";
 var isProductSliderReloaded;
 var requestInProgress = false;
 var EMPTY_RESPONSE = 3;
+var QUERY_STATE = 0;
 function getCrawledProducts(tag, pTypeTag, filterTag, offset, limit, option) {
-    requestType = FRESH_REQUEST;
-    providerStringIndex = -1
-    currentProvider = null;
-    queryStringArray.clear();
-    console.log(option);
-    current_option = option;
+    reInitializeValues();
     offsetval = offset;
-    if (tag !== null && tag !== undefined) {
-        if (option !== OPTION_THREE) {
-            tag_one = "~" + tag;
-        } else {
-            tag_one = tag;
-        }
+    current_option = option;
+    if (tag !== null && tag !== undefined  ) {
+        if(option !== OPTION_THREE){
+        tag_one = "~" + tag;
+    } else {
+         tag_one = tag;
     }
-
+    }
     if (pTypeTag !== null && pTypeTag !== undefined)
         tag_two = "~" + pTypeTag;
 
     if (filterTag !== null && filterTag !== undefined)
         tag_three = "~" + filterTag;
-
+    queryStringMappingPool();
+    var url = getUrl();
+    getProductsCall(url);
+}
+function reInitializeValues() {
+    products.clear();
     loopCount = 0;
     queryString = null;
-
-    if (pTypeTag === null && filterTag === null) {
-        randomize = true;
-    } else {
-        randomize = false;
-    }
-    var url;
-    var providerString = getProvider();
-     queryStringMappingPool();
-     queryString = queryStringArray[0];
-     var tempQueryString = queryString + " " + providerString;
-       url = "https://vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + tempQueryString + "&offset=" + offset + "&limit=" + limit + "&randomize=true";
-    products.clear();
-    getProductsCall(url);
+    requestType = FRESH_REQUEST;
+    providerStringIndex = 0;
+    QUERY_STATE = 0;
+    currentProvider = null;
+    queryStringArray.clear();
+    tag_one = null;
+    tag_two = null;
+    tag_three = null;
 }
 //ajax call to server to fetch products.
 function getProductsCall(url) {
-
-
     console.log("REQUESTED URL: " + url);
     if (XMLHttpRequest)
     {
@@ -128,24 +109,21 @@ function getHandler() {
         return;
     if (request.status === 200)
     {
-        if(loopCount < 20){
-           getNewQueryString();
-           return;
-       }
         var jsonResponse = JSON.parse(request.responseText);
         if (request.responseText.length < EMPTY_RESPONSE) {
-            //alert("No products was found with "+currentProvider);
-             if (loopCount < providersList.length) {
-            getNewQueryString();
-             }
+            
+            if (loopCount < providersList.length * queryStringArray.length) {
+                //Issue a new request with new provider{(new or old)query string}if the current request has no data.
+                getNewQueryString();
+            }else {
+               alert("Products are not found"); 
+            }
             return;
         }
 
         if (offsetval === '0' || offsetval === 0) {
             products.clear();
-
             isProductSliderReloaded = false;
-
             aisleProducts.clear();
             var aisleHolder = document.getElementById('aisle_holder_id');
             var productsCount = document.getElementById('products_id');
@@ -159,10 +137,8 @@ function getHandler() {
             aisleSubmitButton.style.outline = "solid gray";
             var productsCount = document.getElementById('products_id');
             productsCount.style.color = "Black";
-
             aisleHolder.appendChild(imag);
             aisleSldierReload();
-
         }
         if (requestType === FETCH_MORE_REQUEST) {
 
@@ -207,7 +183,7 @@ function getHandler() {
             // }
         }
 
-        // prepare();
+        // prepare the box slider
         showProductsBxSlider();
     }
     if (request.status !== 200 && request.status !== 304) {
@@ -215,33 +191,10 @@ function getHandler() {
         return;
     }
 }
-/**
- * Returns a random integer between min (inclusive) and max (inclusive)
- * Using Math.round() will give you a non-uniform distribution!
- */
-function getRandomInt() {
-    var min = 1;
-    var max = 10;
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
 function fetchMore() {
-    if (requestInProgress) {
-        //current request is not processed 
-      //  return;
-    }
     offsetval = 'NOT ZERO';
     loopCount = 0;
-    var url;
-    var providerString = getProvider();
-    if (randomize) {
-        offset = offset + limit;
-        var tempString = tag_one + " " + providerString;
-        url = "https://vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + tempString + "&offset=" + offset + "&limit=" + limit + "&randomize=true";
-    } else {
-        offset = offset + limit;
-        var tempString = queryString + " " + providerString;
-        url = "https://vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + tempString + "&offset=" + offset + "&limit=" + limit + "&randomize=true";
-    }
+    var url = getUrl();
     requestType = FETCH_MORE_REQUEST;
     getProductsCall(url);
     moveSliderPosition = products.length;
@@ -249,45 +202,13 @@ function fetchMore() {
 
 function getNewQueryString() {
     offsetval = 'NOT ZERO';
-//    if(queryString === null || queryString === undefined){
-//        queryString = queryStringArray[0];
-//    } else if (queryString !== null && queryString === queryStringArray[queryStringArray.length - 1]) {
-//        queryString = queryStringArray[0];
-//    } else {
-//        var index = queryStringArray.indexOf(queryString);
-//        if (index === -1) {
-//            queryString = queryStringArray[0];
-//        } else {
-//            for (var j = 0; j < queryStringArray.length; j++) {
-//                if (queryStringArray[j] !== queryString && j > index) {
-//                    queryString = queryStringArray[j];
-//                    break;
-//                }
-//            }
-//        }
-//    }
-    //TODO: check this condition.
-    if(queryStringIndex === -1 || queryStringIndex >= queryStringArray.length -1 ||queryStringIndex< 0){
-        queryString = queryStringArray[0];
-        queryStringIndex = 0;
-    } else {
-        queryString = queryStringArray[queryStringIndex+1];
-        queryStringIndex++;
-    }
-    
-    console.log("queryString is: " + queryString);
-   // console.log("queryString is queryStringArray : " + queryStringArray);
-    //offset = getRandomInt();
     offset = 0;
-    var providerString = getProvider();
-    queryString = queryString + " " + providerString;
-    var url = "https://vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + queryString + "&offset=" + offset + "&limit=" + limit + "&randomize=true";
+    var url = getUrl();
     loopCount++;
     getProductsCall(url);
 }
 //Load all possible queryString values into Array
 function queryStringMappingPool() {
-    var queryString;
     if (tag_one === undefined) {
         tag_one = null;
     }
@@ -298,36 +219,21 @@ function queryStringMappingPool() {
         tag_three = null;
     }
 
-    if (tag_one !== null && tag_two !== null && tag_three !== null) {
-        if (current_option === OPTION_TWO) {
-            queryString = tag_one + " " + tag_two + " AND " + tag_three;
-        } else if (current_option === OPTION_THREE) {
-            var wordsArray = tag_one.split(" ");
-            queryString = tag_two + " " + tag_three;
-            for (var t = 0; t < wordsArray.length; t++) {
-                if (wordsArray[t].trim() !== '')
-                    queryString = queryString + " OR " + wordsArray[t];
-            }
-            console.log("Title: Query: " + queryString);
-        } else {
-            queryString = tag_one + " " + tag_two + " " + tag_three;
-        }
-
-        queryStringArray.push(queryString);
+    if (current_option === OPTION_ONE) {
+        optionOneQueries();
+    } else if (current_option === OPTION_TWO) {
+        optionTwoQueries();
+    } else if (current_option === OPTION_THREE) {
+        optionThreeQueries();
     }
-    if (tag_one !== null && tag_two !== null) {
-        queryString = tag_one + " " + tag_two;
-
-        queryStringArray.push(queryString);
+    for (var j = 0; j < queryStringArray.length; j++) {
+        console.log("TOTAL QUERIES: "+queryStringArray[j]);
     }
+}
+function optionOneQueries() {
+    var queryString;
     if (tag_one !== null && tag_three !== null) {
-        queryString = tag_one + " " + tag_three;
-
-        queryStringArray.push(queryString);
-    }
-    if (tag_two !== null && tag_three !== null) {
-        queryString = tag_two + " " + tag_three;
-
+        queryString = tag_one + " AND " + tag_three;
         queryStringArray.push(queryString);
     }
     if (tag_three !== null) {
@@ -335,15 +241,83 @@ function queryStringMappingPool() {
     }
     if (tag_one !== null) {
         queryStringArray.push(tag_one);
-
     }
-    if (tag_two !== null) {
-        queryStringArray.push(tag_two);
-
+}
+function optionTwoQueries() {
+    var queryString;
+    //tag_one is a PRIMARY field.
+    //
+    //first query.  
+    if (tag_one !== null && tag_two !== null && tag_three !== null) {
+        queryString = tag_one + " AND " + tag_two + " AND " + tag_three;
+        queryStringArray.push(queryString);
+    } else {
+        if (tag_two !== null) {
+            queryString = tag_one + " AND " + tag_two;
+            queryStringArray.push(queryString);
+        }
     }
-
-    for (var j = 0; j < queryStringArray.length; j++) {
-        console.log(queryStringArray[j]);
+    
+    //second query
+    if (tag_one !== null && tag_three !== null) {
+        queryString = tag_one + " AND " + tag_three;
+        queryStringArray.push(queryString);
+    }
+    
+    //Third query
+    if (tag_two !== null && tag_three !== null) {
+        queryString = tag_two + " AND " + tag_three;
+        queryStringArray.push(queryString);
+    } else {
+        if (tag_two !== null) {
+            queryString = tag_two;
+             queryStringArray.push(queryString);
+        } else if (tag_three !== null) {
+            queryString = tag_three;
+              queryStringArray.push(queryString);
+        }  
+    }
+    
+    //only one query and that too with primary tag.
+    if (tag_two === null && tag_three === null) {
+        queryStringArray.push(tag_one);
+    }
+}
+function optionThreeQueries() {
+    var queryString;
+    //title splitting.
+    var wordsArray = tag_one.split(" ");
+    var titleString;
+    for (var t = 0; t < wordsArray.length; t++) {
+        if (wordsArray[t].trim() !== ''){
+            if(titleString === undefined){
+                titleString =  wordsArray[t];
+            } else {
+            titleString = titleString + " OR " + wordsArray[t];
+        }
+        }
+    }
+    if (titleString !== undefined) {
+        tag_one = titleString;
+    }
+    //first query     
+    if (tag_one !== null && tag_two !== null && tag_three) {
+        queryString = tag_one + " AND " + tag_two + " AND " + tag_three;
+        queryStringArray.push(queryString);
+    }  
+    //second query
+    if (tag_one !== null && tag_three !== null) {
+        queryString = tag_one + " AND " + tag_three;
+        queryStringArray.push(queryString);
+    }
+    //third query
+    if (tag_one !== null && tag_two !== null) {
+        queryString = tag_one + " AND " + tag_two;
+        queryStringArray.push(queryString);
+    }
+    //only one query and that too with primary tag.
+    if (tag_two === null && tag_three === null) {
+        queryStringArray.push(tag_one);
     }
 }
 function clearProducts() {
@@ -378,45 +352,6 @@ function clearProducts() {
     sliderReload();
     aisleSldierReload();
 }
-function getAllAislesByUser(id) {
-    var url = "https://3dot1-dot-vue-server-dev.appspot.com/api/aisles/user/" + id;
-    if (XMLHttpRequest)
-    {
-        request = new XMLHttpRequest();
-        if ("withCredentials" in request)
-        {
-            // Firefox 3.5 and Safari 4
-            request.open('GET', url, true);
-            request.onreadystatechange = aisleHandler;
-            request.send();
-        }
-    }
-}
-//get result handler
-function aisleHandler() {
-    if (request.readyState !== 4)
-        return;
-    if (request.status === 200)
-    {
-        aisles.clear();
-        var jsonResponse = JSON.parse(request.responseText);
-        for (var i = 0; i < jsonResponse.length; i++) {
-            if (jsonResponse[i].productList.length !== 0 && jsonResponse[i].currentAisleState !== "DELETED") {
-                aisles.push(jsonResponse[i]);
-            }
-        }
-
-        alert("total aisles: " + aisles.length);
-        console.log(request.responseText);
-        prepareAisleTable();
-
-    }
-    if (request.status !== 200 && request.status !== 304) {
-        alert('HTTP GET error ' + request.status);
-        return;
-    }
-}
-
 function showProductsBxSlider() {
 
     var prodcuHolder = document.getElementById('products_holder_id');
@@ -753,42 +688,34 @@ function getSelectedProducts() {
     }
 
 }
+function getUrl() {
+    var providerString = getProvider();
+    var queryString = getQueryString();
+    var tempQueryString = queryString + " " + providerString +" NOT ARCHIVED";
+    console.log("PROVIDER "+tempQueryString);
+    url = "https://vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + tempQueryString + "&offset=" + offset + "&limit=" + limit + "&randomize=true";
+    return url;
+}
+function getQueryString() {
+    if(QUERY_STATE < queryStringArray.length){
+    return queryStringArray[QUERY_STATE];
+    }else {
+        QUERY_STATE = 0;
+        return queryStringArray[QUERY_STATE]; 
+    }
+}
 function getProvider() {
-     if(providerStringIndex === -1 || providerStringIndex >= providersList.length -1 ||providerStringIndex< 0){
-        currentProvider = providersList[0];
+    var provider;
+    if (providerStringIndex > providersList.length - 1) {
+        provider = providersList[0];
         providerStringIndex = 0;
+        QUERY_STATE++;       
     } else {
-        currentProvider = queryStringArray[providerStringIndex+1];
+        provider = providersList[providerStringIndex];
+         console.log("PROVIDER1 "+provider);
         providerStringIndex++;
     }
-    //TODO: simplify this code.
-    loopCount++;
-//    if (currentProvider === null) {
-//        currentProvider = providersList[0];
-//        return currentProvider;
-//    } else if (currentProvider !== null && currentProvider === providersList[providersList.length - 1]) {
-//        //if the current provider is at the end of the list pick the starting one.
-//        currentProvider = providersList[0];
-//        return currentProvider;
-//    } else {
-//        var index = providersList.indexOf(currentProvider);
-//        if (index === -1) {
-//            //no providers found, then fetch starting one.
-//            currentProvider = providersList[0];
-//            return currentProvider;
-//        }
-//        //to fetch the current provider in sequential order.
-//        for (var j = 0; j < providersList.length; j++) {
-//            if (providersList[j] !== currentProvider && j > index) {
-//                currentProvider = providersList[j];
-//                console.log("5 " + currentProvider);
-//                break;
-//            }
-//
-//        }
-//        return currentProvider;
-//    }
-    return currentProvider;
+    return provider;
 }
 function aisleProductsCount() {
     number_aisle_added = aisleProducts.length;

@@ -186,7 +186,7 @@
                     for (var k = 0; k < jsonResponse.length; k++) {
                         var tagObject = jsonResponse[k];
                         if (tagObject.tagString.charAt(0) === tagObject.tagString.charAt(0).toLowerCase()) {
-                            console.log(tagObject.tagString + " length : " + tagObject.tagString.length);
+                           // console.log(tagObject.tagString + " length : " + tagObject.tagString.length);
                             blocked.push(tagObject);
                         }
                     }
@@ -215,7 +215,7 @@
                             titleProductType.options[titleProductType.options.length] = new Option(jsonResponse[i].tagString, jsonResponse[i].tagString, false, false);
                         }
                         if (jsonResponse[i].tagCategory === "Product description") {
-                            console.log(jsonResponse[i].tagString);
+                           // console.log(jsonResponse[i].tagString);
                         }
                     }
                     ajaxcallToPType('OccasionsCuration.csv', titleTags);
@@ -412,11 +412,8 @@
                 primaryValue = selectedValue;
 
                 for (var i = 0; i < itemArray.length; i++) {
-                    console.log("TAGING: itemArray length " + itemArray[i].title.split(":")[0]);
-                    console.log("TAGING: itemArray length " + itemArray[i].title.split(":")[1]);
                     if (itemArray[i].title.split(":")[1].localeCompare(selectedValue) === 0) {
                         position = i;
-                        console.log("TAGING: position is " + position);
                         break;
                     }
                 }
@@ -425,18 +422,14 @@
                 if (position !== undefined) {
                     var titleObject = itemArray[position];
                     if (titleObject !== undefined) {
-                        console.log("TAGING: title object ");
                         var tags;
                         tags = titleObject.Tags.split(":")[1];
-                        console.log("TAGING: title object " + tags);
                         tagsArray = tags.split(";");
                     }
                 }
-                console.log("TAGING: tags count is " + tagsArray.length);
                 if (tagsArray.length >= 1) {
 
                     document.getElementById("productType_tag").style.visibility = "hidden";
-                    console.log("TAGING:  hidding the product selection ");
                 }
                 if (tagsArray[0] !== undefined) {
                     document.getElementById('btTagOne').innerHTML = tagsArray[0];
@@ -728,9 +721,9 @@
                     url: pathOfFileToReadFrom,
                     async: true,
                     success: function(csvd) {
-                        console.log('ajax succes: ' + csvd);
+                       // console.log('ajax succes: ' + csvd);
                         datatype = $.csv2Array(csvd);
-                        console.log('ajax arry: ' + datatype);
+                        //console.log('ajax arry: ' + datatype);
 
                     },
                     dataType: "text",
@@ -825,9 +818,9 @@
                     url: pathOfFileToReadFrom,
                     async: true,
                     success: function(csvd) {
-                        console.log('ajax succes: ' + csvd);
+                        //console.log('ajax succes: ' + csvd);
                         datatype = $.csv2Array(csvd);
-                        console.log('ajax arry: ' + datatype);
+                        //console.log('ajax arry: ' + datatype);
 
                     },
                     dataType: "text",
