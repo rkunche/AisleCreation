@@ -1,23 +1,24 @@
 <html>
     <head>
         <script>
-//            (function(i, s, o, g, r, a, m) {
-//                i['GoogleAnalyticsObject'] = r;
-//                i[r] = i[r] || function() {
-//                    (i[r].q = i[r].q || []).push(arguments)
-//                }, i[r].l = 1 * new Date();
-//                a = s.createElement(o),
-//                        m = s.getElementsByTagName(o)[0];
-//                a.async = 1;
-//                a.src = g;
-//                m.parentNode.insertBefore(a, m)
-//            })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-//
-//            ga('create', 'UA-55582645-2', 'auto');
-//            ga('create', 'UA-55582645-2', {'userId': userId});
-//            ga('send', 'pageview');
-//
-//        </script>
+            (function(i, s, o, g, r, a, m) {
+                i['GoogleAnalyticsObject'] = r;
+                i[r] = i[r] || function() {
+                    (i[r].q = i[r].q || []).push(arguments)
+                }, i[r].l = 1 * new Date();
+                a = s.createElement(o),
+                        m = s.getElementsByTagName(o)[0];
+                a.async = 1;
+                a.src = g;
+                m.parentNode.insertBefore(a, m)
+            })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+             //production tracker id
+            ga('create', 'UA-55582645-1', 'auto');
+            //dev tracker id
+        //ga('create', 'UA-55582645-2', 'auto');
+            ga('send', 'pageview');
+ 
+         </script>
         <meta charset="utf-8">
         <script language="javascript" type="text/javascript" src="autocomplete.js"></script>
         <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"/>
@@ -100,21 +101,10 @@
                 if (data[0] === 'User') {
 
                     if (data[1] !== '0') {
-                        (function(i, s, o, g, r, a, m) {
-                            i['GoogleAnalyticsObject'] = r;
-                            i[r] = i[r] || function() {
-                                (i[r].q = i[r].q || []).push(arguments)
-                            }, i[r].l = 1 * new Date();
-                            a = s.createElement(o),
-                                    m = s.getElementsByTagName(o)[0];
-                            a.async = 1;
-                            a.src = g;
-                            m.parentNode.insertBefore(a, m)
-                        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-
-                        // ga('create', 'UA-55582645-2', 'auto');
-                        ga('create', 'UA-55582645-2', {'userId': data[1]});
-                        ga('send', 'pageview');
+ 
+console.log("USER ID: "+data[1]);
+ga('set', '&uid', data[1]);
+ ga('send', 'pageview');
                         getUser(data[1]);
                         // getUser("6419807607980032");
                     }
@@ -127,6 +117,7 @@
         <script>
 
             function getTags() {
+                 hideGif();
                 document.getElementById('products_holder_id').setAttribute("style", "width:800px");
                 document.getElementById('aisle_holder_id').setAttribute("style", "width:800px");
                 newheight = screen.height - 120;
@@ -333,7 +324,9 @@
             }
             function occasionSelectionVal() {
                 secodryValue = null;
-                checkAisleAddedInfo();
+                checkAisleAddedInfo();               
+                   document.getElementById("occasionProductType").value = "selectedValue";
+                    $('#occasionProductType').multiselect('refresh');
                 var selectedValue = $("#Occassion_tag").val();
                 offset = 0;
                 primaryTag = "OCCASION";
@@ -345,7 +338,7 @@
                 document.getElementById('fetch_button_op2').value = "Fetch with Occasion";
                 occasion = selectedValue[0];
                 primaryValue = selectedValue;
-                ga('send', 'event', 'option', 'select', selectedValue[0]);
+                ga('send', 'event', 'option', 'select',"OPTION_TWO::"+ selectedValue);
                 enableButton(2);
 
 
@@ -371,6 +364,7 @@
                 }
                 var selectedValue = $("#title_ProductType").val();
                 secodryValue = selectedValue[0];
+                ga('send', 'event', 'option', 'select', secodryValue);
                 // document.getElementById('tag_id').innerHTML = "Creating an aisle :: '" + aisleTitle + "'" + "With Product: '" + secodryValue + "'"; 
             }
 
@@ -391,13 +385,16 @@
                 resetOptionTwo();
                 resetOptionThree();
                 enableButton(1);
-                ga('send', 'event', 'option', 'select', selectedValue[0]);
+                ga('send', 'event', 'option', 'select', "OPTION_ONE:: "+selectedValue[0]);
 
             }
             function onTitleSelectionChange() {
                 secodryValue = null;
                 var position;
-                var selectedValue = $("#titleID").val();
+                  document.getElementById("title_ProductType").value = "selectedValue";
+                    $('#title_ProductType').multiselect('refresh');
+                var selectedValue = $("#titleID").val();  
+                 ga('send', 'event', 'option', 'select', "OPTION_THREE:: "+selectedValue);
                 checkAisleAddedInfo();
                 offset = 0;
                 primaryTag = "TITLE";
@@ -465,12 +462,22 @@
                 if (filterWord === '') {
                     filterWord = null;
                 }
-                getCrawledProducts(tag, secodryValue, filterWord, offset, limit, OPTION_FOUR);
+                var titleVal = aisleTitle;             
+                if(filterWord !== null && filterWord !== undefined){
+                     filterWord = filterWord+" "+tag;
+                }else {
+                      filterWord =  tag;
+                }
+                console.log("AISLE TITLE CASE: tag "+tag);
+                 console.log("AISLE TITLE CASE: secodryValue "+secodryValue);
+                  console.log("AISLE TITLE CASE: filterWord "+filterWord);
+                   console.log("AISLE TITLE CASE: titleVal "+titleVal);
+                getCrawledProducts(titleVal, secodryValue, filterWord, offset, limit, OPTION_THREE);
             };
 
             //OPTION 1 button click 
             function getProductWithProductType() {
-
+                ga('send', 'event', 'button', 'click', 'OPTION_ONE_BUTTON');
                 if (productType === null || productType === undefined || productType === '') {
                     alert("Please Select ProductType");
                     return;
@@ -535,27 +542,24 @@
                 if (filterWord === '') {
                     filterWord = null;
                 }
+                 ga('send', 'event', 'button', 'click', 'OPTION_TWO_BUTTON');
                 getCrawledProducts(occasion, secodryValue, filterWord, offset, limit, OPTION_TWO);
 
             }
             //option 3 button click
             function getProductsWithTitle() {
-                var searchStringOne;
+ 
                 var searchStringTwo;
-                var selectedValue = $("#titleID").val();
                 var tagTwo = $("#title_ProductType").val();
-                searchStringOne = selectedValue;
-                if (selectedValue === null) {
+               
+                if (aisleTitle === null || aisleTitle === undefined) {
                     alert("Please Select Title");
                     return;
                 }
                 if (tagTwo !== null) {
                     searchStringTwo = tagTwo[0];
                 }
-
-                if (searchStringOne === undefined || searchStringOne.length < 2) {
-                    searchStringOne = null;
-                }
+ 
                 if (searchStringTwo === undefined || searchStringTwo.length < 2) {
                     searchStringTwo = null;
                 }
@@ -566,8 +570,8 @@
                 if (filterWord === '') {
                     filterWord = null;
                 }
-
-                getCrawledProducts(searchStringOne, searchStringTwo, filterWord, offset, limit, OPTION_THREE);
+                 ga('send', 'event', 'button', 'click', 'OPTION_THREE_BUTTON');
+                getCrawledProducts(aisleTitle, searchStringTwo, filterWord, offset, limit, OPTION_THREE);
             }
             function getUser(id) {
                 var url = "https://vue-server-dev.appspot.com/api/user/" + id;
@@ -709,6 +713,7 @@
                     if (uploadProductCount < selectedProducts.length) {
                         uploadAisleProduct(selectedProducts[uploadProductCount]);
                     } else {
+                        clearAisleProducts();
                         alert("Aisle created successfully with  " + uploadProductCount + " products");
                     }
                 }
@@ -893,12 +898,12 @@
         <button class="link" id="btTagFive" onclick="titleTag(this)"> </button>
         <button class="link" id="btTagSix" onclick="titleTag(this)"> </button>
         <button class="link" id="btTagSeven" onclick="titleTag(this)"> </button>
-        <p align="center" id="tag_id">Creating an aisle with Product Type</p>
+        <p align="center"  style="font-size:16px"> <b id="tag_id"> </b> </p>
         <hr>
 
 
         <input type='button' id="fetch_more_button_id" value='Fetch More' onClick="fetchMore()"  style="margin-left:30em;"
-               /> 
+               />  &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp &nbsp &nbsp<img src='images/bx_loader.gif' id="gif_id"/> 
 
         <br>
         <!--        <div class="outside">
@@ -915,7 +920,7 @@
                 <td  > <p id='products_text_id'> Select products from here</p>  
 
                     <div  id = 'products_holder_id' class="slider6">
-                        <div> <img src ='images/aisle_bagroundvue.png' /></div>
+                        <div> <img src ='images/aisle_bagroundvue.jpg' /></div>
 
                     </div>  
 
@@ -1007,8 +1012,9 @@
                 ga('send', 'event', 'button', 'click', 'Submit Aisle', aisleCount);
                 uploadProductCount = 0;
                 getSelectedProducts();
+                if(selectedProducts.length !== 0){
                 createAisleRequest();
-
+            }
             }
 
         </script>

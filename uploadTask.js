@@ -55,21 +55,17 @@ var requestInProgress = false;
 var EMPTY_RESPONSE = 3;
 var QUERY_STATE = 0;
 function getCrawledProducts(tag, pTypeTag, filterTag, offset, limit, option) {
+    showGif();
     reInitializeValues();
-    offsetval = offset;
     current_option = option;
     if (tag !== null && tag !== undefined  ) {
-        if(option !== OPTION_THREE){
-        tag_one = "~" + tag;
-    } else {
-         tag_one = tag;
-    }
+        tag_one =  tag;
     }
     if (pTypeTag !== null && pTypeTag !== undefined)
-        tag_two = "~" + pTypeTag;
+        tag_two =  pTypeTag;
 
     if (filterTag !== null && filterTag !== undefined)
-        tag_three = "~" + filterTag;
+        tag_three =  filterTag;
     queryStringMappingPool();
     var url = getUrl();
     getProductsCall(url);
@@ -116,12 +112,14 @@ function getHandler() {
                 //Issue a new request with new provider{(new or old)query string}if the current request has no data.
                 getNewQueryString();
             }else {
+                hideGif();
                alert("Products are not found"); 
             }
             return;
         }
-
+         console.log("offsetval "+offsetval);
         if (offsetval === '0' || offsetval === 0) {
+           
             products.clear();
             isProductSliderReloaded = false;
             aisleProducts.clear();
@@ -182,27 +180,47 @@ function getHandler() {
             }
             // }
         }
-
+        console.log("PRODUCTS COUNT: "+products.length);
+fetchMoreButtonChange(true);
         // prepare the box slider
+        if(products.length !== 0){
+            hideGif();
         showProductsBxSlider();
+    } else {
+       getNewQueryString();
+    }
     }
     if (request.status !== 200 && request.status !== 304) {
-        alert('HTTP GET error ' + request.status);
+        //alert('HTTP GET error ' + request.status);
+        console.log("error response");
         return;
     }
 }
 function fetchMore() {
+    showGif();
     offsetval = 'NOT ZERO';
     loopCount = 0;
     var url = getUrl();
     requestType = FETCH_MORE_REQUEST;
     getProductsCall(url);
     moveSliderPosition = products.length;
+    ga('send', 'event', 'button', 'click', 'FETCH_MORE_BUTTON');
+    fetchMoreButtonChange(false);
 }
-
+function fetchMoreButtonChange(flag){
+     var btn = document.getElementById('fetch_more_button_id');
+       if (flag) {
+                    btn.style.backgroundColor = "white";
+                    btn.style.color = "green";
+                    btn.style.outline = "solid orange";
+                } else {
+                    btn.style.backgroundColor = "white";
+                    btn.style.color = "black";
+                    btn.style.outline = "gray";
+                }
+}
 function getNewQueryString() {
     offsetval = 'NOT ZERO';
-    offset = 0;
     var url = getUrl();
     loopCount++;
     getProductsCall(url);
@@ -218,7 +236,17 @@ function queryStringMappingPool() {
     if (tag_three === undefined) {
         tag_three = null;
     }
-
+    //separate each charected and add ~
+     if(tag_one !== null){
+         tag_one = addTilda(tag_one,1);
+         console.log("Title OPTIONTHREE: "+tag_one);
+     }
+     if(tag_two !== null){
+         tag_two = addTilda(tag_two,2);
+     }
+     if(tag_three !== null){
+         tag_three = addTilda(tag_three,3);
+     }
     if (current_option === OPTION_ONE) {
         optionOneQueries();
     } else if (current_option === OPTION_TWO) {
@@ -252,7 +280,7 @@ function optionTwoQueries() {
         queryString = tag_one + " AND " + tag_two + " AND " + tag_three;
         queryStringArray.push(queryString);
     } else {
-        if (tag_two !== null) {
+        if (tag_one !== null && tag_two !== null) {
             queryString = tag_one + " AND " + tag_two;
             queryStringArray.push(queryString);
         }
@@ -285,21 +313,6 @@ function optionTwoQueries() {
 }
 function optionThreeQueries() {
     var queryString;
-    //title splitting.
-    var wordsArray = tag_one.split(" ");
-    var titleString;
-    for (var t = 0; t < wordsArray.length; t++) {
-        if (wordsArray[t].trim() !== ''){
-            if(titleString === undefined){
-                titleString =  wordsArray[t];
-            } else {
-            titleString = titleString + " OR " + wordsArray[t];
-        }
-        }
-    }
-    if (titleString !== undefined) {
-        tag_one = titleString;
-    }
     //first query     
     if (tag_one !== null && tag_two !== null && tag_three) {
         queryString = tag_one + " AND " + tag_two + " AND " + tag_three;
@@ -319,6 +332,30 @@ function optionThreeQueries() {
     if (tag_two === null && tag_three === null) {
         queryStringArray.push(tag_one);
     }
+}
+
+function addTilda(currentTag,val){
+      //title splitting.
+    var wordsArray = currentTag.split(" ");
+    var titleString;
+    for (var t = 0; t < wordsArray.length; t++) {
+        if (wordsArray[t].trim() !== ''){
+            var word = '~'+wordsArray[t]
+            if(titleString === undefined){
+                titleString =  word;
+            } else {
+                if(current_option === OPTION_THREE && val === 1 ){
+            titleString = titleString + " OR " +word;         
+        }else {
+            titleString = titleString + " " +word;
+        }
+        }
+        }
+    }  
+ if(current_option === OPTION_THREE){
+      titleString = "("+titleString+")";
+ }
+    return titleString;
 }
 function clearProducts() {
     //clear aisle hoder
@@ -341,7 +378,7 @@ function clearProducts() {
     var container = document.createElement("div");
     var imag = document.createElement("img");
     try {
-        imag.src = 'images/aisle_bagroundvue.png';
+        imag.src = 'images/aisle_bagroundvue.jpg';
 
         //console.log(jsonObject.productImages[0].externalURL);
     } catch (e) {
@@ -351,6 +388,9 @@ function clearProducts() {
     prodcuHolder.appendChild(container);
     sliderReload();
     aisleSldierReload();
+}
+function imageNotFound() {
+     console.log("IMAGE NOT LOADED THERE IS A PROBLEM");
 }
 function showProductsBxSlider() {
 
@@ -362,8 +402,11 @@ function showProductsBxSlider() {
         var jsonObject = products[i];
         var imag = document.createElement("img");
         try {
-            imag.src = jsonObject.productImages[0].externalURL;
-
+            //imag.src = jsonObject.productImages[0].externalURL;
+            imag.src = "http://www.foo.com/bar.jpg";
+           imag.onerror= function () {
+  this.src = "images/aislebg.jpg";
+}
             console.log(jsonObject.productImages[0].externalURL);
         } catch (e) {
             console.log("externalURL null")
@@ -662,14 +705,22 @@ function createAisleDeleteButton(div, product) {
 function onImageMouseOver(jsonObject) {
 
 }
-
+function showGif(){
+   var figImage = document.getElementById('gif_id'); 
+   figImage.style.visibility = "visible";
+}
+function hideGif(){
+    var figImage = document.getElementById('gif_id');
+     figImage.style.visibility = "hidden";
+}
 function getSelectedProducts() {
 
     if (aisleProducts.length < 1) {
         alert("Please select atleast one product ");
         return;
     } else if (aisleProducts.length >= 1 && aisleProducts.length < 3) {
-        var r = confirm("You have selected only Two prodcuts, Do you want continue?");
+        var message = "You have selected only "+aisleProducts.length+" products, Do you want continue?";
+        var r = confirm(message);
         if (r === true) {
             selected.clear();
             selectedProducts.clear();
@@ -712,13 +763,22 @@ function getProvider() {
         QUERY_STATE++;       
     } else {
         provider = providersList[providerStringIndex];
-         console.log("PROVIDER1 "+provider);
+          
         providerStringIndex++;
     }
     return provider;
 }
 function aisleProductsCount() {
     number_aisle_added = aisleProducts.length;
+}
+function clearAisleProducts(){
+ aisleProducts.clear(); 
+  selectedProducts.clear();
+ fetchMoreButtonChange(false);
+ var aisleSubmitButton = document.getElementById('submit_button');
+        aisleSubmitButton.style.backgroundColor = "white";
+            aisleSubmitButton.style.color = "gray";
+            aisleSubmitButton.style.outline = "solid gray";
 }
 window.addEventListener('DOMContentLoaded', function() {
 

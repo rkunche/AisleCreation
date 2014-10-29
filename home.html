@@ -153,7 +153,10 @@
                 return;
             }
             analytics();
-            var requestProduct = "http://dev.curatevue.com/Product_Curation/ProductRequest.html?user=" + userID;
+            //production url
+             var requestProduct = "http://curatevue.com/Product_Curation/ProductRequest.html?user=" + userID;
+             //dev url
+            //var requestProduct = "http://dev.curatevue.com/Product_Curation/ProductRequest.html?user=" + userID;
             window.open(requestProduct, '_blank');
             window.focus();
             //  alert(requestProduct);
@@ -174,7 +177,10 @@
                 return;
             }
             analytics();
-            var requestAsile = "http://dev.curatevue.com/Aisle_Curation/iframe.html?user=" + userID;
+            //production url
+             var requestAsile = "http://curatevue.com/Aisle_Curation/iframe.html?user=" + userID;
+            //dev url
+           //var requestAsile = "http://dev.curatevue.com/Aisle_Curation/iframe.html?user=" + userID;
             window.open(requestAsile, '_blank');
             window.focus();
             //alert(requestAsile);
@@ -193,10 +199,10 @@
                 m.parentNode.insertBefore(a, m)
             })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
-           // ga('create', 'UA-55582645-2', 'auto');
-           // ga('send', 'pageview');
-                ga('create', 'UA-55582645-1', {'userId': userID});
-                ga('send', 'pageview');
+            ga('create', 'UA-55582645-2', 'auto');
+            ga('send', 'pageview');
+                //ga('create', 'UA-55582645-1', {'userId': userID});
+                //ga('send', 'pageview');
      }
 
 
@@ -254,8 +260,11 @@
             }
 
             window.fbAsyncInit = function() {
-                FB.init({
-                    appId: '1485057308443130',
+                FB.init({  
+                    //production fb apid:
+                     appId:'1485057308443130',
+                    //dev app id 
+                   // appId: '1569604653273192',
                     cookie: true, // enable cookies to allow the server to access 
                     // the session
                     xfbml: true, // parse social plugins on this page
@@ -387,7 +396,7 @@
                 }
             }
             function user_post_handler() {
-                if (request.readyState != 4)
+                if (request.readyState !== 4)
                     return;
                 if (request.status == 200)
                 {
