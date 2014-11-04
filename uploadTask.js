@@ -411,8 +411,8 @@ function showProductsBxSlider() {
         var jsonObject = products[i];
         var imag = document.createElement("img");
         try {
-            //imag.src = jsonObject.productImages[0].externalURL;
-            imag.src = "http://www.foo.com/bar.jpg";
+            imag.src = jsonObject.productImages[0].externalURL;
+             
            imag.onerror= function () {
   this.src = "images/aislebg.jpg";
 }
