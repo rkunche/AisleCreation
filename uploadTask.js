@@ -296,14 +296,18 @@ function optionTwoQueries() {
     if (tag_two !== null && tag_three !== null) {
         queryString = tag_two + " AND " + tag_three;
         queryStringArray.push(queryString);
+        
+        //add 4 th query with filter word.
+         queryStringArray.push(tag_three);
     } else {
-        if (tag_two !== null) {
-            queryString = tag_two;
-             queryStringArray.push(queryString);
-        } else if (tag_three !== null) {
+          if (tag_three !== null) {
             queryString = tag_three;
               queryStringArray.push(queryString);
-        }  
+          } 
+            if (tag_two !== null) {
+            queryString = tag_two;
+             queryStringArray.push(queryString);
+        } 
     }
     
     //only one query and that too with primary tag.
@@ -327,6 +331,11 @@ function optionThreeQueries() {
     if (tag_one !== null && tag_two !== null) {
         queryString = tag_one + " AND " + tag_two;
         queryStringArray.push(queryString);
+    }
+    
+    //add query with only filete word
+    if(tag_three !== null){
+         queryStringArray.push(tag_three);
     }
     //only one query and that too with primary tag.
     if (tag_two === null && tag_three === null) {
