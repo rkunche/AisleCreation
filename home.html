@@ -154,9 +154,9 @@
             }
             analytics();
             //production url
-             var requestProduct = "http://curatevue.com/Product_Curation/ProductRequest.html?user=" + userID;
+            // var requestProduct = "http://curatevue.com/Product_Curation/ProductRequest.html?user=" + userID;
              //dev url
-            //var requestProduct = "http://dev.curatevue.com/Product_Curation/ProductRequest.html?user=" + userID;
+            var requestProduct = "http://dev.curatevue.com/Product_Curation/ProductRequest.html?user=" + userID;
             window.open(requestProduct, '_blank');
             window.focus();
             //  alert(requestProduct);
@@ -178,9 +178,9 @@
             }
             analytics();
             //production url
-             var requestAsile = "http://curatevue.com/Aisle_Curation/iframe.html?user=" + userID;
+             //var requestAsile = "http://curatevue.com/Aisle_Curation/iframe.html?user=" + userID;
             //dev url
-           //var requestAsile = "http://dev.curatevue.com/Aisle_Curation/iframe.html?user=" + userID;
+           var requestAsile = "http://dev.curatevue.com/Aisle_Curation/iframe.html?user=" + userID;
             window.open(requestAsile, '_blank');
             window.focus();
             //alert(requestAsile);
@@ -262,9 +262,9 @@
             window.fbAsyncInit = function() {
                 FB.init({  
                     //production fb apid:
-                     appId:'1485057308443130',
+                     //appId:'1485057308443130',
                     //dev app id 
-                   // appId: '1569604653273192',
+                    appId: '1569604653273192',
                     cookie: true, // enable cookies to allow the server to access 
                     // the session
                     xfbml: true, // parse social plugins on this page
