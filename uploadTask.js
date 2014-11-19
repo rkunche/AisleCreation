@@ -10,6 +10,7 @@ var products = [];
 var aisleProducts = [];
 var queryStringIndex = -1;
 var providerStringIndex = 0;
+var titleSearchEnabled = true;
 //add providers here.
 var providersList = [
     "asos.com",
@@ -82,6 +83,7 @@ function reInitializeValues() {
     tag_one = null;
     tag_two = null;
     tag_three = null;
+    titleSearchEnabled = true;
 }
 //ajax call to server to fetch products.
 function getProductsCall(url) {
@@ -751,7 +753,28 @@ function getSelectedProducts() {
 function getUrl() {
     var providerString = getProvider();
     var queryString = getQueryString();
+    if(titleSearchEnabled){
+        queryString = "(title="+queryString+")";
+    }
     var tempQueryString = queryString + " " + providerString +" NOT ARCHIVED";
+    if(queryString.indexOf('title') > -1){
+       try{
+        document.getElementById('serach_info_id').style.color = "green";
+        document.getElementById('serach_info_id').innerHTML = "( Searching in Title with "+queryString+" )";
+    }catch(err){
+                document.getElementById('tag_id').style.color = "green";
+        document.getElementById('tag_id').innerHTML = "( Searching in Title with "+queryString+" )";
+    }
+    } else {
+        try{
+        document.getElementById('serach_info_id').style.color = "red";
+         document.getElementById('serach_info_id').innerHTML = "( Searching with "+queryString+" )";
+     }catch(err){
+        document.getElementById('tag_id').style.color = "red";
+         document.getElementById('tag_id').innerHTML = "( Searching with "+queryString+" )"; 
+     }
+    }
+ 
     console.log("PROVIDER "+tempQueryString);
     url = "https://vue-server-dev.appspot.com/api/product/search/genericsearch?queryString=" + tempQueryString + "&offset=" + offset + "&limit=" + limit + "&randomize=true";
     return url;
@@ -761,6 +784,7 @@ function getQueryString() {
     return queryStringArray[QUERY_STATE];
     }else {
         QUERY_STATE = 0;
+        titleSearchEnabled = false;
         return queryStringArray[QUERY_STATE]; 
     }
 }

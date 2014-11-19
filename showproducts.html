@@ -644,7 +644,11 @@ ga('set', '&uid', data[1]);
                 if (lookingFor !== null) {
 
                 }
-
+                if(lookingFor === null || lookingFor === ''){
+                    if(secodryValue !== undefined && secodryValue !== null && secodryValue !== ''){
+                        lookingFor = secodryValue;
+                    }
+                }
 
                 if (XMLHttpRequest) {
                     request = new XMLHttpRequest();
@@ -655,7 +659,7 @@ ga('set', '&uid', data[1]);
                         request.setRequestHeader('Content-Type', 'application/json');
                         request.onreadystatechange = aisle_post_handler;
                         //aisle creation request.
-                        request.send(JSON.stringify({id: null, ownerUserId: userId, category: category, description: null, lookingFor: lookingFor, name: aisleTitle, productList: null, occassion: occasion, currentAisleState: "CURATED", bookmarkCount: 0}));
+                       request.send(JSON.stringify({id: null, ownerUserId: userId, category: category, description: null, lookingFor: lookingFor, name: aisleTitle, productList: null, occassion: occasion, currentAisleState: "CURATED", bookmarkCount: 0}));
 
                         console.log(JSON.stringify({id: null, ownerUserId: userId, category: category, description: null, lookingFor: lookingFor, name: aisleTitle, productList: null, occassion: occasion, currentAisleState: "CURATED", bookmarkCount: 0}));
                     }
@@ -905,7 +909,8 @@ ga('set', '&uid', data[1]);
 
         <input type='button' id="fetch_more_button_id" value='Fetch More' onClick="fetchMore()"  style="margin-left:30em;"
                />  &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp &nbsp &nbsp<img src='images/bx_loader.gif' id="gif_id"/> 
-
+     
+         <p align="right"  style="font-size:12px"> <b id="serach_info_id"> </b> </p>
         <br>
         <!--        <div class="outside">
         
